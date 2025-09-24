@@ -374,7 +374,7 @@ function NewGame()     --选择新游戏,设置主角初始属性
 	local battlenum = 1
 	while true do
 		local des = GetBattleDescription(num)
-		local mainOption = myJYMsgBox("行走江湖", des, {"战你娘亲","知己知彼","飞鸽传书","南柯一梦"}, 2, 19)
+		local mainOption = myJYMsgBox("行走江湖", des, {"战你娘亲","知己知彼","飞鸽传书","南柯一梦"}, 4, 19)
 		if mainOption == 1 then 
 			if WarMain(battles[battlenum], 0) == false then
 				continue
@@ -390,7 +390,9 @@ function NewGame()     --选择新游戏,设置主角初始属性
 		if mainOption == 3 then 
 			continue
 		end
-		if mainOption == 4 then 
+		if mainOption == 4 then
+			local Option4 = myJYMsgBox("南柯一梦", "选择接下来的操作", {"存档","读档","退出"}, 3, 19)
+			 
 			continue
 		end
 	end
