@@ -337,9 +337,20 @@ function NewGame()     --选择新游戏，设置主角初始属性
 	JY.Base["难度"] = JYMsgBox("请选择游戏难度", "休闲模式下，友方角色被击败后不会死亡。*冒险模式下，友方角色被击败后死亡，无法继续使用。*挑战模式下，敌方角色更加强大。", {"休闲模式","冒险模式","挑战模式"}, 3, 35)
 	ClsN()
 	
-	--选择标主还是畅想
-	local player_type = JYMsgBox("主角选择", "选择你想要的主角模式*", {"标准主角","畅想主角"}, 2, 378)
-	ClsN()
+	local player_type = 2
+
+	while player_type == 2 do
+		--选择标主还是畅想
+		local player_type = JYMsgBox("初始门派选择", "选择你想要的门派*", {"华山派","敬请期待"}, 2, 378)
+		ClsN()
+
+		if player_type == 1 then
+			local checksure = JYMsgBox("华山派", "初始角色：岳灵珊，袁承志，令狐冲*", {"确定","返回"}, 2, 378)
+			if checksure == 2 then
+				player_type = 2
+			end
+		end
+	end
 
 	JY.Person[0]["姓名"]=CC.NewPersonName;
 		  
