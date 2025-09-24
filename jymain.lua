@@ -337,15 +337,15 @@ function NewGame()     --选择新游戏，设置主角初始属性
 	--选择难度
 	JY.Base["难度"] = myJYMsgBox("请选择游戏难度", "休闲模式下，友方角色被击败后不会死亡。*冒险模式下，友方角色被击败后死亡，无法继续使用。*挑战模式下，敌方角色更加强大。", {"休闲模式","冒险模式","挑战模式"}, 3, 35)
 	
-	local player_type = 2
+	local player_type = 0
 
-	while player_type == 2 do
+	while player_type == 0 do
 		--选择标主还是畅想
-		local player_type = myJYMsgBox("初始门派选择", "选择你想要的门派*", {"华山派","敬请期待"}, 2, 378)
+		local player_type = myJYMsgBox("初始门派选择", "选择你喜欢的门派", {"华山派","敬请期待"}, 2, 378)
 
 		if player_type == 1 then
-			local checksure = myJYMsgBox("华山派", "初始角色：岳灵珊，袁承志，令狐冲*", {"确定","返回"}, 2, 19)
-			if checksure == 1 then
+			local checkSure = myJYMsgBox("华山派", "初始角色：岳灵珊，袁承志，令狐冲", {"确定","返回"}, 2, 19)
+			if checkSure == 1 then
 				instruct_10(79)
 				instruct_10(54)
 				instruct_10(35)
@@ -355,7 +355,8 @@ function NewGame()     --选择新游戏，设置主角初始属性
 	end
 
 	JY.Person[0]["姓名"]=CC.NewPersonName;
-		  
+	
+	local mainOption = myJYMsgBox("行走江湖", "", {"确定","返回"}, 2, 19)
 	
 	--标准主角+特殊主角
 	if player_type == 1 then	
@@ -6176,18 +6177,7 @@ function instruct_10(personid)
 			end
 		end
 	end
-	for i = 1, 4 do
-		local id = JY.Person[personid]["携带物品" .. i]
-		local n = JY.Person[personid]["携带物品数量" .. i]
-		if n < 0 then
-			n = 0
-		end
-		if id >= 0 and n > 0 then
-			instruct_2(id, n)
-			JY.Person[personid]["携带物品" .. i] = -1
-			JY.Person[personid]["携带物品数量" .. i] = 0
-		end
-	end
+
 	if add == 0 then
 		lib.Debug("instruct_10 error: 加入队伍已满")
 		return
