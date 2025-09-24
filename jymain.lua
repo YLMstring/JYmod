@@ -332,48 +332,30 @@ function NewGame()     --选择新游戏，设置主角初始属性
 	
 	JY.Status = GAME_NEWNAME;
 	ClsN();
+	lib.LoadPNG(1, 1000 * 2 , 0 , 0, 1)
 
 	--选择难度
-	JY.Base["难度"] = JYMsgBox("请选择游戏难度", "休闲模式下，友方角色被击败后不会死亡。*冒险模式下，友方角色被击败后死亡，无法继续使用。*挑战模式下，敌方角色更加强大。", {"休闲模式","冒险模式","挑战模式"}, 3, 35)
-	ClsN()
+	JY.Base["难度"] = myJYMsgBox("请选择游戏难度", "休闲模式下，友方角色被击败后不会死亡。*冒险模式下，友方角色被击败后死亡，无法继续使用。*挑战模式下，敌方角色更加强大。", {"休闲模式","冒险模式","挑战模式"}, 3, 35)
 	
 	local player_type = 2
 
 	while player_type == 2 do
 		--选择标主还是畅想
-		local player_type = JYMsgBox("初始门派选择", "选择你想要的门派*", {"华山派","敬请期待"}, 2, 378)
-		ClsN()
+		local player_type = myJYMsgBox("初始门派选择", "选择你想要的门派*", {"华山派","敬请期待"}, 2, 378)
 
 		if player_type == 1 then
-			local checksure = JYMsgBox("华山派", "初始角色：岳灵珊，袁承志，令狐冲*", {"确定","返回"}, 2, 378)
-			ClsN()
+			local checksure = myJYMsgBox("华山派", "初始角色：岳灵珊，袁承志，令狐冲*", {"确定","返回"}, 2, 19)
 			if checksure == 1 then
+				instruct_10(79)
+				instruct_10(54)
+				instruct_10(35)
 				break
 			end
 		end
 	end
 
-
-
 	JY.Person[0]["姓名"]=CC.NewPersonName;
 		  
-	JY.Person[0]["生命最大值"] = 50
-	JY.Person[0]["内力最大值"] = 100
-	JY.Person[0]["生命"] = JY.Person[0]["生命最大值"]
-	JY.Person[0]["内力"] = JY.Person[0]["内力最大值"]
-	JY.Person[0]["攻击力"] = 30
-	JY.Person[0]["防御力"] = 30
-	JY.Person[0]["轻功"] = 30
-	JY.Person[0]["医疗能力"] = 30
-	JY.Person[0]["用毒能力"] = 30
-	JY.Person[0]["解毒能力"] = 30
-	JY.Person[0]["抗毒能力"] = 0
-	JY.Person[0]["拳掌功夫"] = 30
-	JY.Person[0]["指法技巧"] = 30
-	JY.Person[0]["御剑能力"] = 30
-	JY.Person[0]["耍刀技巧"] = 30
-	JY.Person[0]["特殊兵器"] = 30
-	JY.Person[0]["暗器技巧"] = 30
 	
 	--标准主角+特殊主角
 	if player_type == 1 then	
@@ -7358,7 +7340,13 @@ function instruct_67(id)
   PlayWavAtk(id)
 end
 
-
+--自己封装了一下，简化代码
+function myJYMsgBox(title, str, button, num, headid, isEsc)
+	local result = JYMsgBox(title, str, button, num, headid, isEsc)
+	ClsN()
+	lib.LoadPNG(1, 1000 * 2 , 0 , 0, 1)
+	return result
+end
 --选择框，每个选项都带边框
 --title 标题
 --str 内容 *换行
@@ -7482,7 +7470,7 @@ function JYMsgBox(title, str, button, num, headid, isEsc)
 	select = limitX(select, -2, num)
 	lib.FreeSur(surid)
 	
-	Cls();
+	Cls()
 	return select
 end
 
