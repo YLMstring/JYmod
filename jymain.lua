@@ -346,11 +346,14 @@ function NewGame()     --选择新游戏，设置主角初始属性
 
 		if player_type == 1 then
 			local checksure = JYMsgBox("华山派", "初始角色：岳灵珊，袁承志，令狐冲*", {"确定","返回"}, 2, 378)
-			if checksure == 2 then
-				player_type = 2
+			ClsN()
+			if checksure == 1 then
+				break
 			end
 		end
 	end
+
+
 
 	JY.Person[0]["姓名"]=CC.NewPersonName;
 		  
