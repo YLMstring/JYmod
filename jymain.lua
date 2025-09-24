@@ -2,20 +2,20 @@
 ------------------------------------------------------------
 -----------金庸群侠传复刻之Lua版----------------------------
 
---版权所无，敬请复制
+--版权所无,敬请复制
 --您可以随意使用代码
 
 --本代码由游泳的鱼编写
 
---本模块是lua主模块，由C主程序JYLua.exe调用。C程序主要提供游戏需要的视频、音乐、键盘等API函数，供lua调用。
---游戏的所有逻辑都在lua代码中，以方便大家对代码的修改。
---为加快速度，显示主地图/场景地图/战斗地图部分用C API实现。
+--本模块是lua主模块,由C主程序JYLua.exe调用。C程序主要提供游戏需要的视频、音乐、键盘等API函数,供lua调用。
+--游戏的所有逻辑都在lua代码中,以方便大家对代码的修改。
+--为加快速度,显示主地图/场景地图/战斗地图部分用C API实现。
 
 -----------------------------------------------------------------------------
 
 -----黑山群侠传 基于金庸群侠传复刻之Lua版制作 在此感谢各位前辈的无私分享-----
 
------本游戏全部代码依然为开源代码，供真正热爱游戏的朋友学习交流用------------
+-----本游戏全部代码依然为开源代码,供真正热爱游戏的朋友学习交流用------------
 
 -----四大山和狗请不要使用----------------------------------------------------
 
@@ -25,7 +25,7 @@
 
 function IncludeFile()
 	package.path=CONFIG.ScriptLuaPath;  --设置加载路径
-	require("jyconst");					--加载其他文件，使用require避免重复加载
+	require("jyconst");					--加载其他文件,使用require避免重复加载
 	require("jywar");
 end
 
@@ -57,24 +57,24 @@ function SetGlobal()  	 --设置游戏内部使用的全程变量
 	JY.GOLD = 0				--游戏银两
 
 	JY.SubScene=-1;         --当前子场景编号
-	JY.SubSceneX=0;         --子场景显示位置偏移，场景移动指令使用
+	JY.SubSceneX=0;         --子场景显示位置偏移,场景移动指令使用
 	JY.SubSceneY=0;
 
-	JY.Darkness=0;          --=0 屏幕正常显示，=1 不显示，屏幕全黑
+	JY.Darkness=0;          --=0 屏幕正常显示,=1 不显示,屏幕全黑
 
 	JY.CurrentD=-1;         --当前调用D*的编号
 	JY.OldDPass=-1;         --上次触发路过事件的D*编号, 避免多次触发
 	JY.CurrentEventType=-1  --当前触发事件的方式 1 空格 2 物品 3 路过
 
-	JY.CurrentThing=-1;     --当前选择物品，触发事件使用
+	JY.CurrentThing=-1;     --当前选择物品,触发事件使用
 
-	JY.MmapMusic=-1;        --切换大地图音乐，返回主地图时，如果设置，则播放此音乐
+	JY.MmapMusic=-1;        --切换大地图音乐,返回主地图时,如果设置,则播放此音乐
 
-	JY.CurrentMIDI=-1;      --当前播放的音乐id，用来在关闭音乐时保存音乐id。
-	JY.EnableMusic=1;       --是否播放音乐 1 播放，0 不播放
-	JY.EnableSound=1;       --是否播放音效 1 播放，0 不播放
+	JY.CurrentMIDI=-1;      --当前播放的音乐id,用来在关闭音乐时保存音乐id。
+	JY.EnableMusic=1;       --是否播放音乐 1 播放,0 不播放
+	JY.EnableSound=1;       --是否播放音效 1 播放,0 不播放
 
-	WAR={};					--战斗使用的全程变量 这里占个位置，因为程序后面不允许定义全局变量了。具体内容在WarSetGlobal函数中
+	WAR={};					--战斗使用的全程变量 这里占个位置,因为程序后面不允许定义全局变量了。具体内容在WarSetGlobal函数中
 
 	AutoMoveTab = {[0] = 0}
 	
@@ -90,7 +90,7 @@ function JY_Main()        --主程序入口
     xpcall(JY_Main_sub,myErrFun);     --捕获调用错误
 end
 
-function myErrFun(err)      --错误处理，打印错误信息
+function myErrFun(err)      --错误处理,打印错误信息
     lib.Debug(err);                 --输出错误信息
     lib.Debug(debug.traceback());   --输出调用堆栈信息
 end
@@ -324,7 +324,22 @@ function CleanMemory()            --清理lua内存
     end
 end
 
-function NewGame()     --选择新游戏，设置主角初始属性
+function Generate20Battles()
+	local battles = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20}            
+    return battles
+end
+
+function GetBattleDescription(num)
+	if num == 1 then
+		return "这是第一场战斗,哈哈哈"     
+	end
+	if num == 2 then
+		return "这是第二场战斗,哈哈哈"     
+	end
+    return "哈哈哈哈哈哈哈哈哈"
+end
+
+function NewGame()     --选择新游戏,设置主角初始属性
 	--Cls();
 	--ShowScreen();
 	--这两句不知道有什么用？注释掉之后也没啥变化
@@ -335,7 +350,7 @@ function NewGame()     --选择新游戏，设置主角初始属性
 	lib.LoadPNG(1, 1000 * 2 , 0 , 0, 1)
 
 	--选择难度
-	JY.Base["难度"] = myJYMsgBox("请选择游戏难度", "休闲模式下，友方角色被击败后不会死亡。*冒险模式下，友方角色被击败后死亡，无法继续使用。*挑战模式下，敌方角色更加强大。", {"休闲模式","冒险模式","挑战模式"}, 3, 35)
+	JY.Base["难度"] = myJYMsgBox("请选择游戏难度", "休闲模式下,友方角色被击败后不会死亡。*冒险模式下,友方角色被击败后死亡,无法继续使用。*挑战模式下,敌方角色更加强大。", {"休闲模式","冒险模式","挑战模式"}, 3, 35)
 	
 	local player_type = 0
 
@@ -344,7 +359,7 @@ function NewGame()     --选择新游戏，设置主角初始属性
 		local player_type = myJYMsgBox("初始门派选择", "选择你喜欢的门派", {"华山派","敬请期待"}, 2, 378)
 
 		if player_type == 1 then
-			local checkSure = myJYMsgBox("华山派", "初始角色：岳灵珊，袁承志，令狐冲", {"确定","返回"}, 2, 19)
+			local checkSure = myJYMsgBox("华山派", "初始角色：岳灵珊,袁承志,令狐冲", {"确定","返回"}, 2, 19)
 			if checkSure == 1 then
 				instruct_10(79)
 				instruct_10(54)
@@ -355,8 +370,30 @@ function NewGame()     --选择新游戏，设置主角初始属性
 	end
 
 	JY.Person[0]["姓名"]=CC.NewPersonName;
-	
-	local mainOption = myJYMsgBox("行走江湖", "", {"确定","返回"}, 2, 19)
+	local battles = Generate20Battles();
+	local battlenum = 1
+	while true do
+		local des = GetBattleDescription(num)
+		local mainOption = myJYMsgBox("行走江湖", des, {"战你娘亲","知己知彼","飞鸽传书","南柯一梦"}, 2, 19)
+		if mainOption == 1 then 
+			if WarMain(battles[battlenum], 0) == false then
+				continue
+			else
+				battlenum = battlenum + 1
+				continue
+				--这里还要做一个游戏结束确认
+			end
+		end
+		if mainOption == 2 then 
+			continue
+		end
+		if mainOption == 3 then 
+			continue
+		end
+		if mainOption == 4 then 
+			continue
+		end
+	end
 	
 	--标准主角+特殊主角
 	if player_type == 1 then	
@@ -737,12 +774,12 @@ function NewGame()     --选择新游戏，设置主角初始属性
 				JY.Person[p]["内力"] = JY.Person[p]["内力最大值"]
 			end
 			
-			--设置血量翻倍，根据难度系数提高
+			--设置血量翻倍,根据难度系数提高
 			local dif_factor;
-			--难1，难2
+			--难1,难2
 			if JY.Base["难度"] < 3 then
 				dif_factor = 2;
-			--难3，难4，难5
+			--难3,难4,难5
 			elseif JY.Base["难度"] > 2 and JY.Base["难度"] < 6 then
 				dif_factor = 3;
 			--难6
@@ -782,12 +819,12 @@ end
 function JLSD(s1, s2, dw)
 	local s = math.random(100)
 	local chance_up = 0;
-	--论剑打赢阿凡提奖励，几率+6
+	--论剑打赢阿凡提奖励,几率+6
 	--[[
 	if dw == 0 and JY.Person[606]["论剑奖励"] == 1 then
 		chance_up = 3
 	end]]
-	--如果不在队伍中，几率+20
+	--如果不在队伍中,几率+20
 	if inteam(dw) == false then
 		chance_up = 10
 	end
@@ -809,7 +846,7 @@ function Game_Cycle()
 		end
         local t1=lib.GetTime();
 
-	    JY.Mytick=JY.Mytick+1;    --20个节拍无击键，则主角变为站立状态
+	    JY.Mytick=JY.Mytick+1;    --20个节拍无击键,则主角变为站立状态
 		if JY.Mytick%20==0 then
             JY.MyCurrentPic=0;
 		end
@@ -818,7 +855,7 @@ function Game_Cycle()
             JY.MYtick=0;
         end
 
-        if JY.Status==GAME_FIRSTMMAP then  --首次显示主场景，重新调用主场景贴图，渐变显示。然后转到正常显示
+        if JY.Status==GAME_FIRSTMMAP then  --首次显示主场景,重新调用主场景贴图,渐变显示。然后转到正常显示
 			CleanMemory()
 			lib.ShowSlow(20, 1)
 			JY.MmapMusic = 57
@@ -852,7 +889,7 @@ function Game_MMap()      --主地图
 			keypress = i
 		end
 	end 
-    --如果与上次不同的方向未被按下，则检测与上次相同的方向是否被按下
+    --如果与上次不同的方向未被按下,则检测与上次相同的方向是否被按下
 	if keypress==-1 and	lib.GetKeyState(CC.PrevKeypress) ~=0 then
 		keypress = CC.PrevKeypress
 	end
@@ -936,7 +973,7 @@ function Game_MMap()      --主地图
 				
 		--鼠标移动
 		if ktype == 2 then
-			if lib.GetMMap(mx, my, 3) > 0 then				--如果有建筑，判断是否可进入
+			if lib.GetMMap(mx, my, 3) > 0 then				--如果有建筑,判断是否可进入
 				for i=0, 4 do
 		    		for j=0, 4 do
 		    			local xx, yy = mx-i, my-j;
@@ -1006,7 +1043,7 @@ function Game_MMap()      --主地图
 		end
 	end
     if direct ~= -1 then   --按下了光标键
-        AddMyCurrentPic();         --增加主角贴图编号，产生走路效果
+        AddMyCurrentPic();         --增加主角贴图编号,产生走路效果
         x=JY.Base["人X"]+CC.DirectX[direct+1];
         y=JY.Base["人Y"]+CC.DirectY[direct+1];
         JY.Base["人方向"]=direct;
@@ -1023,7 +1060,7 @@ function Game_MMap()      --主地图
 		JY.SubScene=CanEnterScene(x,y);   --判断是否进入子场景
 	end
 
-    if lib.GetMMap(x,y,3)==0 and lib.GetMMap(x,y,4)==0 then     --没有建筑，可以到达
+    if lib.GetMMap(x,y,3)==0 and lib.GetMMap(x,y,4)==0 then     --没有建筑,可以到达
         JY.Base["人X"]=x;
         JY.Base["人Y"]=y;
     end
@@ -1093,7 +1130,7 @@ function walkto(xx,yy,x,y,flag)
 			if GetS(JY.SubScene, xx, yy, 3) > 0 and GetD(JY.SubScene, GetS(JY.SubScene, xx, yy, 3), 2) > 0 then
 				CC.AutoMoveEvent[1] = xx;
 				CC.AutoMoveEvent[2] = yy;
-				--无酒不欢：一处蛋疼的细节修改，自动触发事件的站位优先级
+				--无酒不欢：一处蛋疼的细节修改,自动触发事件的站位优先级
 				if x < xx then
 					if SceneCanPass(xx-1,yy) then
 						xx = xx-1;
@@ -1275,7 +1312,7 @@ end
 --场景是否可进
 --id 场景代号
 --x,y 当前主地图坐标
---返回：场景id，-1表示没有场景可进
+--返回：场景id,-1表示没有场景可进
 function CanEnterScene(x,y)         --场景是否可进
     for id = 0,JY.SceneNum-1 do
 		local scene=JY.Scene[id];
@@ -1344,7 +1381,7 @@ function Menu_Help()
 	local title = "系统攻略";
 	local str ="装备说明：查看各种装备的说明。"
 						.."*武功说明：查看各种武功的说明。"
-						.."*天书攻略：各种天书的拿法，以及游戏技攻略。"
+						.."*天书攻略：各种天书的拿法,以及游戏技攻略。"
 	local btn = {"装备说明","武功说明","天书攻略"};
 	local num = #btn;
 	local r = JYMsgBox(title,str,btn,num,nil,1);
@@ -1455,7 +1492,7 @@ function Menu_WPZL()
 						swap(j, j+1);
 						flag = 1;
 					end   
-                elseif wg1 > 0 then							--可练出武功的根据类型排序，如果类型相同，再根据武功10级威力排序                         
+                elseif wg1 > 0 then							--可练出武功的根据类型排序,如果类型相同,再根据武功10级威力排序                         
 					if JY.Wugong[wg1]["武功类型"] > JY.Wugong[wg2]["武功类型"] or (JY.Wugong[wg1]["武功类型"] == JY.Wugong[wg2]["武功类型"] and JY.Wugong[wg1]["攻击力10"] > JY.Wugong[wg2]["攻击力10"]) then
 						swap(j, j+1);
 						flag = 1;
@@ -1463,7 +1500,7 @@ function Menu_WPZL()
 				end
 			end
 		end
-		if flag == 0 then									--如果一轮下来没有任何的交换，肯定就是已经排好序了，直接退出
+		if flag == 0 then									--如果一轮下来没有任何的交换,肯定就是已经排好序了,直接退出
 			break;
 		end
 	end
@@ -1725,7 +1762,7 @@ function GetTeamNum()
 end
 
 ---显示队伍状态
--- 左右键翻页，上下键换队友
+-- 左右键翻页,上下键换队友
 function ShowPersonStatus(teamid)
 	local page = 1
 	local pagenum = 3
@@ -1787,7 +1824,7 @@ function ShowPersonStatus(teamid)
 			if sp["武功"..j] == 0 then
 				break
 			end
-			--外功，不能选斗转
+			--外功,不能选斗转
 			if JY.Wugong[sp["武功"..j]]["武功类型"] <= 5 and sp["武功"..j] ~= 43 then
 				yxsynum = yxsynum + 1
 				yxsy[yxsynum] = sp["武功"..j]
@@ -1828,7 +1865,7 @@ function ShowPersonStatus(teamid)
 				zyqg[zyqgnum] = sp["武功"..j]
 			end
 		end
-		--状态界面动画显示，97号
+		--状态界面动画显示,97号
 		lib.PicLoadFile(string.format(CC.FightPicFile[1],JY.Person[id]["头像代号"]),
 		string.format(CC.FightPicFile[2],JY.Person[id]["头像代号"]), 97)
 		local m = 0
@@ -1847,7 +1884,7 @@ function ShowPersonStatus(teamid)
 		ShowScreen()
 		local keypress, ktype, mx, my = lib.GetKey()
 		lib.Delay(CC.Frame)
-		--ktype  1：键盘，2：鼠标移动，3:鼠标左键，4：鼠标右键，5：鼠标中键，6：滚动上，7：滚动下
+		--ktype  1：键盘,2：鼠标移动,3:鼠标左键,4：鼠标右键,5：鼠标中键,6：滚动上,7：滚动下
 		if keypress == VK_ESCAPE or ktype == 4 then
 			if page == 3 and AI_menu_selected > 0 then
 				AI_menu_selected = 0
@@ -2028,7 +2065,7 @@ function ShowPersonStatus(teamid)
 end
 
 --无酒不欢：人物状态栏
---case：nil=正常浏览，else加点
+--case：nil=正常浏览,else加点
 function ShowPersonStatus_sub(id, page, istart, tfid, max_row, case, AI_s1, AI_s2, AI_menu_selected,AniFrame,dl)
 	if JY.Restart == 1 then
 		do return end
@@ -2345,28 +2382,28 @@ function ShowPersonStatus_sub(id, page, istart, tfid, max_row, case, AI_s1, AI_s
 		end
 		DrawString(x1 + size * 6 + 24, y1 + h * (i), hb, C_GOLD, size)
 		
-		--连击，暴击
+		--连击,暴击
 		i = i + 1
 		DrawString(x1, y1 + h * (i), "连击", M_SandyBrown, size)
 		DrawString(x1 + size * 2 + 8, y1 + h * (i), Person_LJ(id).."%", M_LightBlue, size)
 		DrawString(x1 + size * 4 + 16, y1 + h * (i), "暴击", M_SandyBrown, size)
 		DrawString(x1 + size * 6 + 24, y1 + h * (i), Person_BJ(id).."%", PinkRed, size)
 		
-		--内伤，中毒
+		--内伤,中毒
 		i = i + 1
 		DrawString(x1, y1 + h * (i), "内伤", M_SandyBrown, size)
 		DrawString(x1 + size * 2 + 8, y1 + h * (i), p["受伤程度"], PinkRed, size)
 		DrawString(x1 + size * 4 + 16, y1 + h * (i), "中毒", M_SandyBrown, size)
 		DrawString(x1 + size * 6 + 24, y1 + h * (i), p["中毒程度"], LightGreen, size)
 	  
-		--出战，休战
+		--出战,休战
 		i = i + 1
 		DrawString(x1, y1 + h * (i), "出战", M_SandyBrown, size)
 		DrawString(x1 + size * 2 + 8, y1 + h * (i), p["出战"], MilkWhite, size)
 		DrawString(x1 + size * 4 + 16, y1 + h * (i), "休战", M_SandyBrown, size)
 		DrawString(x1 + size * 6 + 24, y1 + h * (i), "0", MilkWhite, size)
 		
-		--武器，防具
+		--武器,防具
 		i = i + 1
 		DrawString(x1, y1 + h * (i), "武器", M_LightBlue, size)
 		if p["武器"] > -1 then
@@ -2557,10 +2594,10 @@ function ShowPersonStatus_sub(id, page, istart, tfid, max_row, case, AI_s1, AI_s
 				end
 				--等级
 				DrawString(x1 + size * 6 -6, y1 + h * (i), T[level], C_WHITE, size)
-				--如果是特技，显示特技
+				--如果是特技,显示特技
 				if secondary_wugong(wugong) then
 					DrawString(x1 + size * 8 -14, y1 + h * (i), "特技", M_PaleGreen, size)
-				--如果不是，则显示武功威力
+				--如果不是,则显示武功威力
 				else
 					--威力
 					local wugongwl = get_skill_power(id, wugong, level)
@@ -2974,7 +3011,7 @@ function SelectThing(thing,thingnum)
 	local dx=(CC.ScreenW-w)/2;
 	local dy=(CC.ScreenH-h-2*(CC.ThingFontSize+2*CC.MenuBorderPixel+8))/2-CC.ThingFontSize-11;
 
-	local y1_1,y1_2,y2_1,y2_2,y3_1,y3_2;                  --名称，说明和图片的Y坐标
+	local y1_1,y1_2,y2_1,y2_2,y3_1,y3_2;                  --名称,说明和图片的Y坐标
 
 	local cur_line=0;
 	local cur_x=0;
@@ -3626,7 +3663,7 @@ function Game_SMap()         --场景处理主函数
 			keypress = i
 		end
 	end 
-    --如果与上次不同的方向未被按下，则检测与上次相同的方向是否被按下
+    --如果与上次不同的方向未被按下,则检测与上次相同的方向是否被按下
 	if keypress==-1 and	lib.GetKeyState(CC.PrevKeypress) ~=0 then
 		keypress = CC.PrevKeypress
 	end
@@ -3707,7 +3744,7 @@ function Game_SMap()         --场景处理主函数
 			yy = math.modf(yy);
 		end	
 		
-		if CONFIG.Zoom ~= 100 then		--无酒不欢：不知道什么毛病，反正不加就是有毛病
+		if CONFIG.Zoom ~= 100 then		--无酒不欢：不知道什么毛病,反正不加就是有毛病
 			xx = xx + 1
 			yy = yy + 1
 		end
@@ -3725,7 +3762,7 @@ function Game_SMap()         --场景处理主函数
         return ;
     end
 	
-	--无酒不欢：有标记事件坐标，且自动走到前面一格才会触发事件
+	--无酒不欢：有标记事件坐标,且自动走到前面一格才会触发事件
 	if CC.AutoMoveEvent[1] ~= 0 and 
 	(JY.Base["人X1"] - 1 == CC.AutoMoveEvent[1] or JY.Base["人X1"] + 1 == CC.AutoMoveEvent[1] or JY.Base["人Y1"] - 1 == CC.AutoMoveEvent[2] or JY.Base["人Y1"] + 1 == CC.AutoMoveEvent[2]) then
 		CC.AutoMoveEvent[0] = 1;		--鼠标操作触发事件
@@ -3775,11 +3812,11 @@ function Game_SMap()         --场景处理主函数
 end
 
 --场景坐标(x,y)是否可以通过
---返回true,可以，false不能
+--返回true,可以,false不能
 function SceneCanPass(x,y)  --场景坐标(x,y)是否可以通过
     local ispass=true;        --是否可以通过
 
-    if GetS(JY.SubScene,x,y,1)>0 then     --场景层1有物品，不可通过
+    if GetS(JY.SubScene,x,y,1)>0 then     --场景层1有物品,不可通过
         ispass=false;
     end
 
@@ -3790,13 +3827,13 @@ function SceneCanPass(x,y)  --场景坐标(x,y)是否可以通过
         end
     end
 
-    if CC.SceneWater[GetS(JY.SubScene,x,y,0)] ~= nil then   --水面，不可进入
+    if CC.SceneWater[GetS(JY.SubScene,x,y,0)] ~= nil then   --水面,不可进入
         ispass=false;
     end
     return ispass;
 end
 
-function DtoSMap()          ---D*中的事件数据复制到S*中，同时处理动画效果。
+function DtoSMap()          ---D*中的事件数据复制到S*中,同时处理动画效果。
     for i=0,CC.DNum-1 do
         local x=GetD(JY.SubScene,i,9);
         local y=GetD(JY.SubScene,i,10);
@@ -3843,14 +3880,14 @@ end
 
 
 -- 读取游戏进度
--- id=0 新进度，=1/2/3 进度
---这里是先把数据读入Byte数组中。然后定义访问相应表的方法，在访问表时直接从数组访问。
---与以前的实现相比，从文件中读取和保存到文件的时间显著加快。而且内存占用少了
+-- id=0 新进度,=1/2/3 进度
+--这里是先把数据读入Byte数组中。然后定义访问相应表的方法,在访问表时直接从数组访问。
+--与以前的实现相比,从文件中读取和保存到文件的时间显著加快。而且内存占用少了
 function LoadRecord(id)       -- 读取游戏进度
     local zipfile=string.format('data/save/Save_%d',id)
     
     if id ~= 0 and ( existFile(zipfile) == false) then
-		QZXS("此存档数据不全，不能读取。请选择其它存档或重新开始");
+		QZXS("此存档数据不全,不能读取。请选择其它存档或重新开始");
 		return -1;
 	end
     
@@ -3881,7 +3918,7 @@ function LoadRecord(id)       -- 读取游戏进度
     JY.Data_Base=Byte.create(idx[1]-idx[0]);              --基本数据
     Byte.loadfile(JY.Data_Base,grpFile,idx[0],idx[1]-idx[0]);
 
-    --设置访问基本数据的方法，这样就可以用访问表的方式访问了。而不用把二进制数据转化为表。节约加载时间和空间
+    --设置访问基本数据的方法,这样就可以用访问表的方式访问了。而不用把二进制数据转化为表。节约加载时间和空间
 	local meta_t={
 	    __index=function(t,k)
 	        return GetDataFromStruct(JY.Data_Base,0,CC.Base_S,k);
@@ -4032,7 +4069,7 @@ function LoadRecord(id)       -- 读取游戏进度
 end
 
 -- 写游戏进度
--- id=0 新进度，=1/2/3 进度
+-- id=0 新进度,=1/2/3 进度
 function SaveRecord(id)         -- 写游戏进度
 
 	--判断是否在子场景保存
@@ -4092,7 +4129,7 @@ function filelength(filename)         --得到文件长度
     return l;
 end
 
---读S×数据, (x,y) 坐标，level 层 0-5
+--读S×数据, (x,y) 坐标,level 层 0-5
 function GetS(id,x,y,level)       --读S×数据
 	return lib.GetS(id,x,y,level);
 end
@@ -4103,7 +4140,7 @@ function SetS(id,x,y,level,v)       --写S×
 end
 
 --读D*
---sceneid 场景编号，
+--sceneid 场景编号,
 --id D*编号
 --要读第几个数据, 0-10
 function GetD(Sceneid,id,i)          --读D*
@@ -4118,9 +4155,9 @@ end
 --从数据的结构中翻译数据
 --data 二进制数组
 --offset data中的偏移
---t_struct 数据的结构，在jyconst中有很多定义
+--t_struct 数据的结构,在jyconst中有很多定义
 --key  访问的key
-function GetDataFromStruct(data,offset,t_struct,key)  --从数据的结构中翻译数据，用来取数据
+function GetDataFromStruct(data,offset,t_struct,key)  --从数据的结构中翻译数据,用来取数据
     local t=t_struct[key];
 	local r;
 	if t[2]==0 then
@@ -4137,7 +4174,7 @@ function GetDataFromStruct(data,offset,t_struct,key)  --从数据的结构中翻译数据，
 	return r;
 end
 
-function SetDataFromStruct(data,offset,t_struct,key,v)  --从数据的结构中翻译数据，保存数据
+function SetDataFromStruct(data,offset,t_struct,key,v)  --从数据的结构中翻译数据,保存数据
     local t=t_struct[key];
 	if t[2]==0 then
 		Byte.set16(data,t[1]+offset,v);
@@ -4216,7 +4253,7 @@ end
 
 --等待键盘输入
 function WaitKey(flag)
-	--ktype  1：键盘，2：鼠标移动，3:鼠标左键，4：鼠标右键，5：鼠标中键，6：滚动上，7：滚动下
+	--ktype  1：键盘,2：鼠标移动,3:鼠标左键,4：鼠标右键,5：鼠标中键,6：滚动上,7：滚动下
 	local key, ktype, mx, my=-1,-1,-1,-1;
 	while true do
 		if JY.Restart == 1 then
@@ -4238,7 +4275,7 @@ function WaitKey(flag)
 	return key, ktype, mx, my;
 end
 
---绘制一个带背景的白色方框，四角凹进
+--绘制一个带背景的白色方框,四角凹进
 function DrawBox(x1, y1, x2, y2, color)
 	local s = 4
 	lib.Background(x1 + 4, y1, x2 - 4, y1 + s, 88)
@@ -4253,7 +4290,7 @@ function DrawBox(x1, y1, x2, y2, color)
 	DrawBox_1(x1, y1, x2 - 1, y2 - 1, color)
 end
 
---绘制一个带背景的白色方框，四角凹进
+--绘制一个带背景的白色方框,四角凹进
 function DrawBox_1(x1, y1, x2, y2, color)
 	local s = 4
 	lib.DrawRect(x1 + s, y1, x2 - s, y1, color)
@@ -4284,7 +4321,7 @@ function DrawString(x,y,str,color,size)         --显示阴影字符串
 end
 
 --显示带框的字符串
---(x,y) 坐标，如果都为-1,则在屏幕中间显示
+--(x,y) 坐标,如果都为-1,则在屏幕中间显示
 function DrawStrBox(x,y,str,color,size,boxcolor)         --显示带框的字符串
     local ll=#str;
     local w=size*ll/2+2*CC.MenuBorderPixel;
@@ -4357,8 +4394,8 @@ function DrawStrBox3(x, y, s, color, size, flag)         --显示带框的字符串
 	end
 end
 
---显示并询问Y/N，如果点击Y，则返回true, N则返回false
---(x,y) 坐标，如果都为-1,则在屏幕中间显示
+--显示并询问Y/N,如果点击Y,则返回true, N则返回false
+--(x,y) 坐标,如果都为-1,则在屏幕中间显示
 --改为用菜单询问是否
 function DrawStrBoxYesNo(x, y, str, color, size, boxcolor)
 	if JY.Restart == 1 then
@@ -4387,7 +4424,7 @@ function DrawStrBoxYesNo(x, y, str, color, size, boxcolor)
 	end
 end
 
---显示字符串并等待击键，字符串带框，显示在屏幕中间
+--显示字符串并等待击键,字符串带框,显示在屏幕中间
 function DrawStrBoxWaitKey(s,color,size,flag,boxcolor)
 	if JY.Restart == 1 then
 		return
@@ -4414,12 +4451,12 @@ function Rnd(i)           --随机数
     return r-1;
 end
 
---增加人物属性，如果有最大值限制，则应用最大值限制。最小值则限制为0
+--增加人物属性,如果有最大值限制,则应用最大值限制。最小值则限制为0
 --id 人物id
 --str属性字符串
---value 要增加的值，负数表示减少
+--value 要增加的值,负数表示减少
 --返回1,实际增加的值
---返回2，字符串：xxx 增加/减少 xxxx，用于显示药品效果
+--返回2,字符串：xxx 增加/减少 xxxx,用于显示药品效果
 function AddPersonAttrib(id, str, value)
 	local oldvalue = JY.Person[id][str]
 	local attribmax = math.huge
@@ -4459,7 +4496,7 @@ function AddPersonAttrib(id, str, value)
 		elseif p_zz >= 91 then
 			attribmax = 1500
 		end
-		--段誉，扫地，石破天，无崖子，上限9999
+		--段誉,扫地,石破天,无崖子,上限9999
 		if match_ID(id, 53) or match_ID(id, 114) or match_ID(id, 38) or match_ID(id, 116) then
 			attribmax = 9999
 		end
@@ -4473,7 +4510,7 @@ function AddPersonAttrib(id, str, value)
 		elseif Num_of_Neigong(id) > 2 then
 			attribmax = attribmax + 4500
 		end
-		--学有北冥或吸星，+300
+		--学有北冥或吸星,+300
 		for i = 1, CC.Kungfunum do
 			if JY.Person[id]["武功" .. i] == 85 or JY.Person[id]["武功" .. i] == 88 then
 				attribmax = attribmax + 300
@@ -4484,7 +4521,7 @@ function AddPersonAttrib(id, str, value)
 		if match_ID(id, 58) then
 			attribmax = attribmax - JY.Person[300]["声望"] * 1000
 		end
-		--内力下限2999，上限9999
+		--内力下限2999,上限9999
 		if attribmax < 2999 then
 			attribmax = 2999
 		end
@@ -4493,31 +4530,31 @@ function AddPersonAttrib(id, str, value)
 		end
 	end
     
-	--程灵素，何铁手，王难姑，用毒500
+	--程灵素,何铁手,王难姑,用毒500
 	if str == "用毒能力" and (match_ID(id, 2) or match_ID(id, 83) or match_ID(id, 17)) then
 		attribmax = 500
 	end
-	--蓝凤凰，用毒400
+	--蓝凤凰,用毒400
 	if str == "用毒能力" and match_ID(id, 25) then
 		attribmax = 400
 	end
-	--胡青牛，平一指，薛慕华医疗500
+	--胡青牛,平一指,薛慕华医疗500
 	if str == "医疗能力" and (match_ID(id, 16) or match_ID(id, 28) or match_ID(id, 45)) then
 		attribmax = 500
 	end
-	--贝海石，程灵素医疗400
+	--贝海石,程灵素医疗400
 	if str == "医疗能力" and (match_ID(id, 85) or match_ID(id, 2)) then
 		attribmax = 400
 	end
-	--标主医生，医疗用毒解毒都是400
+	--标主医生,医疗用毒解毒都是400
 	if (str == "医疗能力" or str == "用毒能力" or str == "解毒能力") and id == 0 and JY.Base["标准"] == 8 then
 		attribmax = 400
 	end
-	--标主毒王，用毒解毒都是500
+	--标主毒王,用毒解毒都是500
 	if (str == "用毒能力" or str == "解毒能力") and id == 0 and JY.Base["标准"] == 9 then
 		attribmax = 500
 	end
-	--阎基，医疗用毒都是300
+	--阎基,医疗用毒都是300
 	if (str == "医疗能力" or str == "用毒能力") and match_ID(id, 4) then
 		attribmax = 300
 	end
@@ -4577,33 +4614,33 @@ function ShowScreen(flag)
 end
 
 --通用菜单函数
--- menuItem 表，每项保存一个子表，内容为一个菜单项的定义
+-- menuItem 表,每项保存一个子表,内容为一个菜单项的定义
 --          菜单项定义为  {   ItemName,     菜单项名称字符串
---                          ItemFunction, 菜单调用函数，如果没有则为nil
---                          Visible       是否可见  0 不可见 1 可见, 2 可见，作为当前选择项。只能有一个为2，
---                                        多了则只取第一个为2的，没有则第一个菜单项为当前选择项。
+--                          ItemFunction, 菜单调用函数,如果没有则为nil
+--                          Visible       是否可见  0 不可见 1 可见, 2 可见,作为当前选择项。只能有一个为2,
+--                                        多了则只取第一个为2的,没有则第一个菜单项为当前选择项。
 --                                        在只显示部分菜单的情况下此值无效。
 --                                        此值目前只用于是否菜单缺省显示否的情况
 --                       }
 --          菜单调用函数说明：         itemfunction(newmenu,id)
 --
 --       返回值
---              0 正常返回，继续菜单循环 1 调用函数要求退出菜单，不进行菜单循环
+--              0 正常返回,继续菜单循环 1 调用函数要求退出菜单,不进行菜单循环
 --
 -- numItem      总菜单项个数
--- numShow      显示菜单项目，如果总菜单项很多，一屏显示不下，则可以定义此值
+-- numShow      显示菜单项目,如果总菜单项很多,一屏显示不下,则可以定义此值
 --                =0表示显示全部菜单项
 
--- (x1,y1),(x2,y2)  菜单区域的左上角和右下角坐标，如果x2,y2=0,则根据字符串长度和显示菜单项自动计算x2,y2
--- isBox        是否绘制边框，0 不绘制，1 绘制。若绘制，则按照(x1,y1,x2,y2)的矩形绘制白色方框，并使方框内背景变暗
--- isEsc        Esc键是否起作用 0 不起作用，1起作用
+-- (x1,y1),(x2,y2)  菜单区域的左上角和右下角坐标,如果x2,y2=0,则根据字符串长度和显示菜单项自动计算x2,y2
+-- isBox        是否绘制边框,0 不绘制,1 绘制。若绘制,则按照(x1,y1,x2,y2)的矩形绘制白色方框,并使方框内背景变暗
+-- isEsc        Esc键是否起作用 0 不起作用,1起作用
 -- Size         菜单项字体大小
--- color        正常菜单项颜色，均为RGB
+-- color        正常菜单项颜色,均为RGB
 -- selectColor  选中菜单项颜色,
 --;
 -- 返回值  0 Esc返回
 --         >0 选中的菜单项(1表示第一项)
---         <0 选中的菜单项，调用函数要求退出父菜单，这个用于退出多层菜单
+--         <0 选中的菜单项,调用函数要求退出父菜单,这个用于退出多层菜单
 
 function ShowMenu(menuItem, numItem, numShow, x1, y1, x2, y2, isBox, isEsc, size, color, selectColor)
 	local w = 0
@@ -4979,10 +5016,10 @@ function ShowMenu(menuItem, numItem, numShow, x1, y1, x2, y2, isBox, isEsc, size
 					local id = WAR.Person[WAR.CurID]["人物编号"]
 					--运功内力不足
 					if JY.Person[id]["内力"] < 2000 then
-						DrawStrBoxWaitKey("内力不足，无法运功",C_RED,CC.DefaultFont,nil,LimeGreen)
+						DrawStrBoxWaitKey("内力不足,无法运功",C_RED,CC.DefaultFont,nil,LimeGreen)
 					--运功体力不足
 					elseif JY.Person[id]["体力"] < 20 then
-						DrawStrBoxWaitKey("体力不足，无法运功",C_RED,CC.DefaultFont,nil,LimeGreen)
+						DrawStrBoxWaitKey("体力不足,无法运功",C_RED,CC.DefaultFont,nil,LimeGreen)
 					else
 						local r=newMenu[current][2](newMenu,current); 
 						--连续两级菜单全部返回20作为判定参数
@@ -5000,7 +5037,7 @@ function ShowMenu(menuItem, numItem, numShow, x1, y1, x2, y2, isBox, isEsc, size
 					local id = WAR.Person[WAR.CurID]["人物编号"]
 					--运功体力不足
 					if JY.Person[id]["体力"] < 20 then
-						DrawStrBoxWaitKey("体力不足，无法运功",M_DeepSkyBlue,CC.DefaultFont,nil,LimeGreen)
+						DrawStrBoxWaitKey("体力不足,无法运功",M_DeepSkyBlue,CC.DefaultFont,nil,LimeGreen)
 					else
 						local r=newMenu[current][2](newMenu,current); 
 						if r == 10 then
@@ -5041,12 +5078,12 @@ function ShowMenu(menuItem, numItem, numShow, x1, y1, x2, y2, isBox, isEsc, size
 	return returnValue
 end
 
---基本参数和ShowMenu一样，有一些特别的进行着重说明
---menu 每个数据三个值，1名称，2执行函数，3显示方式(0灰色可选择，1正常显示，2不显示, 3灰色不可选择)
---itemNum 菜单的个数，通常在调用的时候 #menu就可以了
+--基本参数和ShowMenu一样,有一些特别的进行着重说明
+--menu 每个数据三个值,1名称,2执行函数,3显示方式(0灰色可选择,1正常显示,2不显示, 3灰色不可选择)
+--itemNum 菜单的个数,通常在调用的时候 #menu就可以了
 --numShow 每行显示的菜单个数
---showRow 一个版面显示的最大行数，如果可显示菜单个数达不到一个版面的数，函数会自动适应这个值
---str 是标题的文字，传nil不显示
+--showRow 一个版面显示的最大行数,如果可显示菜单个数达不到一个版面的数,函数会自动适应这个值
+--str 是标题的文字,传nil不显示
 --选中项
 function ShowMenu2(menu,itemNum,numShow,showRow,x1,y1,x2,y2,isBox,isEsc,size,color,selectColor, str, selIndex)     --通用菜单函数
     local w=0;
@@ -5066,7 +5103,7 @@ function ShowMenu2(menu,itemNum,numShow,showRow,x1,y1,x2,y2,isBox,isEsc,size,col
     for i,v in pairs(menu) do
 		if v[3] ~= 2 then
 			numItem = numItem + 1;
-			menuItem[numItem] = {v[1],v[2],v[3],i};                --注意第4个位置，保存i的值
+			menuItem[numItem] = {v[1],v[2],v[3],i};                --注意第4个位置,保存i的值
 		end
     end
     
@@ -5239,7 +5276,7 @@ function ShowMenu2(menu,itemNum,numShow,showRow,x1,y1,x2,y2,isBox,isEsc,size,col
     end
 	lib.FreeSur(surid)
         
-	--返回值，这个是取第4个位置的值
+	--返回值,这个是取第4个位置的值
 	if returnValue > 0 then
 		return menuItem[returnValue][4]
 	else
@@ -5251,12 +5288,12 @@ end
 --------------------------------------物品使用---------------------------------------
 --物品使用模块
 --当前物品id
---返回1 使用了物品， 0 没有使用物品。可能是某些原因不能使用
+--返回1 使用了物品, 0 没有使用物品。可能是某些原因不能使用
 function UseThing(id)
 	return DefaultUseThing(id);
 end
 
---缺省物品使用函数，实现原始游戏效果
+--缺省物品使用函数,实现原始游戏效果
 --id 物品id
 function DefaultUseThing(id)                --缺省物品使用函数
     if JY.Thing[id]["类型"]==0 then
@@ -5272,7 +5309,7 @@ function DefaultUseThing(id)                --缺省物品使用函数
     end
 end
 
---剧情物品，触发事件
+--剧情物品,触发事件
 function UseThing_Type0(id)
 	--合并九阴
 	if id == 286 then
@@ -5322,10 +5359,10 @@ end
 
 
 --判断一个人是否可以装备或修炼一个物品
---返回 true可以修炼，false不可
+--返回 true可以修炼,false不可
 function CanUseThing(id, personid)
 	local str = ""
-	--王语嫣，随便修炼秘籍
+	--王语嫣,随便修炼秘籍
 	if match_ID(personid, 76) and JY.Thing[id]["类型"] == 2 then
 		return true
 	--主角学圣火
@@ -5380,22 +5417,22 @@ function CanUseThing(id, personid)
 			return false
 		end
 
-		--学有小无相功，兵器值视作+10点
+		--学有小无相功,兵器值视作+10点
 		local lv = 0;
 		if PersonKF(personid, 98) then
 			lv = 10
 		end
 		
-		--主角和喵姐学苗剑，需求-40（即为60）
+		--主角和喵姐学苗剑,需求-40（即为60）
 		if id == 117 and (personid == 0 or personid == 92) and PersonKF(personid, 67) then
 			lv = lv + 40
 		end
-		--主角和喵姐学胡刀，需求-80（即为60）
+		--主角和喵姐学胡刀,需求-80（即为60）
 		if id == 136 and (personid == 0 or personid == 92) and PersonKF(personid, 44) then
 			lv = lv + 80
 		end
 		
-		--桃花绝技，学习其中之一后，剩下两个的需求减少-10，可叠加
+		--桃花绝技,学习其中之一后,剩下两个的需求减少-10,可叠加
 		if id == 95 or id == 101 or id == 123 then
 			for i = 1, CC.Kungfunum do
 				if JY.Person[personid]["武功" .. i] == 12 or JY.Person[personid]["武功" .. i] == 18 or JY.Person[personid]["武功" .. i] == 38 then
@@ -5471,9 +5508,9 @@ function CanUseThing(id, personid)
 end
 
 --药品使用实际效果
---id 物品id，
+--id 物品id,
 --personid 使用人id
---返回值：0 使用没有效果，物品数量应该不变。1 使用有效果，则使用后物品数量应该-1
+--返回值：0 使用没有效果,物品数量应该不变。1 使用有效果,则使用后物品数量应该-1
 function UseThingEffect(id, personid, amount)
 	--无使用数量则默认为使用1个
 	if amount == nil then
@@ -5485,7 +5522,7 @@ function UseThingEffect(id, personid, amount)
 	local addvalue = nil
 	if JY.Thing[id]["加生命"] > 0 then
 		local add = JY.Thing[id]["加生命"] - math.modf(JY.Thing[id]["加生命"] * JY.Person[personid]["受伤程度"] / 200) + Rnd(5)
-		--胡青牛在队，吃药效果为1.3倍
+		--胡青牛在队,吃药效果为1.3倍
 		if JY.Status == GAME_WMAP and inteam(personid) and (inteam(16) or JY.Base["畅想"] == 16) then
 			for w = 0, WAR.PersonNum - 1 do
 				if match_ID(WAR.Person[w]["人物编号"], 16) and WAR.Person[w]["死亡"] == false and WAR.Person[w]["我方"] then
@@ -5499,7 +5536,7 @@ function UseThingEffect(id, personid, amount)
 		end
 		add = math.modf(add)
 		
-		--洪安通，敌人吃药不加血反而减血
+		--洪安通,敌人吃药不加血反而减血
 		if JY.Status == GAME_WMAP then
 			for w = 0, WAR.PersonNum - 1 do
 				if match_ID(WAR.Person[w]["人物编号"], 71) and WAR.Person[w]["死亡"] == false and WAR.Person[w]["我方"] ~= WAR.Person[WAR.CurID]["我方"] then
@@ -5535,7 +5572,7 @@ function UseThingEffect(id, personid, amount)
 			if addvalue ~= 0 then
 			strnum = strnum + 1
 			end
-			--蓝烟清：显示体力，内力点数
+			--蓝烟清：显示体力,内力点数
 			if JY.Status == GAME_WMAP then
 				if s == "体力" then
 					WAR.Person[WAR.CurID]["体力点数"] = addvalue;
@@ -5638,7 +5675,7 @@ function UseThing_Type1(id)
 		local personid = JY.Base["队伍" .. r]
 		--田归农装闯王军刀
 		if id == 202 and match_ID(personid, 72) then
-			say("嘿嘿，这口宝刀本来就是田掌门的兵器，谁说耍刀不够就装不了？",72,0)
+			say("嘿嘿,这口宝刀本来就是田掌门的兵器,谁说耍刀不够就装不了？",72,0)
 			if JY.Thing[id]["使用人"] >= 0 then
 								
 				JY.Person[JY.Thing[id]["使用人"]]["武器"] = -1
@@ -5683,7 +5720,7 @@ function UseThing_Type1(id)
 end
 --秘籍物品使用
 function UseThing_Type2(id)
-	if JY.Thing[id]["使用人"] >= 0 and DrawStrBoxYesNo(-1, -1, "此物品已经有人修炼，是否换人修炼?", C_WHITE, CC.DefaultFont) == false then
+	if JY.Thing[id]["使用人"] >= 0 and DrawStrBoxYesNo(-1, -1, "此物品已经有人修炼,是否换人修炼?", C_WHITE, CC.DefaultFont) == false then
 		Cls(CC.MainSubMenuX, CC.MainSubMenuY, CC.ScreenW, CC.ScreenH)
 		ShowScreen()
 		return 0
@@ -5709,10 +5746,10 @@ function UseThing_Type2(id)
 			end
 		end
 		
-		--纯阳一脉相承九阳，面板有纯阳的可以无条件学九阳
+		--纯阳一脉相承九阳,面板有纯阳的可以无条件学九阳
 		if id == 83 then
 			if PersonKF(personid, 99) and PersonKF(personid, 106) == false then
-				if DrawStrBoxYesNo(-1, -1, "纯阳九阳，一脉相承，是否将武功洗为九阳神功?", C_WHITE, CC.DefaultFont) then
+				if DrawStrBoxYesNo(-1, -1, "纯阳九阳,一脉相承,是否将武功洗为九阳神功?", C_WHITE, CC.DefaultFont) then
 					for i = 1, CC.Kungfunum do
 						if JY.Person[personid]["武功" .. i] == 99 then
 							JY.Person[personid]["武功" .. i] = 106
@@ -5728,7 +5765,7 @@ function UseThing_Type2(id)
 			end
 		end
     
-		--如果已经满武功并且选择的武功没有学会，则不可装备修炼
+		--如果已经满武功并且选择的武功没有学会,则不可装备修炼
 		if yes == 0 and full == 1 then
 			DrawStrBoxWaitKey("一个人只能修炼12种武功", C_WHITE, CC.DefaultFont)
 			return 0
@@ -5738,9 +5775,9 @@ function UseThing_Type2(id)
 		if CC.Shemale[id] == 1 then
 			--剑神可以直接学
 			if personid == 0 and JY.Base["标准"] == 3 then
-				say("嗯……我看看，这套武功的精妙之处其实不在于是否自宫。看我如何以剑入道克服这个问题！",0,1)
+				say("嗯……我看看,这套武功的精妙之处其实不在于是否自宫。看我如何以剑入道克服这个问题！",0,1)
 				yes = 2
-			--主角打赢葵花尊者，可以直接学
+			--主角打赢葵花尊者,可以直接学
 			elseif personid == 0 and JY.Person[27]["品德"] == 10 then
 				yes = 2
 			elseif personid == 92 then
@@ -5748,7 +5785,7 @@ function UseThing_Type2(id)
 				return 0
 			elseif JY.Person[personid]["性别"] == 0 and CanUseThing(id, personid) then
 				Cls(CC.MainSubMenuX, CC.MainSubMenuY, CC.ScreenW, CC.ScreenH)
-				if DrawStrBoxYesNo(-1, -1, "修炼此书必须先挥刀自宫，是否仍要修炼?", C_WHITE, CC.DefaultFont) == false then
+				if DrawStrBoxYesNo(-1, -1, "修炼此书必须先挥刀自宫,是否仍要修炼?", C_WHITE, CC.DefaultFont) == false then
 					return 0
 				else
 					lib.FillColor(0, 0, CC.ScreenW, CC.ScreenH, C_RED, 128)
@@ -5881,8 +5918,8 @@ end
 --------------------------------------事件调用-----------------------------------
 
 --事件调用主入口
---id，d*中的编号
---flag 1 空格触发，2，物品触发，3，路过触发
+--id,d*中的编号
+--flag 1 空格触发,2,物品触发,3,路过触发
 function EventExecute(id,flag)
     JY.CurrentD=id;
 
@@ -5930,7 +5967,7 @@ function CallCEvent(eventnum)
 end
 
 
---改变大地图坐标，从场景出去后移动到相应坐标
+--改变大地图坐标,从场景出去后移动到相应坐标
 function ChangeMMap(x,y,direct)          --改变大地图坐标
 	JY.Base["人X"]=x;
 	JY.Base["人Y"]=y;
@@ -5947,10 +5984,10 @@ end
 
 
 --清除(x1,y1)-(x2,y2)矩形内的文字等。
---如果没有参数，则清除整个屏幕表面
+--如果没有参数,则清除整个屏幕表面
 --注意该函数并不直接刷新显示屏幕
 function Cls(x1,y1,x2,y2)                    --清除屏幕
-    if x1==nil then        --第一个参数为nil,表示没有参数，用缺省
+    if x1==nil then        --第一个参数为nil,表示没有参数,用缺省
 	    x1=0;
 		y1=0;
 		x2=CC.ScreenW;
@@ -5976,10 +6013,10 @@ function Cls(x1,y1,x2,y2)                    --清除屏幕
 end
 
 
---产生对话显示需要的字符串，即每隔n个中文字符加一个星号
+--产生对话显示需要的字符串,即每隔n个中文字符加一个星号
 function GenTalkString(str,n)             					 --产生对话显示需要的字符串
     local tmpstr="";
-    for s in string.gmatch(str .. "*","(.-)%*") do           --去掉对话中的所有*. 字符串尾部加一个星号，避免无法匹配
+    for s in string.gmatch(str .. "*","(.-)%*") do           --去掉对话中的所有*. 字符串尾部加一个星号,避免无法匹配
         tmpstr=tmpstr .. s;
     end
 
@@ -6019,7 +6056,7 @@ function TalkEx(s,pid,flag,name)
 	say(s,pid,flag,name)
 end
 
---测试指令，占位置用
+--测试指令,占位置用
 function instruct_test(s)
     DrawStrBoxWaitKey(s,C_ORANGE,24);
 end
@@ -6056,14 +6093,14 @@ function ReadTalk(id, flag)
 end
 
 --对话
---talkid: 为数字，则为对话编号；为字符串，则为对话本身。
+--talkid: 为数字,则为对话编号；为字符串,则为对话本身。
 --headid: 头像id
---flag :对话框位置：0 屏幕上方显示, 左边头像，右边对话
---            1 屏幕下方显示, 左边对话，右边头像
---            2 屏幕上方显示, 左边空，右边对话
---            3 屏幕下方显示, 左边对话，右边空
---            4 屏幕上方显示, 左边对话，右边头像
---            5 屏幕下方显示, 左边头像，右边对话
+--flag :对话框位置：0 屏幕上方显示, 左边头像,右边对话
+--            1 屏幕下方显示, 左边对话,右边头像
+--            2 屏幕上方显示, 左边空,右边对话
+--            3 屏幕下方显示, 左边对话,右边空
+--            4 屏幕上方显示, 左边对话,右边头像
+--            5 屏幕下方显示, 左边头像,右边对话
 function instruct_1(talkid, headid, flag)
 	local s = ReadTalk(talkid)
 	if s == nil then
@@ -6277,7 +6314,7 @@ end
 function instruct_16(personid)
 	local r = false
 	local xwperson;	--判定人物
-	--非战斗中才生效，用于触发剧情等判定
+	--非战斗中才生效,用于触发剧情等判定
 	if personid == JY.Base["畅想"] and JY.Status ~= GAME_WMAP then
 		xwperson = 0
 	else
@@ -6618,16 +6655,16 @@ function instruct_31(num)
 	return r
 end
 
---增加，减少物品的函数
+--增加,减少物品的函数
 function instruct_32(thingid, num)
 	local p = 1
-	--首先控制获取数量，超过30000自动算30000
+	--首先控制获取数量,超过30000自动算30000
 	if num > 30000 then
 		num = 30000
 	end
 	for i = 1, CC.MyThingNum do
 		if JY.Base["物品" .. i] == thingid then
-			--已经有一定数量的物品，如果相加之后超过30000，按30000算
+			--已经有一定数量的物品,如果相加之后超过30000,按30000算
 			if (JY.Base["物品数量" .. i] + num) > 30000 then
 				JY.Base["物品数量" .. i] = 30000
 			else
@@ -6649,7 +6686,7 @@ function instruct_32(thingid, num)
 	end
   
   
-	--获得天书，增加15点声望
+	--获得天书,增加15点声望
 	--获得的时候才增加
 	if num > 0 and thingid >= CC.BookStart and thingid < CC.BookStart + CC.BookNum then
 		JY.Person[0]["声望"] = JY.Person[0]["声望"] + 15;
@@ -6657,7 +6694,7 @@ function instruct_32(thingid, num)
 		--无酒不欢：用520号人物的品德判定可以摘取的蟠桃数量
 		--替换蟠桃树贴图
 		JY.Person[520]["品德"] = JY.Person[520]["品德"] + 1
-		--在已经种过树的情况下，树会结果，用521号人物的品德判定是否已触发种树事件
+		--在已经种过树的情况下,树会结果,用521号人物的品德判定是否已触发种树事件
 		if JY.Person[521]["品德"] == 1 then
 			addevent(70, 65, 1, 4119, 1, 2366*2)
 		end
@@ -7059,7 +7096,7 @@ function instruct_58()
       end
     end
     if i < group - 1 then
-      TalkEx(JY.Person[0]["外号"].."已连战三场，*可先休息再战．", 70, 0)
+      TalkEx(JY.Person[0]["外号"].."已连战三场,*可先休息再战．", 70, 0)
       instruct_0()
       instruct_14()
       lib.Delay(300)
@@ -7070,19 +7107,19 @@ function instruct_58()
         AddPersonAttrib(0, "生命", math.huge)
       end
       instruct_13()
-      TalkEx("我已经休息够了，*有谁要再上？", 0, 1)
+      TalkEx("我已经休息够了,*有谁要再上？", 0, 1)
       instruct_0()
     end
   end
   TalkEx("接下来换谁？**．．．．*．．．．***没有人了吗？", 0, 1)
   instruct_0()
-  TalkEx("如果还没有人要出来向这位*"..JY.Person[0]["外号"].."挑战，那麽这武功天下*第一之名，武林盟主之位，*就由这位"..JY.Person[0]["外号"].."夺得．***．．．．．．*．．．．．．*．．．．．．*好，恭喜"..JY.Person[0]["外号"].."，这武林盟主*之位就由"..JY.Person[0]["外号"].."获得，而这把*”武林神杖”也由你保管．", 70, 0)
+  TalkEx("如果还没有人要出来向这位*"..JY.Person[0]["外号"].."挑战,那麽这武功天下*第一之名,武林盟主之位,*就由这位"..JY.Person[0]["外号"].."夺得．***．．．．．．*．．．．．．*．．．．．．*好,恭喜"..JY.Person[0]["外号"]..",这武林盟主*之位就由"..JY.Person[0]["外号"].."获得,而这把*”武林神杖”也由你保管．", 70, 0)
   instruct_0()
   TalkEx("恭喜"..JY.Person[0]["外号"].."！", 12, 0)
   instruct_0()
-  TalkEx("小兄弟，恭喜你！", 64, 4)
+  TalkEx("小兄弟,恭喜你！", 64, 4)
   instruct_0()
-  TalkEx("好，今年的武林大会到此已*圆满结束，希望明年各位武*林同道能再到我华山一游．", 19, 0)
+  TalkEx("好,今年的武林大会到此已*圆满结束,希望明年各位武*林同道能再到我华山一游．", 19, 0)
   instruct_0()
   instruct_14()
   for i = 24, 72 do
@@ -7090,7 +7127,7 @@ function instruct_58()
   end
   instruct_0()
   instruct_13()
-  TalkEx("历经千辛万苦，我终於打败*群雄，得到这武林盟主之位*及神杖．*但是”圣堂”在那呢？*为什麽没人告诉我，难道大*家都不知道．*这会儿又有的找了．", 0, 1)
+  TalkEx("历经千辛万苦,我终於打败*群雄,得到这武林盟主之位*及神杖．*但是”圣堂”在那呢？*为什麽没人告诉我,难道大*家都不知道．*这会儿又有的找了．", 0, 1)
   instruct_0()
   instruct_2(143, 1)
 end
@@ -7136,7 +7173,7 @@ function instruct_62(id1, startnum1, endnum1, id2, startnum2, endnum2)
 	--instruct_44(id1, startnum1, endnum1, id2, startnum2, endnum2)
 	--ShowScreen()
 	lib.Delay(200)
-	say("本次游戏就到这里了，选择重新开始可进行下一周目的游戏！", 260, 5, "无酒不欢")
+	say("本次游戏就到这里了,选择重新开始可进行下一周目的游戏！", 260, 5, "无酒不欢")
   
 	--保存周目
 	if GetS(53, 0, 1, 5) >= CC.CircleNum-1 then
@@ -7255,7 +7292,7 @@ function instruct_64()
 	if id < 0 then
 		return 
 	end
-	TalkEx("这位小哥，看看有什么需要的，小店卖的东西价钱绝对公道。", headid, 0,"商家")
+	TalkEx("这位小哥,看看有什么需要的,小店卖的东西价钱绝对公道。", headid, 0,"商家")
 	local menu = {}
 	for i = 1, 6 do
 		local thingid = JY.Shop[id]["物品" .. i]
@@ -7288,12 +7325,12 @@ function instruct_64()
 	itemJC[4] = {27, 9, 34, 22, 69, -1, 2000, 50, 130, 400, 8000, -1}]]
 	if r > 0 then
 		if instruct_31(JY.Shop[id]["物品价格" .. r]) == false then
-			TalkEx("非常抱歉，你身上的钱似乎不够。", headid, 0,"商家")
+			TalkEx("非常抱歉,你身上的钱似乎不够。", headid, 0,"商家")
 		else
 			JY.Shop[id]["物品数量" .. r] = JY.Shop[id]["物品数量" .. r] - 1
 			instruct_32(CC.MoneyID, -JY.Shop[id]["物品价格" .. r])
 			instruct_32(JY.Shop[id]["物品" .. r], 1)
-			TalkEx(JY.Person[0]["外号"].."买了小店的东西，保证绝不后悔。", headid, 0,"商家")
+			TalkEx(JY.Person[0]["外号"].."买了小店的东西,保证绝不后悔。", headid, 0,"商家")
 		end
 	end
 	for i,v in ipairs(CC.ShopScene[id].d_leave) do
@@ -7330,19 +7367,19 @@ function instruct_67(id)
   PlayWavAtk(id)
 end
 
---自己封装了一下，简化代码
+--自己封装了一下,简化代码
 function myJYMsgBox(title, str, button, num, headid, isEsc)
 	local result = JYMsgBox(title, str, button, num, headid, isEsc)
 	ClsN()
 	lib.LoadPNG(1, 1000 * 2 , 0 , 0, 1)
 	return result
 end
---选择框，每个选项都带边框
+--选择框,每个选项都带边框
 --title 标题
 --str 内容 *换行
 --button 选项
---num 选项的个数，一定要和选项对应起来
---headid 显示在内容左边的贴图，如果不传值则不显示贴图
+--num 选项的个数,一定要和选项对应起来
+--headid 显示在内容左边的贴图,如果不传值则不显示贴图
 function JYMsgBox(title, str, button, num, headid, isEsc)
 	if JY.Restart == 1 then
 		return 1
@@ -7449,7 +7486,7 @@ function JYMsgBox(title, str, button, num, headid, isEsc)
 	    break;
 	  elseif ktype == 2 or ktype == 3 then
 	  	if mx >= x1 and mx <= x1 + width and my >= y2 and my <= y2 + 2*CC.MenuBorderPixel + size then
-				--无酒不欢：这里pass in select，避免在选择不到的情况下返回不存在的选项
+				--无酒不欢：这里pass in select,避免在选择不到的情况下返回不存在的选项
 				select = between(mx, select);
 				if select > 0 and select <= num and ktype==3 then
 					break;
@@ -7535,7 +7572,7 @@ end
 
 --新对话方式
 --加入控制字符
---暂停，任意键后继续，ｐ
+--暂停,任意键后继续,ｐ
 --控制颜色Ｒ=redＧ=goldＢ=blackＷ=whiteＯ=orange
 --控制字符显示速度０,１,２,３,４,５,６,７,８,９
 --控制字体ＡＳＤＦ
@@ -7621,8 +7658,8 @@ function say(s,pid,flag,name)          --个人新对话
 		local T1={"０","１","２","３","４","５","６","７","８","９"}
 		local T2={{"Ｒ",C_RED},{"Ｇ",C_GOLD},{"Ｂ",C_BLACK},{"Ｗ",C_WHITE},{"Ｏ",C_ORANGE},{"Ｌ",LimeGreen},{"Ｄ",M_DeepSkyBlue},{"Ｚ",LightPurple}}
 		local T3={{"Ｈ",CC.FontNameSong},{"Ｓ",CC.FontNameHei},{"Ｆ",CC.FontName}}
-		--美观起见，针对不同字体同一行显示，需要微调ｙ坐标，以及字号
-		--以默认的字体为标准，启体需下移，细黑需上移
+		--美观起见,针对不同字体同一行显示,需要微调ｙ坐标,以及字号
+		--以默认的字体为标准,启体需下移,细黑需上移
 		for i=0,9 do
 			if T1[i+1]==str then return 1,i*50 end
 		end
@@ -7728,7 +7765,7 @@ function say(s,pid,flag,name)          --个人新对话
 				end
 			end
 		end
-		--如果换页，则显示，等待按键
+		--如果换页,则显示,等待按键
 		if page==0 or string.len(s)<1 then
 			ShowScreen();
 			WaitKey();
@@ -7799,7 +7836,7 @@ function DrawStrBox2(x, y, str, color, size, bjcolor)
   end
 end
 
---绘制一个带背景的白色方框，四角凹进
+--绘制一个带背景的白色方框,四角凹进
 function DrawBox2(x1, y1, x2, y2, color, bjcolor)
   local s = 4
   if not bjcolor then
@@ -7855,8 +7892,8 @@ end
 
 --自定义的进入子场景的函数
 --需要进入的子场景编号
---x进入子场景后人物的X坐标，传入-1则默认为入口X
---y进入子场景后人物的Y坐标，传入-1则默认为入口Y
+--x进入子场景后人物的X坐标,传入-1则默认为入口X
+--y进入子场景后人物的Y坐标,传入-1则默认为入口Y
 --direct人物面对的方向
 function My_Enter_SubScene(sceneid,x,y,direct)
 	--从大地图进入子场景前自动保存到10号档
@@ -7864,7 +7901,7 @@ function My_Enter_SubScene(sceneid,x,y,direct)
 		SaveRecord(10)
 	end
 	JY.SubScene = sceneid;
-	local flag = 1;   --是否自定义的xy坐标, 0是，1否
+	local flag = 1;   --是否自定义的xy坐标, 0是,1否
 	if x == -1 and y == -1 then
 		JY.Base["人X1"]=JY.Scene[sceneid]["入口X"];
 		JY.Base["人Y1"]=JY.Scene[sceneid]["入口Y"];
@@ -7891,8 +7928,8 @@ function My_Enter_SubScene(sceneid,x,y,direct)
 	JY.Base["乘船"]=0;
 	JY.MyPic=GetMyPic(); 
   
-	--外景入口是个难点，有些子场景是通过跳转的方式进入的，需要判断
-	--由于目前最多只能有一个子场景跳转，所以不需要进行循环判断
+	--外景入口是个难点,有些子场景是通过跳转的方式进入的,需要判断
+	--由于目前最多只能有一个子场景跳转,所以不需要进行循环判断
 	local sid = JY.Scene[sceneid]["跳转场景"];
   
 	if sid < 0 or (JY.Scene[sid]["外景入口X1"] <= 0 and JY.Scene[sid]["外景入口Y1"] <= 0) then
@@ -7906,7 +7943,7 @@ function My_Enter_SubScene(sceneid,x,y,direct)
 
 	Init_SMap(flag);  --重新初始化地图
   
-	if flag == 0 then    --如果是自定义位置，先传送到那个位置，再显示场景名称
+	if flag == 0 then    --如果是自定义位置,先传送到那个位置,再显示场景名称
 		DrawStrBox(-1,10,JY.Scene[JY.SubScene]["名称"],C_WHITE,CC.DefaultFont);
 		ShowScreen();
 		WaitKey();
@@ -7995,7 +8032,7 @@ end
 
 
 ---对矩形进行屏幕剪裁
---返回剪裁后的矩形，如果超出屏幕，返回空
+--返回剪裁后的矩形,如果超出屏幕,返回空
 function ClipRect(r)
   if CC.ScreenW <= r.x1 or r.x2 <= 0 or CC.ScreenH <= r.y1 or r.y2 <= 0 then
     return nil
@@ -8010,13 +8047,13 @@ function ClipRect(r)
 end
 
 --计算贴图改变形成的Clip裁剪
---(dx1,dy1) 新贴图和绘图中心点的坐标偏移。在场景中，视角不同而主角动时用到
+--(dx1,dy1) 新贴图和绘图中心点的坐标偏移。在场景中,视角不同而主角动时用到
 --pic1 旧的贴图编号
 --id1 贴图文件加载编号
 --(dx2,dy2) 新贴图和绘图中心点的偏移
 --pic2 旧的贴图编号
 --id2 贴图文件加载编号
---返回，裁剪矩形 {x1,y1,x2,y2}
+--返回,裁剪矩形 {x1,y1,x2,y2}
 function Cal_PicClip(dx1, dy1, pic1, id1, dx2, dy2, pic2, id2)
   local w1, h1, x1_off, y1_off = lib.PicGetXY(id1, pic1 * 2)
   local old_r = {}
@@ -8045,7 +8082,7 @@ end
 
 --自定义事件
 function NEvent(keypress)
-	NEvent2(keypress)		--十四本天书之后得到5000两，洗四神技
+	NEvent2(keypress)		--十四本天书之后得到5000两,洗四神技
 	NEvent3(keypress)		--胡斐 苗人凤教苗家剑法
 	NEvent4(keypress)		--令狐冲变身
 	NEvent6(keypress)		--蜘蛛洞 金龙帮
@@ -8054,7 +8091,7 @@ function NEvent(keypress)
 end
 
 --显示阴影字符串
---如果x,y传-1，那么显示在屏幕中间
+--如果x,y传-1,那么显示在屏幕中间
 function NewDrawString(x, y, str, color, size)
 	local ll = #str
 	local w = size * ll / 2 + 2 * CC.MenuBorderPixel
@@ -8232,12 +8269,12 @@ function AnalyString(str)
 				end
 				str = string.sub(str, f4+1, #str);
 				f1, f2 = string.find(str, "<[A-R]>");
-				--如果已经没有其它颜色标志，直接输入退出循环
+				--如果已经没有其它颜色标志,直接输入退出循环
 				if f1 == nil then
 					table.insert(strcolor, {str, nil});
 					break;
 				end
-			else		--如果找不到结束标志，直接输入退出循环
+			else		--如果找不到结束标志,直接输入退出循环
 				str = string.sub(str, f2+1, #str);
 				table.insert(strcolor, {str, CC.Color[match]});
 				break;
@@ -8471,7 +8508,7 @@ function ShowMenu3(menu,itemNum,numShow,showRow,x1,y1,size,color,selectColor)
     for i,v in pairs(menu) do
         if v[3] ~= 0 then
             numItem = numItem + 1;
-			menuItem[numItem] = {v[1],v[2],v[3],i};                --注意第4个位置，保存i的值
+			menuItem[numItem] = {v[1],v[2],v[3],i};                --注意第4个位置,保存i的值
         end
     end
     
@@ -8612,7 +8649,7 @@ function ShowMenu3(menu,itemNum,numShow,showRow,x1,y1,size,color,selectColor)
 					mk = false;
 				end
 			end
-			--空格，回车，
+			--空格,回车,
 			if keyPress==VK_SPACE or keyPress==VK_RETURN or ktype == 5 or (ktype == 3 and mk) then
 				current = curx + cury*col;
 				if menuItem[current][3]==3 then
@@ -8635,7 +8672,7 @@ function ShowMenu3(menu,itemNum,numShow,showRow,x1,y1,size,color,selectColor)
     end
 	lib.FreeSur(surid)
         
-	--返回值，这个是取第4个位置的值
+	--返回值,这个是取第4个位置的值
 	if returnValue > 0 then
 		return menuItem[returnValue][4]
 	else
@@ -8651,7 +8688,7 @@ function get_skill_power(personid, wugongid, wugonglvl)
 		wugonglvl = 10
 	end
 	power = JY.Wugong[wugongid]["攻击力"..wugonglvl]
-	--学了葵花之后，辟邪的威力
+	--学了葵花之后,辟邪的威力
 	if wugongid == 48 and PersonKF(personid, 105) then
 		power = 1300
 	end
@@ -8663,34 +8700,34 @@ function get_skill_power(personid, wugongid, wugonglvl)
 		end
 	end
 	--觉醒后翻倍的众人
-	--王重阳+全真七子，全真剑法
+	--王重阳+全真七子,全真剑法
 	if wugongid == 39 and JY.Person[0]["六如觉醒"] > 0 then
 		if match_ID(personid, 123) or match_ID(personid, 124) or match_ID(personid, 125) or match_ID(personid, 126) or
 		match_ID(personid, 127) or match_ID(personid, 128) or match_ID(personid, 129) or match_ID(personid, 68) then
 			power = power * 2
 		end
 	end
-	--石破天，金乌
+	--石破天,金乌
 	if wugongid == 61 and JY.Person[0]["六如觉醒"] > 0 and match_ID(personid, 38) then
 		power = power * 1.5
 	end
-	--梅超风，九阴白骨爪
+	--梅超风,九阴白骨爪
 	if wugongid == 11 and JY.Person[0]["六如觉醒"] > 0 and match_ID(personid, 78) then
 		power = power * 1.5
 	end
-	--韦一笑，寒冰绵掌
+	--韦一笑,寒冰绵掌
 	if wugongid == 5 and JY.Person[0]["六如觉醒"] > 0 and match_ID(personid, 14) then
 		power = power * 2
 	end
-	--殷天正，鹰爪功
+	--殷天正,鹰爪功
 	if wugongid == 4 and JY.Person[0]["六如觉醒"] > 0 and match_ID(personid, 12) then
 		power = power * 2
 	end
-	--朱聪，分筋错骨手
+	--朱聪,分筋错骨手
 	if wugongid == 117 and JY.Person[0]["六如觉醒"] > 0 and match_ID(personid, 131) then
 		power = power * 2
 	end
-	--潇湘子，鹤蛇八打
+	--潇湘子,鹤蛇八打
 	if wugongid == 74 and JY.Person[0]["六如觉醒"] > 0 and match_ID(personid, 157) then
 		power = power * 2
 	end
@@ -8706,7 +8743,7 @@ function get_skill_power(personid, wugongid, wugonglvl)
 			power = 1400
 		end
 	end
-	--天山折梅手，虚竹，童姥，无崖子，李秋水，威力提高
+	--天山折梅手,虚竹,童姥,无崖子,李秋水,威力提高
 	if wugongid == 14 then
 		if match_ID(personid, 49) or match_ID(personid, 116) or match_ID(personid, 117) or match_ID(personid, 118) then
 			for i = 1, CC.Kungfunum do
@@ -8745,11 +8782,11 @@ function get_skill_power(personid, wugongid, wugonglvl)
 			power = power + WAR.tmp[3000 + personid]
 		end
 	end
-	--周芷若，谁与争锋
+	--周芷若,谁与争锋
 	if match_ID(personid, 631) and JY.Person[personid]["武器"] == 37 and JY.Wugong[wugongid]["武功类型"] == 3 then
 		power = power + 200
 	end
-	--林朝英，惊才绝艳
+	--林朝英,惊才绝艳
 	if match_ID(personid, 605) then
 		power = power * 1.1
 	end
@@ -8825,8 +8862,8 @@ function TeleportMenu(menu, color, selectColor)
 	local PType_7 = {};
     local PNum_7 = 0;
     
-	--v123分别为场景名称，可否进入，场景编号
-	--v2为0代表可进入，1代表不可进入
+	--v123分别为场景名称,可否进入,场景编号
+	--v2为0代表可进入,1代表不可进入
     for i,v in pairs(menu) do
         if v[4] == 1 then
 			PNum_1 = PNum_1 +1
@@ -8871,7 +8908,7 @@ function TeleportMenu(menu, color, selectColor)
 			break
 		end
         lib.LoadSur(surid, 0, 0)
-		--DrawString(x1+10,y1-CC.RowPixel*4-7,"X:"..cursor_x.."，Y:"..cursor_y.."，Current:"..current,LimeGreen,size);	--输出测试信息
+		--DrawString(x1+10,y1-CC.RowPixel*4-7,"X:"..cursor_x..",Y:"..cursor_y..",Current:"..current,LimeGreen,size);	--输出测试信息
 		for i = 1, 7 do
 			--大类名称
 			DrawString(x1+(i-1)*(size*maxlength/2+CC.RowPixel*4+5)+CC.MenuBorderPixel,y1-CC.RowPixel*6+1,PType_name[i],LimeGreen,size);
@@ -8907,7 +8944,7 @@ function TeleportMenu(menu, color, selectColor)
 		
 		lib.Delay(CC.Frame);
 				
-		--ktype  1：键盘，2：鼠标移动，3:鼠标左键，4：鼠标右键，5：鼠标中键，6：滚动上，7：滚动下
+		--ktype  1：键盘,2：鼠标移动,3:鼠标左键,4：鼠标右键,5：鼠标中键,6：滚动上,7：滚动下
         if keyPress==VK_ESCAPE or ktype == 4 then
             break;
         elseif keyPress==VK_DOWN then
@@ -8997,7 +9034,7 @@ function kungfu_knowledge(id, value)
 	JY.Person[xwperson]["武学常识"] = JY.Person[xwperson]["武学常识"] + value
 end
 
---无酒不欢：判定是否为指定ID的人物，并且判定是否达到指定觉醒次数
+--无酒不欢：判定是否为指定ID的人物,并且判定是否达到指定觉醒次数
 function match_ID_awakened(personid, id, awkntimes)
 	if personid == id then
 		if JY.Person[personid]["个人觉醒"] >= awkntimes then
@@ -9032,7 +9069,7 @@ function secondary_wugong(wugongid)
 	--轻功
 	if JY.Wugong[wugongid]["武功类型"] == 7 then
 		return true
-	--吸功，金刚不坏，五岳剑诀
+	--吸功,金刚不坏,五岳剑诀
 	elseif wugongid == 85 or wugongid == 87 or wugongid == 88 or wugongid == 144 or wugongid == 175 then
 		return true
 	end
@@ -9045,7 +9082,7 @@ function Curr_NG(personid, NGid)
 		return true
 	--天罡的判定
 	elseif personid == 0 and JY.Base["标准"] == 6 then
-		--如果是天内，并且已经学会，则自动主运
+		--如果是天内,并且已经学会,则自动主运
 		if JY.Person[personid]["天赋内功"] == NGid and PersonKF(personid, NGid) then
 			return true
 		else
@@ -9076,7 +9113,7 @@ function calc_mas_num(id)
 	return mas_num
 end
 
---无酒不欢：判定是否为指定ID的人物，用作天赋等判定
+--无酒不欢：判定是否为指定ID的人物,用作天赋等判定
 function match_ID(personid, id)
 	if personid == id then
 		return true
@@ -9097,13 +9134,13 @@ function Person_LJ(pid)
 	local LJ = 0
 	LJ = (LJ1 + LJ2 + LJ3) / 2
 	
-	--灭绝、裘千仞、洪教主、成昆、萧半和、戚长发、令狐冲二觉之后，连击率+70%
+	--灭绝、裘千仞、洪教主、成昆、萧半和、戚长发、令狐冲二觉之后,连击率+70%
 	if match_ID(pid, 6) or match_ID(pid, 67) or match_ID(pid, 71) or match_ID(pid, 18) or match_ID(pid, 189) or match_ID(pid, 594) or match_ID_awakened(pid, 35, 2) then
 		LJ = LJ + (100 - LJ) * 0.7
 	end
 
-	--连击武功，每个连击+2.5%
-	--百花，空明，玉女，泰山，鸳鸯，反两仪，杨家枪，海叟，银锁，连城，去烦恼，黑风, 素心
+	--连击武功,每个连击+2.5%
+	--百花,空明,玉女,泰山,鸳鸯,反两仪,杨家枪,海叟,银锁,连城,去烦恼,黑风, 素心
 	local ljup = {10, 15, 42, 31, 54, 60, 68, 76, 79, 114, 124, 131, 139}
 	for i = 1, CC.Kungfunum do
 		if JY.Person[pid]["武功" .. i] > 0 then
@@ -9129,7 +9166,7 @@ function Person_LJ(pid)
 		LJ = LJ + (100 - LJ) * 0.5
 	end
 	
-	--实战，每40点+1%
+	--实战,每40点+1%
 	local jp = JY.Person[pid]["实战"] / 4000
 	LJ = LJ + (100 - LJ) * jp
 	
@@ -9138,7 +9175,7 @@ function Person_LJ(pid)
 		LJ = LJ + (100 - LJ) * 0.25
 	end
 	
-	--焦宛儿在场，全体加10%
+	--焦宛儿在场,全体加10%
 	if inteam(pid) and JY.Status == GAME_WMAP then
 		for wid = 0, WAR.PersonNum - 1 do
 			if match_ID(WAR.Person[wid]["人物编号"], 607) and WAR.Person[wid]["死亡"] == false and WAR.Person[wid]["我方"] then
@@ -9148,7 +9185,7 @@ function Person_LJ(pid)
 		end
 	end
 
-	--东方不败、萧远山，必连击
+	--东方不败、萧远山,必连击
 	if match_ID(pid, 27) or match_ID(pid, 112) then
 		LJ = 100
 	end
@@ -9173,26 +9210,26 @@ function Person_BJ(pid)
     local BJ = 0
     BJ = (BJ1 + BJ2 + BJ3) / 2
 
-    --血刀老祖、裘千仞、洪教主、任我行、玉真子、萧半和，暴击率+70%
+    --血刀老祖、裘千仞、洪教主、任我行、玉真子、萧半和,暴击率+70%
     if match_ID(pid, 97) or match_ID(pid, 67) or match_ID(pid, 71) or match_ID(pid, 26) or match_ID(pid, 184) or match_ID(pid, 189) then
 		BJ = BJ + (100 - BJ) * 0.7
     end
 	
-	--袁承志，暴击率+50%
+	--袁承志,暴击率+50%
     if match_ID(pid, 54) then
 		BJ = BJ + (100 - BJ) * 0.5
     end
 	
-    --杨过，血量少于四分之一时，基础暴击率3倍
+    --杨过,血量少于四分之一时,基础暴击率3倍
     if match_ID(pid, 58) and JY.Person[pid]["生命"] < JY.Person[pid]["生命最大值"] / 4 then
 		BJ = BJ * 3
-    --杨过，血量少于二分之一，基础暴击率2倍
+    --杨过,血量少于二分之一,基础暴击率2倍
     elseif match_ID(pid, 58) and JY.Person[pid]["生命"] < JY.Person[pid]["生命最大值"] / 2 then
 		BJ = BJ * 2
     end
 	
-	--暴击武功，每个暴击+2.5%
-	--弹指，大力，全真，金蛇，奇门三才，燃木，裴将军，黄沙，鹤蛇，金乌，玄冥，铁指诀，一阳指
+	--暴击武功,每个暴击+2.5%
+	--弹指,大力,全真,金蛇,奇门三才,燃木,裴将军,黄沙,鹤蛇,金乌,玄冥,铁指诀,一阳指
     local bjup = {18, 22, 39, 40, 56, 65, 71, 78, 74, 61, 21, 121, 17}
     for i = 1, CC.Kungfunum do
 		if JY.Person[pid]["武功" .. i] > 0 then
@@ -9211,7 +9248,7 @@ function Person_BJ(pid)
 		BJ = BJ + (100 - BJ) * 0.7
 	end
 	
-	--实战，每40点+1%
+	--实战,每40点+1%
 	local jp = JY.Person[pid]["实战"] / 4000
 	BJ = BJ + (100 - BJ) * jp
 	
@@ -9220,7 +9257,7 @@ function Person_BJ(pid)
 		BJ = BJ + (100 - BJ) * 0.25
 	end
 	
-	--萧峰、灭绝、萧远山，必暴击
+	--萧峰、灭绝、萧远山,必暴击
     if match_ID(pid, 50) or match_ID(pid, 6) or match_ID(pid, 112) then
 		BJ = 100
     end
@@ -9232,7 +9269,7 @@ function Person_BJ(pid)
 			BJ = 100
 		end
 		
-		--怒气值100，非斗转下必暴击
+		--怒气值100,非斗转下必暴击
 		if WAR.LQZ[pid] == 100 and WAR.DZXY ~= 1 then
 			BJ = 100
 		end
@@ -9661,7 +9698,7 @@ function TianYiWF(id)
 	end
 end
 
---无酒不欢：举火燎原，金乌+燃木+火焰刀
+--无酒不欢：举火燎原,金乌+燃木+火焰刀
 function JuHuoLY(id)
 	local juhuonum = 0;
 	for i = 1, CC.Kungfunum do
@@ -9678,7 +9715,7 @@ function JuHuoLY(id)
 	end
 end
 
---无酒不欢：利刃寒锋，修罗+阴风+沧溟
+--无酒不欢：利刃寒锋,修罗+阴风+沧溟
 function LiRenHF(id)
 	local lirennum = 0;
 	for i = 1, CC.Kungfunum do
