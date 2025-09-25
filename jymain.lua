@@ -207,6 +207,40 @@ function TitleSelection()
 	return choice
 end
 
+function NewMainCycle()
+	local battles = Generate20Battles();
+	local battlenum = 1
+	while true do
+		ClsN();
+		local des = GetBattleDescription(battlenum)
+		local mainOption = myJYMsgBox("行走江湖", des, {"战你娘亲","知己知彼","飞鸽传书","南柯一梦"}, 4, 19)
+		if mainOption == 1 then 
+			if WarMain(battles[battlenum], 0) == true then
+				battlenum = battlenum + 1
+				--这里还要做一个游戏结束确认
+			end
+		end
+		if mainOption == 2 then 
+		
+		end
+		if mainOption == 3 then 
+			
+		end
+		if mainOption == 4 then
+			local Option4 = myJYMsgBox("南柯一梦", "选择接下来的操作", {"存档","读档","退出"}, 3, 19)
+			if Option4 == 1 then
+				--Menu_SaveRecord()
+			end
+			if Option4 == 2 then
+				--Menu_ReadRecord()
+			end
+			if Option4 == 3 then
+				JY.Status = GAME_END
+			end
+		end
+	end
+end
+
 function StartMenu()
 	Cls()
 	--[[
@@ -223,18 +257,6 @@ function StartMenu()
 		if JY.Restart == 1 then
 			do return end
 		end
-		--畅想杨过初始场景
-		if JY.Base["畅想"] == 58 then
-			JY.SubScene = 18
-			JY.Base["人X"] = 144
-			JY.Base["人Y"] = 218
-			JY.Base["人X1"] = 30
-			JY.Base["人Y1"] = 32
-		else
-			JY.SubScene = CC.NewGameSceneID
-			JY.Base["人X1"] = CC.NewGameSceneX
-			JY.Base["人Y1"] = CC.NewGameSceneY
-		end
 		--无酒不欢：男女主角判定
 		if JY.Person[0]["性别"] == 0 then
 			JY.MyPic = CC.NewPersonPicM
@@ -246,37 +268,10 @@ function StartMenu()
 		CleanMemory()
 		Init_SMap(0)
         lib.ShowSlow(20,0)
-        
-		--if DrawStrBoxYesNo(-1, -1, "是否观看序章剧情？", C_GOLD, CC.DefaultFont, LimeGreen) == true then 
-			--oldCallEvent(CC.NewGameEvent)
-		--end
 		
 		--开局事件
-		if JY.Base["畅想"] == 58 then		--畅想杨过
-			CallCEvent(4187)
-		else								--其他人
-			CallCEvent(691)
-		end
-		
-		--畅想开局获得自身的装备
-		if JY.Base["畅想"] > 0 then
-			if JY.Person[0]["武器"] ~= - 1 then
-				instruct_2(JY.Person[0]["武器"], 1)
-				JY.Person[0]["武器"] = - 1
-			end
-			if JY.Person[0]["防具"] ~= - 1 then
-				instruct_2(JY.Person[0]["防具"], 1)
-				JY.Person[0]["防具"] = - 1
-			end
-		end
-		--畅想尹克西获得一万两
-		if JY.Base["畅想"] == 158 then
-			instruct_2(174, 10000)
-		end
-		--标主可以在云岭洞花钱学习迷踪步
-		if JY.Base["标准"] > 0 then
-			addevent(41, 0, 1, 4144, 1, 8694)
-		end
+		CallCEvent(691)
+
 	elseif menuReturn == 2 then         --载入旧的进度
 
     	DrawStrBox(-1,CC.ScreenH*1/6-20,"读取进度",LimeGreen,CC.Fontbig,C_GOLD);
@@ -370,446 +365,8 @@ function NewGame()     --选择新游戏,设置主角初始属性
 	end
 
 	JY.Person[0]["姓名"]=CC.NewPersonName;
-	local battles = Generate20Battles();
-	local battlenum = 1
-	while true do
-		ClsN();
-		local des = GetBattleDescription(battlenum)
-		local mainOption = myJYMsgBox("行走江湖", des, {"战你娘亲","知己知彼","飞鸽传书","南柯一梦"}, 4, 19)
-		if mainOption == 1 then 
-			if WarMain(battles[battlenum], 0) == true then
-				battlenum = battlenum + 1
-				--这里还要做一个游戏结束确认
-			end
-		end
-		if mainOption == 2 then 
-		
-		end
-		if mainOption == 3 then 
-			
-		end
-		if mainOption == 4 then
-			local Option4 = myJYMsgBox("南柯一梦", "选择接下来的操作", {"存档","读档","退出"}, 3, 19)
-			if Option4 == 1 then
-				Menu_SaveRecord()
-			end
-			if Option4 == 2 then
-				Menu_ReadRecord()
-			end
-			if Option4 == 3 then
-				JY.Status = GAME_END
-			end
-		end
-	end
-	
-	--标准主角+特殊主角
-	if player_type == 1 then	
-		--特殊主角
-		if DrawStrBoxYesNo(-1, -1, "是否选用特殊主角进行游戏？", C_WHITE, CC.DefaultFont) == true then
-			ClsN()
-			--特殊主角的贴图
-			JY.Person[0]["姓名"] = "无酒不欢"
-			JY.Person[0]["头像代号"] = 355
-			local T_ani = {
-				{0, 0, 0}, 
-				{0, 0, 0}, 
-				{10, 8, 6}, 
-				{0, 0, 0}, 
-				{0, 0, 0}}
-			for i = 1, 5 do
-				JY.Person[0]["出招动画帧数" .. i] = T_ani[i][1]
-				JY.Person[0]["出招动画延迟" .. i] = T_ani[i][3]
-				JY.Person[0]["武功音效延迟" .. i] = T_ani[i][2]
-			end
-			
-			local gender;
-			
-			gender = JYMsgBox("请选择", "请选择你的主角性别 ", {"男", "女"}, 2, 291)
-			
-			--女主角初始化
-			if gender == 2 then
-				JY.Person[0]["姓名"] = "凡芯儿"
-				JY.Person[0]["性别"] = 1
-				JY.Person[0]["外号"] = "姑娘"
-				JY.Person[0]["外号2"] = "丫头"
-				JY.Person[0]["头像代号"] = 368
-				local f_ani = {
-					{0, 0, 0}, 
-					{0, 0, 0}, 
-					{17, 15, 13}, 
-					{0, 0, 0}, 
-					{0, 0, 0}}
-				for i = 1, 5 do
-					JY.Person[0]["出招动画帧数" .. i] = f_ani[i][1]
-					JY.Person[0]["出招动画延迟" .. i] = f_ani[i][3]
-					JY.Person[0]["武功音效延迟" .. i] = f_ani[i][2]
-				end
-			end
-			
-			ClsN()
-			
-			JY.Person[0]["资质"] = InputNum("输入资质",1,100);
-
-			ClsN()
-			
-			JY.Base["特殊"] = 1
-			JY.Person[0]["攻击力"] = 40
-			JY.Person[0]["防御力"] = 40
-			JY.Person[0]["轻功"] = 40
-			JY.Person[0]["拳掌功夫"] = 50
-			JY.Person[0]["指法技巧"] = 50
-			JY.Person[0]["御剑能力"] = 50
-			JY.Person[0]["耍刀技巧"] = 50
-			JY.Person[0]["特殊兵器"] = 50
-		--标准主角
-		else
-			ClsN()
-			
-			local gender;
-			
-			gender = JYMsgBox("请选择", "请选择你的主角性别 ", {"男", "女"}, 2, 291)
-			
-			--女主角初始化
-			if gender == 2 then
-				JY.Person[0]["性别"] = 1
-				JY.Person[0]["外号"] = "姑娘"
-				JY.Person[0]["外号2"] = "丫头"
-				JY.Person[0]["头像代号"] = 303
-				local f_ani = {
-				{0, 0, 0}, 
-				{0, 0, 0}, 
-				{10, 8, 6}, 
-				{0, 0, 0}, 
-				{0, 0, 0}}
-				for i = 1, 5 do
-					JY.Person[0]["出招动画帧数" .. i] = f_ani[i][1]
-					JY.Person[0]["出招动画延迟" .. i] = f_ani[i][3]
-					JY.Person[0]["武功音效延迟" .. i] = f_ani[i][2]
-				end
-			end
-			
-			ClsN()
-			
-			JY.Person[0]["资质"] = InputNum("输入资质",1,100);
-
-			ClsN()
-			
-			--选择系
-			local TF = JYMsgBox("请选择主角的天赋能力", TFXZSAY1, TFE, 9, 50)
-			--是标主
-			SetS(10, 0, 6, 0, 1)
-			if TF == 1 then         --拳
-				SetS(4, 5, 5, 5, 1)
-				JY.Person[0]["拳掌功夫"] = 40
-				JY.Base["标准"] = 1
-			elseif TF == 2 then     --指
-				JY.Person[0]["指法技巧"] = 40
-				JY.Base["标准"] = 2
-			elseif TF == 3 then     --剑
-				SetS(4, 5, 5, 5, 2)
-				JY.Person[0]["御剑能力"] = 40
-				JY.Base["标准"] = 3			
-			elseif TF == 4 then     --刀
-				SetS(4, 5, 5, 5, 3)
-				JY.Person[0]["耍刀技巧"] = 40
-				JY.Base["标准"] = 4
-			elseif TF == 5 then		 --特 
-				SetS(4, 5, 5, 5, 4)
-				JY.Person[0]["特殊兵器"] = 40
-				JY.Base["标准"] = 5
-			elseif TF == 6 then		 --天罡
-				JY.Person[0]["内力最大值"] = 500
-				JY.Person[0]["内力"] = 500
-				SetS(4, 5, 5, 5, 5)
-				JY.Base["标准"] = 6
-			elseif TF == 7 then		 --仁者
-				JY.Person[0]["品德"] = 100
-				JY.Person[0]["拳掌功夫"] = 40
-				JY.Person[0]["指法技巧"] = 40
-				JY.Person[0]["御剑能力"] = 40
-				JY.Person[0]["耍刀技巧"] = 40
-				JY.Person[0]["特殊兵器"] = 40
-				SetS(4, 5, 5, 5, 6)
-				JY.Base["标准"] = 7
-			elseif TF == 8 then		 --医生
-				JY.Person[0]["医疗能力"] = 200
-				JY.Person[0]["用毒能力"] = 200
-				JY.Person[0]["解毒能力"] = 200
-				SetS(4, 5, 5, 5, 7)
-				JY.Base["标准"] = 8
-			elseif TF == 9 then		 --毒王
-				JY.Base["标准"] = 9
-				JY.Person[0]["用毒能力"] = 300
-				JY.Person[0]["解毒能力"] = 300
-			end
-			ClsN()
-		end
-	--畅想主角
-	else
-		lib.LoadPNG(1, 1000 * 2 , 0 , 0, 1)
-		
-	    local menu = {}
-		for i = 1, JY.PersonNum - 1 do
-			menu[#menu + 1] = {JY.Person[i]["姓名"], nil, JY.Person[i]["畅想分阶"], i}
-		end
-		
-		--无酒不欢：分出一个菜单函数来显示畅想选单
-		local clone_choice = ShowMenu3(menu,#menu,8,15,CC.MainMenuX+CC.Fontsmall*1-13,CC.MainMenuY+CC.Fontsmall*3+10,CC.Fontsmall, C_GOLD, C_WHITE)
-	
-		ClsN()
-		
-		JY.Base["畅想"] = clone_choice
-		
-		JY.Person[0]["代号"]=JY.Person[clone_choice]["代号"]
-		JY.Person[0]["头像代号"]=JY.Person[clone_choice]["头像代号"]
-		JY.Person[0]["生命增长"]=JY.Person[clone_choice]["生命增长"]
-		JY.Person[0]["无用"]=JY.Person[clone_choice]["无用"]
-		JY.Person[0]["姓名"]=JY.Person[clone_choice]["姓名"]
-		JY.Person[0]["外号"]=JY.Person[clone_choice]["外号"]
-		JY.Person[0]["性别"]=JY.Person[clone_choice]["性别"]
-
-		JY.Person[0]["武器"]=JY.Person[clone_choice]["武器"]
-		JY.Person[0]["防具"]=JY.Person[clone_choice]["防具"]
-
-		for i=1,5 do
-			JY.Person[0]["出招动画帧数" .. i]=JY.Person[clone_choice]["出招动画帧数" .. i]
-			JY.Person[0]["出招动画延迟" .. i]=JY.Person[clone_choice]["出招动画延迟" .. i]
-			JY.Person[0]["武功音效延迟" .. i]=JY.Person[clone_choice]["武功音效延迟" .. i]
-		end
-		
-		--畅想攻防轻最低25
-		JY.Person[0]["攻击力"]=limitX(JY.Person[clone_choice]["攻击力"]/4,25)
-		JY.Person[0]["防御力"]=limitX(JY.Person[clone_choice]["防御力"]/4,25)
-		JY.Person[0]["轻功"]=limitX(JY.Person[clone_choice]["轻功"]/4,25)
-		--医疗用毒解毒最低30
-		JY.Person[0]["医疗能力"]=limitX(JY.Person[clone_choice]["医疗能力"],30)
-		JY.Person[0]["用毒能力"]=limitX(JY.Person[clone_choice]["用毒能力"],30)
-		JY.Person[0]["解毒能力"]=limitX(JY.Person[clone_choice]["解毒能力"],30)
-
-		JY.Person[0]["抗毒能力"]=JY.Person[clone_choice]["抗毒能力"]
-		JY.Person[0]["拳掌功夫"]=JY.Person[clone_choice]["拳掌功夫"]
-		JY.Person[0]["指法技巧"]=JY.Person[clone_choice]["指法技巧"]
-		JY.Person[0]["御剑能力"]=JY.Person[clone_choice]["御剑能力"]
-		JY.Person[0]["耍刀技巧"]=JY.Person[clone_choice]["耍刀技巧"]
-		JY.Person[0]["特殊兵器"]=JY.Person[clone_choice]["特殊兵器"]
-		--暗器技巧至少30
-		JY.Person[0]["暗器技巧"]=limitX(JY.Person[clone_choice]["暗器技巧"],30)
-
-		JY.Person[0]["武学常识"]=JY.Person[clone_choice]["武学常识"]
-		JY.Person[0]["攻击带毒"]=JY.Person[clone_choice]["攻击带毒"]
-		JY.Person[0]["左右互搏"]=JY.Person[clone_choice]["左右互搏"]
-	
-		for i=1,12 do
-			JY.Person[0]["武功" .. i]=JY.Person[clone_choice]["武功" .. i]
-			JY.Person[0]["武功等级" .. i]=JY.Person[clone_choice]["武功等级" .. i]
-		end
-
-		for i=1,4 do
-			JY.Person[0]["携带物品" .. i]=JY.Person[clone_choice]["携带物品" .. i]
-			JY.Person[0]["携带物品数量" .. i]=JY.Person[clone_choice]["携带物品数量" .. i]
-		end
-		
-		for i=1,4 do
-			JY.Person[0]["天赋外功"..i]=JY.Person[clone_choice]["天赋外功"..i]
-		end
-		
-		JY.Person[0]["天赋内功"]=JY.Person[clone_choice]["天赋内功"]
-		JY.Person[0]["天赋轻功"]=JY.Person[clone_choice]["天赋轻功"]
-		JY.Person[0]["畅想分阶"]=JY.Person[clone_choice]["畅想分阶"]
-		JY.Person[0]["外号2"]=JY.Person[clone_choice]["外号2"]
-		JY.Person[0]["特色指令"] = JY.Person[clone_choice]["特色指令"]
-		
-		--畅想萧中慧无法慧心
-		if JY.Base["畅想"] == 77 then
-			JY.Person[0]["特色指令"] = 0	
-		end
-		
-		--畅想王语嫣初始兵器值
-		if JY.Base["畅想"] == 76 then
-			JY.Person[0]["拳掌功夫"]=30
-			JY.Person[0]["指法技巧"]=30
-			JY.Person[0]["御剑能力"]=30
-			JY.Person[0]["耍刀技巧"]=30
-			JY.Person[0]["特殊兵器"]=30
-		end
-		
-		--畅想郭靖初始20拳
-		if JY.Base["畅想"] == 55 then
-			JY.Person[0]["拳掌功夫"]=20
-		end
-		
-		--畅想陈家洛初始兵器值提高
-		if JY.Base["畅想"] == 75 then
-			JY.Person[0]["拳掌功夫"]=100
-			JY.Person[0]["指法技巧"]=60
-			JY.Person[0]["御剑能力"]=60
-			JY.Person[0]["耍刀技巧"]=60
-			JY.Person[0]["特殊兵器"]=60
-		end
-		
-		--畅想王重阳开局选择外功
-		if JY.Base["畅想"] == 129 then
-			local wcywg = JYMsgBox("请选择", "请选择你的初始外功", {"全真剑法","一阳指"}, 2, 129)
-			if wcywg == 1 then
-				JY.Person[0]["武功1"]=39
-				JY.Person[0]["武功等级1"]=999
-			elseif wcywg == 2 then
-				JY.Person[0]["武功1"]=17
-				JY.Person[0]["武功等级1"]=999
-			end
-			JY.Person[0]["武功2"]=100
-			JY.Person[0]["武功等级2"]=999
-			JY.Person[0]["武功3"]=0
-			JY.Person[0]["武功等级3"]=0
-			ClsN()
-		end
-		
-		--畅想裘千尺头像变美
-		if JY.Base["畅想"] == 617 then
-			JY.Person[0]["头像代号"]=353
-			JY.Person[0]["出招动画帧数3"]=24
-			JY.Person[0]["出招动画延迟3"]=22
-			JY.Person[0]["武功音效延迟3"]=22
-		end
-		
-		--畅想杨过初始化
-		if JY.Base["畅想"] == 58 then
-			JY.Person[0]["攻击力"]=30
-			JY.Person[0]["防御力"]=30
-			JY.Person[0]["轻功"]=30
-			JY.Person[0]["拳掌功夫"]=50
-			JY.Person[0]["指法技巧"]=30
-			JY.Person[0]["御剑能力"]=50
-			JY.Person[0]["特殊兵器"]=10
-			JY.Person[0]["武功1"]=42
-			JY.Person[0]["武功等级1"]=999
-			JY.Person[0]["武功2"]=95
-			JY.Person[0]["武功等级2"]=900
-			JY.Person[0]["武功3"]=0
-			JY.Person[0]["武功等级3"]=0
-			JY.Person[0]["天赋内功"]=95
-			JY.Person[0]["天赋外功1"]=42
-			JY.Person[0]["天赋外功2"]=0
-			JY.Scene[18]["进入条件"] = 0
-			JY.Scene[19]["进入条件"] = 1
-			JY.Scene[101]["进入条件"] = 1
-			JY.Scene[36]["进入条件"] = 1
-			JY.Scene[28]["进入条件"] = 1
-			JY.Scene[93]["进入条件"] = 1
-			JY.Scene[105]["进入条件"] = 1
-			null(18, 6)
-			null(70, 87)
-			addevent(70, 95, 0, 4188, 3, 0)
-		end
-		
-		JY.Person[0]["资质"] = InputNum("输入资质",1,100);
-
-		ClsN()	
-	end
-	 
-	--选择内力性质
-	local nl = JYMsgBox("请选择", "想要哪种属性的内力", {"阴性", "阳性", "调和"}, 3, 261)
-	if nl == 1 then
-		JY.Person[0]["内力性质"] = 0
-	elseif nl == 2 then
-		JY.Person[0]["内力性质"] = 1
-	else
-		JY.Person[0]["内力性质"] = 2
-	end
-	
-	--天罡内力
-	if JY.Base["标准"] == 6 then
-		if JY.Person[0]["内力性质"] == 0 then
-			JY.Person[0]["天赋内功"] = 107
-		elseif JY.Person[0]["内力性质"] == 1 then
-			JY.Person[0]["天赋内功"] = 106
-		else
-			JY.Person[0]["天赋内功"] = 108
-		end
-		JY.Person[0]["内力性质"] = 2
-	end
-	
-	ClsN()
-	
-	--是否开启单通模式
-	local nl = JYMsgBox("请选择游戏模式", "注意：如果选择了单通模式*则游戏中的全部战斗*都只能使用主角一人单独完成！*☆新手玩家建议选择普通模式*", {"普通模式", "单通模式"}, 2, 76)
-	if nl == 2 then
-		JY.Base["单通"] = 1
-	end
-	
-	ClsN()
-	ShowScreen()
-	
-	--其他人物初始化
-	for p = 0, JY.PersonNum-1 do
-		local r = 0
-		for i,v in pairs(CC.PersonExit) do
-			if v[1] == p then
-				r = 1
-			end
-		end
-		if p == 0 then
-			r = 1
-		end
-		
-		--敌方的初始化
-		if r == 0 then
-			for i = 1, CC.Kungfunum do
-				if JY.Person[p]["武功" .. i] > 0 then
-					if p < 191 then
-						--JY.Person[p]["武功等级" .. i] = 999    --BOSS武功是为极
-					else
-						--不到10级的加到10级
-						if JY.Person[p]["武功等级" .. i] < 900 then
-							JY.Person[p]["武功等级" .. i] = 900
-						end
-					end
-				else
-					break;
-				end
-			end
-		
-			--生命不足200的加到200
-			if JY.Person[p]["生命最大值"] < 200 then
-				JY.Person[p]["生命最大值"] = 200
-				JY.Person[p]["生命"] = JY.Person[p]["生命最大值"]
-			end
-			
-			--内力不足200的加到200
-			if JY.Person[p]["内力最大值"] < 200 then
-				JY.Person[p]["内力最大值"] = 200
-				JY.Person[p]["内力"] = JY.Person[p]["内力最大值"]
-			end
-			
-			--设置血量翻倍,根据难度系数提高
-			local dif_factor;
-			--难1,难2
-			if JY.Base["难度"] < 3 then
-				dif_factor = 2;
-			--难3,难4,难5
-			elseif JY.Base["难度"] > 2 and JY.Base["难度"] < 6 then
-				dif_factor = 3;
-			--难6
-			else
-				dif_factor = 4;
-			end
-			
-			JY.Person[p]["血量翻倍"] = dif_factor
-			
-			--木桩血量不翻倍
-			if p == 591 then
-				JY.Person[p]["血量翻倍"] = 1
-			end
-			
-			--李秋水的无相分身为1血
-			if p == 600 then
-				JY.Person[p]["生命最大值"] = 1
-				JY.Person[p]["生命"] = JY.Person[p]["生命最大值"]
-				JY.Person[p]["血量翻倍"] = 1
-			end
-		end
-	end
-	
+	JY.Person[0]["资质"] = 100
+	JY.Base["标准"] = 1
 	--无酒不欢：增加一些初始化设定
 	
 	--华山后山谢无悠
@@ -820,6 +377,7 @@ function NewGame()     --选择新游戏,设置主角初始属性
 	
 	--李文秀贴图
 	instruct_3(62,4,0,0,0,0,0,9238,9238,9238,0,0,0); 
+	My_Enter_SubScene(70, 35, 31, 2);
 end
 
 --无酒不欢：机率判定函数
@@ -846,13 +404,13 @@ end
 --游戏主循环
 function Game_Cycle()
     lib.Debug("Start game cycle");
-
+	--NewMainCycle()
     while JY.Status ~=GAME_END and JY.Status ~=GAME_START do
 		if JY.Restart == 1 then
 			break
 		end
         local t1=lib.GetTime();
-
+		
 	    JY.Mytick=JY.Mytick+1;    --20个节拍无击键,则主角变为站立状态
 		if JY.Mytick%20==0 then
             JY.MyCurrentPic=0;
