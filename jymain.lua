@@ -373,6 +373,7 @@ function NewGame()     --选择新游戏,设置主角初始属性
 	local battles = Generate20Battles();
 	local battlenum = 1
 	while true do
+		ClsN();
 		local des = GetBattleDescription(battlenum)
 		local mainOption = myJYMsgBox("行走江湖", des, {"战你娘亲","知己知彼","飞鸽传书","南柯一梦"}, 4, 19)
 		if mainOption == 1 then 
@@ -396,7 +397,7 @@ function NewGame()     --选择新游戏,设置主角初始属性
 				Menu_ReadRecord()
 			end
 			if Option4 == 3 then
-				JY.Status =GAME_END
+				JY.Status = GAME_END
 			end
 		end
 	end
