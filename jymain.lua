@@ -212,13 +212,16 @@ function NewMainCycle()
 	local battlenum = 1
 	while true do
 		ClsN();
+		lib.LoadPNG(1, 1000 * 2 , 0 , 0, 1)
 		local des = GetBattleDescription(battlenum)
 		local mainOption = myJYMsgBox("行走江湖", des, {"战你娘亲","知己知彼","飞鸽传书","南柯一梦"}, 4, 19)
 		if mainOption == 1 then 
+			JY.SubScene = 10
 			if WarMain(battles[battlenum], 0) == true then
 				battlenum = battlenum + 1
 				--这里还要做一个游戏结束确认
 			end
+			JY.SubScene = -1
 		end
 		if mainOption == 2 then 
 		
@@ -235,7 +238,7 @@ function NewMainCycle()
 				--Menu_ReadRecord()
 			end
 			if Option4 == 3 then
-				JY.Status = GAME_END
+				
 			end
 		end
 	end
@@ -257,21 +260,14 @@ function StartMenu()
 		if JY.Restart == 1 then
 			do return end
 		end
-		--无酒不欢：男女主角判定
-		if JY.Person[0]["性别"] == 0 then
-			JY.MyPic = CC.NewPersonPicM
-		else
-			JY.MyPic = CC.NewPersonPicF
-		end
-		JY.Status = GAME_SMAP
-		JY.MmapMusic = -1
-		CleanMemory()
-		Init_SMap(0)
-        lib.ShowSlow(20,0)
-		
-		--开局事件
-		CallCEvent(691)
-
+		JY.MyPic = CC.NewPersonPicF
+		--JY.Status = GAME_SMAP
+		--JY.MmapMusic = -1
+		--CleanMemory()
+		--Init_SMap(0)
+        --lib.ShowSlow(20,0)
+		--My_Enter_SubScene(70, 35, 31, 2);
+		NewMainCycle()
 	elseif menuReturn == 2 then         --载入旧的进度
 
     	DrawStrBox(-1,CC.ScreenH*1/6-20,"读取进度",LimeGreen,CC.Fontbig,C_GOLD);
@@ -377,7 +373,6 @@ function NewGame()     --选择新游戏,设置主角初始属性
 	
 	--李文秀贴图
 	instruct_3(62,4,0,0,0,0,0,9238,9238,9238,0,0,0); 
-	My_Enter_SubScene(70, 35, 31, 2);
 end
 
 --无酒不欢：机率判定函数
@@ -404,7 +399,7 @@ end
 --游戏主循环
 function Game_Cycle()
     lib.Debug("Start game cycle");
-	--NewMainCycle()
+	
     while JY.Status ~=GAME_END and JY.Status ~=GAME_START do
 		if JY.Restart == 1 then
 			break
@@ -7514,7 +7509,7 @@ function My_Enter_SubScene(sceneid,x,y,direct)
 		WaitKey();
 	end
   
-	Cls();	
+	--Cls();	
 end
 
 --简易信息

@@ -978,7 +978,7 @@ function War_WugongHurtLife(enemyid, wugong, level, ang, x, y)
 			return false
 		end
 	end
-  
+
 	local mywuxue = 0
 	local emenywuxue = 0
 	for i = 0, WAR.PersonNum - 1 do
@@ -8613,72 +8613,8 @@ function War_Fight_Sub(id, wugongnum, x, y)
 			if 0 < effect then
 				local emeny = GetWarMap(i, j, 2)
 				if 0 <= emeny and emeny ~= WAR.CurID then		--如果有人，并且不是当前控制人
-					--触发逆转乾坤的情况下，无误伤特效和合击依然会打到自己人
-					if WAR.Person[WAR.CurID]["我方"] ~= WAR.Person[emeny]["我方"] or (ZHEN_ID < 0 and WAR.WS == 0) or WAR.NZQK > 0 then
-						if JY.Wugong[wugong]["伤害类型"] == 1 and (fightscope == 0 or fightscope == 3) then
-							if level == 11 then
-								level = 10
-							end
-							--无酒不欢：这里需要完善修改
-							--WAR.Person[emeny]["内力点数"] = (WAR.Person[emeny]["内力点数"] or 0) - War_WugongHurtNeili(emeny, wugong, level)
-							SetWarMap(i, j, 4, 3)
-							WAR.Effect = 3
-						else
-							--林朝英轻云蔽月，每50时序可触发一次，免疫伤害10时序，误伤不触发
-							if match_ID(WAR.Person[emeny]["人物编号"], 605) and WAR.Person[WAR.CurID]["我方"] ~= WAR.Person[emeny]["我方"] then
-								if WAR.QYBY[WAR.Person[emeny]["人物编号"]] == nil then
-									WAR.QYBY[WAR.Person[emeny]["人物编号"]] = 50
-								end
-								if WAR.QYBY[WAR.Person[emeny]["人物编号"]] > 40 then
-									WAR.Person[emeny]["特效文字3"] = "轻云蔽月"
-									WAR.Person[emeny]["特效动画"] = 102
-								else
-									WAR.Person[emeny]["生命点数"] = (WAR.Person[emeny]["生命点数"] or 0) - War_WugongHurtLife(emeny, wugong, level, ng, x, y)
-									WAR.Effect = 2
-									SetWarMap(i, j, 4, 2)
-								end
-							--主角觉醒后，喵姐开局前三次不受伤害
-							elseif match_ID(WAR.Person[emeny]["人物编号"], 92) and JY.Person[0]["六如觉醒"] > 0 and WAR.FF < 3 and WAR.Person[WAR.CurID]["我方"] ~= WAR.Person[emeny]["我方"] then
-								WAR.FF = WAR.FF + 1
-								WAR.Person[emeny]["特效动画"] = 135
-							--黛绮丝倾国
-							elseif WAR.QGZT[WAR.Person[emeny]["人物编号"]] ~= nil and WAR.Person[WAR.CurID]["我方"] ~= WAR.Person[emeny]["我方"] then
-								local list = {}
-								for q = 0, WAR.PersonNum - 1 do
-									if WAR.Person[q]["死亡"] == false and q ~= WAR.CurID and WAR.Person[q]["我方"] ~= WAR.Person[emeny]["我方"] then
-										table.insert(list,q)
-									end
-								end
-								local F_target
-								if list[1] ~= nil then
-									WAR.Person[emeny]["特效动画"] = 149
-									F_target = list[math.random(#list)]
-									WAR.NZQK = 3
-									WAR.Person[F_target]["生命点数"] = (WAR.Person[F_target]["生命点数"] or 0) - War_WugongHurtLife(F_target, wugong, level, ng, x, y)
-									WAR.Effect = 2
-									SetWarMap(WAR.Person[F_target]["坐标X"], WAR.Person[F_target]["坐标Y"], 4, 2)
-									WAR.NZQK = 0
-								else
-									WAR.Person[emeny]["生命点数"] = (WAR.Person[emeny]["生命点数"] or 0) - War_WugongHurtLife(emeny, wugong, level, ng, x, y)
-									WAR.Effect = 2
-									SetWarMap(i, j, 4, 2)
-								end
-								--无论是否有第三方，既无论是否反弹，都消耗一次次数
-								WAR.QGZT[WAR.Person[emeny]["人物编号"]] = WAR.QGZT[WAR.Person[emeny]["人物编号"]] -1
-								if WAR.QGZT[WAR.Person[emeny]["人物编号"]] < 1 then
-									WAR.QGZT[WAR.Person[emeny]["人物编号"]] = nil
-								end
-							else
-								WAR.Person[emeny]["生命点数"] = (WAR.Person[emeny]["生命点数"] or 0) - War_WugongHurtLife(emeny, wugong, level, ng, x, y)
-								WAR.Effect = 2
-								SetWarMap(i, j, 4, 2)
-							end
-							--沉睡状态的敌人会醒来
-							if WAR.CSZT[WAR.Person[emeny]["人物编号"]] ~= nil then
-								WAR.CSZT[WAR.Person[emeny]["人物编号"]] = nil
-							end
-						end
-					end
+					WAR.Person[emeny]["生命点数"] = WAR.Person[emeny]["生命"]
+					WAR.Person[emeny]["生命"] = 0
 				end
 			end
 		end
