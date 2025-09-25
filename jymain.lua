@@ -209,17 +209,18 @@ end
 
 function NewMainCycle()
 	local battles = Generate20Battles();
-	local battlenum = 1
+	--local battlenum = 1
 	while true do
 		ClsN();
 		lib.LoadPNG(1, 1000 * 2 , 0 , 0, 1)
+		local battlenum = JY.Base["天书数量"]
 		local des = GetBattleDescription(battlenum)
 		local mainOption = myJYMsgBox("行走江湖", des, {"战你娘亲","知己知彼","飞鸽传书","南柯一梦"}, 4, 19)
 		if mainOption == 1 then 
 			JY.SubScene = 10
 			if WarMain(battles[battlenum], 0) == true then
-				battlenum = battlenum + 1
-				--这里还要做一个游戏结束确认
+				JY.Base["天书数量"] = JY.Base["天书数量"] + 1
+				--这里还要做一个游戏结束确认 天书
 			end
 			JY.SubScene = -1
 		end
@@ -232,13 +233,13 @@ function NewMainCycle()
 		if mainOption == 4 then
 			local Option4 = myJYMsgBox("南柯一梦", "选择接下来的操作", {"存档","读档","退出"}, 3, 19)
 			if Option4 == 1 then
-				--Menu_SaveRecord()
+				Menu_SaveRecord()
 			end
 			if Option4 == 2 then
-				--Menu_ReadRecord()
+				Menu_ReadRecord()
 			end
 			if Option4 == 3 then
-				
+				Init_SMap(0)
 			end
 		end
 	end
@@ -267,11 +268,12 @@ function StartMenu()
 		--Init_SMap(0)
         --lib.ShowSlow(20,0)
 		--My_Enter_SubScene(70, 35, 31, 2);
+		JY.Base["天书数量"] = 1
 		NewMainCycle()
 	elseif menuReturn == 2 then         --载入旧的进度
 
     	DrawStrBox(-1,CC.ScreenH*1/6-20,"读取进度",LimeGreen,CC.Fontbig,C_GOLD);
-		DrawStrBox(104,CC.ScreenH*1/6+26,string.format("%-6s %-4s %-10s %-4s %-4s %-4s %-10s","存档名", "主角", "姓名", "难度", "资质", "天书", "位置"),C_ORANGE,CC.DefaultFont,C_GOLD);
+		DrawStrBox(104,CC.ScreenH*1/6+26,string.format("%-6s %-4s %-10s %-4s %-4s %-4s %-10s","存档名", "主角", "姓名", "难度", "资质", "等级", "位置"),C_ORANGE,CC.DefaultFont,C_GOLD);
 	
     	local r = SaveList();
     	--ESC 重新返回选项
@@ -1196,7 +1198,7 @@ end
 function Menu_SaveRecord()
 	Cls();
 	DrawStrBox(-1,CC.ScreenH*1/6-20,"保存进度",LimeGreen,CC.Fontbig,C_GOLD);
-	DrawStrBox(104,CC.ScreenH*1/6+26,string.format("%-6s %-4s %-10s %-4s %-4s %-4s %-10s","存档名", "主角", "姓名", "难度", "资质", "天书", "位置"),C_ORANGE,CC.DefaultFont,C_GOLD);
+	DrawStrBox(104,CC.ScreenH*1/6+26,string.format("%-6s %-4s %-10s %-4s %-4s %-4s %-10s","存档名", "主角", "姓名", "难度", "资质", "等级", "位置"),C_ORANGE,CC.DefaultFont,C_GOLD);
 	local r = SaveList();
     if r>0 then
         DrawStrBox(CC.MainSubMenuX2,CC.MainSubMenuY,"请稍候......",C_WHITE,CC.DefaultFont);
@@ -1211,7 +1213,7 @@ end
 function Menu_ReadRecord()
 	Cls();
 	DrawStrBox(-1,CC.ScreenH*1/6-20,"读取进度",LimeGreen,CC.Fontbig,C_GOLD);
-	DrawStrBox(104,CC.ScreenH*1/6+26,string.format("%-6s %-4s %-10s %-4s %-4s %-4s %-10s","存档名", "主角", "姓名", "难度", "资质", "天书", "位置"),C_ORANGE,CC.DefaultFont,C_GOLD);
+	DrawStrBox(104,CC.ScreenH*1/6+26,string.format("%-6s %-4s %-10s %-4s %-4s %-4s %-10s","存档名", "主角", "姓名", "难度", "资质", "等级", "位置"),C_ORANGE,CC.DefaultFont,C_GOLD);
 	local r = SaveList();
 	if r < 1 then
 		return 0;
@@ -7936,7 +7938,7 @@ function SaveList()
 			end
 			
 			local wz = GetDataFromStruct(data,0,table_struct,"难度");
-			tssl = GetDataFromStruct(data,0,table_struct,"天书数量").."本";
+			tssl = GetDataFromStruct(data,0,table_struct,"天书数量").."级";
 
 			nd = MODEXZ2[wz]
 			
