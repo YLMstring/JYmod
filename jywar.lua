@@ -8612,9 +8612,10 @@ function War_Fight_Sub(id, wugongnum, x, y)
 			local effect = GetWarMap(i, j, 4)
 			if 0 < effect then
 				local emeny = GetWarMap(i, j, 2)
-				if 0 <= emeny and emeny ~= WAR.CurID then		--如果有人，并且不是当前控制人
+				if 0 <= emeny and emeny ~= WAR.CurID and WAR.Person[WAR.CurID]["我方"] then		--如果有人，并且不是当前控制人
 					WAR.Person[emeny]["生命点数"] = WAR.Person[emeny]["生命"]
 					WAR.Person[emeny]["生命"] = 0
+					--伤害逻辑在这
 				end
 			end
 		end
