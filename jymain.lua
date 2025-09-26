@@ -208,14 +208,26 @@ function TitleSelection()
 end
 
 function NewMainCycle()
-	local battles = Generate20Battles();
-	--local battlenum = 1
+	local p = JY.Person[0]
+	local battles = {p["武功等级1"],
+					p["武功等级2"],
+					p["武功等级3"],
+					p["武功等级4"],
+					p["武功等级5"],
+					p["武功等级6"],
+					p["武功等级7"],
+					p["武功等级8"],
+					p["武功等级9"],
+					p["武功等级10"],
+					p["武功等级11"],
+					p["武功等级12"]}
+	--武功等级
 	while true do
 		ClsN();
 		lib.LoadPNG(1, 1000 * 2 , 0 , 0, 1)
 		local battlenum = JY.Base["天书数量"]
-		local des = GetBattleDescription(battlenum)
-		local mainOption = myJYMsgBox("行走江湖", des, {"战你娘亲","知己知彼","飞鸽传书","南柯一梦"}, 4, 19)
+		local des = GetBattleDescription(battles[battlenum])
+		local mainOption = myJYMsgBox("行走江湖", des, {"开战","状态","敌人","系统"}, 4, 19)
 		if mainOption == 1 then 
 			JY.SubScene = 10
 			if WarMain(battles[battlenum], 0) == true then
@@ -225,10 +237,14 @@ function NewMainCycle()
 			JY.SubScene = -1
 		end
 		if mainOption == 2 then 
-		
+			Menu_Status()
 		end
-		if mainOption == 3 then 
-			
+		if mainOption == 3 then
+			for i = battlenum, 12 do
+				DrawStrBoxWaitKey(GetBattleDescription(battles[i]), C_ORANGE, CC.DefaultFont)
+				ClsN();
+				lib.LoadPNG(1, 1000 * 2 , 0 , 0, 1)
+			end
 		end
 		if mainOption == 4 then
 			local Option4 = myJYMsgBox("南柯一梦", "选择接下来的操作", {"存档","读档","退出"}, 3, 19)
@@ -269,6 +285,7 @@ function StartMenu()
         --lib.ShowSlow(20,0)
 		--My_Enter_SubScene(70, 35, 31, 2);
 		JY.Base["天书数量"] = 1
+		Generate12Battles()
 		NewMainCycle()
 	elseif menuReturn == 2 then         --载入旧的进度
 
@@ -306,6 +323,7 @@ function StartMenu()
 			JY.SubScene = -1
 			JY.Status = GAME_FIRSTMMAP
 		end
+		NewMainCycle()
 	elseif menuReturn == 3 then
         return -1;
 	end
@@ -317,16 +335,27 @@ function CleanMemory()            --清理lua内存
     end
 end
 
-function Generate20Battles()
-	local battles = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20}            
-    return battles
+function Generate12Battles()
+	local p = JY.Person[0]
+	p["武功等级1"] = 11;
+	p["武功等级2"] = 99;
+	p["武功等级3"] = 202;
+	p["武功等级4"] = 203;
+	p["武功等级5"] = 204;
+	p["武功等级6"] = 205;
+	p["武功等级7"] = 206;
+	p["武功等级8"] = 207;
+	p["武功等级9"] = 209;
+	p["武功等级10"] = 209;
+	p["武功等级11"] = 210;
+	p["武功等级12"] = 211;
 end
 
 function GetBattleDescription(num)
-	if num == 1 then
+	if num == 11 then
 		return "这是第一场战斗,哈哈哈"     
 	end
-	if num == 2 then
+	if num == 99 then
 		return "这是第二场战斗,哈哈哈"     
 	end
     return "哈哈哈哈哈哈哈哈哈"
@@ -354,7 +383,7 @@ function NewGame()     --选择新游戏,设置主角初始属性
 		if player_type == 1 then
 			local checkSure = myJYMsgBox("华山派", "初始角色：岳灵珊,袁承志,令狐冲", {"确定","返回"}, 2, 19)
 			if checkSure == 1 then
-				instruct_10(79)
+				JY.Base["队伍1"] = 79
 				instruct_10(54)
 				instruct_10(35)
 				break
@@ -365,16 +394,6 @@ function NewGame()     --选择新游戏,设置主角初始属性
 	JY.Person[0]["姓名"]=CC.NewPersonName;
 	JY.Person[0]["资质"] = 100
 	JY.Base["标准"] = 1
-	--无酒不欢：增加一些初始化设定
-	
-	--华山后山谢无悠
-	instruct_3(80, 17, 1, 0, 4105, 0, 0, 4133*2, 4133*2, 4133*2, 0, -2, -2)
-	
-	--鸠摩智贴图
-	instruct_3(16, 10, -2,-2,-2,-2,-2,4153*2,4153*2,4153*2,-2,-2,-2)
-	
-	--李文秀贴图
-	instruct_3(62,4,0,0,0,0,0,9238,9238,9238,0,0,0); 
 end
 
 --无酒不欢：机率判定函数
