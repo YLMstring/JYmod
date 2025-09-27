@@ -229,7 +229,7 @@ function NewMainCycle()
 		local des = GetBattleDescription(battles[battlenum])
 		local mainOption = myJYMsgBox("行走江湖", des, {"开战","状态","敌人","系统"}, 4, 19)
 		if mainOption == 1 then 
-			JY.SubScene = 10
+			JY.SubScene = 28
 			if WarMain(battles[battlenum], 0) == true then
 				JY.Base["天书数量"] = JY.Base["天书数量"] + 1
 				--这里还要做一个游戏结束确认 天书
@@ -394,6 +394,26 @@ function NewGame()     --选择新游戏,设置主角初始属性
 	JY.Person[0]["姓名"]=CC.NewPersonName;
 	JY.Person[0]["资质"] = 100
 	JY.Base["标准"] = 1
+
+	--人物初始化
+	for p = 0, JY.PersonNum-1 do
+		for i = 1, CC.Kungfunum do
+			if JY.Person[p]["武功" .. i] > 0 then
+				JY.Person[p]["武功等级" .. i] = 999
+			else
+				break;
+			end
+		end
+		local level = JY.Person[p]["等级"]
+		local hitpoint = level * 30 + 200 + JY.Person[p]["实战"] * 30
+		JY.Person[p]["生命最大值"] = hitpoint
+		JY.Person[p]["生命"] = hitpoint
+		JY.Person[p]["内力最大值"] = hitpoint
+		JY.Person[p]["内力"] = hitpoint
+		JY.Person[p]["攻击力"] = level * 5 + 70 + JY.Person[p]["出战"] * 5
+		JY.Person[p]["防御力"] = level * 5 + 30 + JY.Person[p]["休战"] * 5
+		JY.Person[p]["轻功"] = 50 + JY.Person[p]["论剑奖励"] * 5
+	end
 end
 
 --无酒不欢：机率判定函数
@@ -8263,115 +8283,18 @@ end
 
 --无酒不欢：获取武功威力
 function get_skill_power(personid, wugongid, wugonglvl)
-	local power;
-	--到极的武功按10级威力算
-	if wugonglvl == 11 then
-		wugonglvl = 10
+	local power = JY.Wugong[wugongid]["攻击力10"]
+	local powerNew = 1
+	if power >= 500 then
+		powerNew = 1.2
 	end
-	power = JY.Wugong[wugongid]["攻击力"..wugonglvl]
-	--学了葵花之后,辟邪的威力
-	if wugongid == 48 and PersonKF(personid, 105) then
-		power = 1300
+	if power >= 800 then
+		powerNew = 1.4
 	end
-	--提高天赋内功的威力
-	if power < 1000 and Given_NG(personid, wugongid) then
-		power = power + 100
-		if power > 1000 then
-			power = 1000
-		end
+	if power >= 1100 then
+		powerNew = 1.6
 	end
-	--觉醒后翻倍的众人
-	--王重阳+全真七子,全真剑法
-	if wugongid == 39 and JY.Person[0]["六如觉醒"] > 0 then
-		if match_ID(personid, 123) or match_ID(personid, 124) or match_ID(personid, 125) or match_ID(personid, 126) or
-		match_ID(personid, 127) or match_ID(personid, 128) or match_ID(personid, 129) or match_ID(personid, 68) then
-			power = power * 2
-		end
-	end
-	--石破天,金乌
-	if wugongid == 61 and JY.Person[0]["六如觉醒"] > 0 and match_ID(personid, 38) then
-		power = power * 1.5
-	end
-	--梅超风,九阴白骨爪
-	if wugongid == 11 and JY.Person[0]["六如觉醒"] > 0 and match_ID(personid, 78) then
-		power = power * 1.5
-	end
-	--韦一笑,寒冰绵掌
-	if wugongid == 5 and JY.Person[0]["六如觉醒"] > 0 and match_ID(personid, 14) then
-		power = power * 2
-	end
-	--殷天正,鹰爪功
-	if wugongid == 4 and JY.Person[0]["六如觉醒"] > 0 and match_ID(personid, 12) then
-		power = power * 2
-	end
-	--朱聪,分筋错骨手
-	if wugongid == 117 and JY.Person[0]["六如觉醒"] > 0 and match_ID(personid, 131) then
-		power = power * 2
-	end
-	--潇湘子,鹤蛇八打
-	if wugongid == 74 and JY.Person[0]["六如觉醒"] > 0 and match_ID(personid, 157) then
-		power = power * 2
-	end
-	--何铁手战斗中五毒威力翻倍
-	if match_ID(personid, 83) and wugongid == 3 and JY.Status == GAME_WMAP and WAR.HTS > 0 then
-		power = power * WAR.HTS
-	end
-	--提高天赋外功的威力
-	if Given_WG(personid, wugongid) then
-		if power < 1200 then
-			power = power + 200
-		elseif power >= 1200 and power < 1400 then
-			power = 1400
-		end
-	end
-	--天山折梅手,虚竹,童姥,无崖子,李秋水,威力提高
-	if wugongid == 14 then
-		if match_ID(personid, 49) or match_ID(personid, 116) or match_ID(personid, 117) or match_ID(personid, 118) then
-			for i = 1, CC.Kungfunum do
-				if JY.Person[personid]["武功"..i] ~= 14 and JY.Person[personid]["武功等级"..i] == 999 then
-					power = power + 50
-				end
-			end
-		end
-	end
-	--五岳剑法威力提高
-	if wugongid >= 30 and wugongid <= 34 and WuyueJF(personid) then
-		power = power + 500
-	end
-	--琴棋书画威力提高
-	if (wugongid == 73 or wugongid == 72 or wugongid == 84 or wugongid == 142) and QinqiSH(personid) then
-		power = power + 300
-	end
-	--桃花绝技威力提高
-	if (wugongid == 12 or wugongid == 18 or wugongid == 38) and TaohuaJJ(personid) then
-		power = power + 200
-	end
-	--九阴神功对白骨爪威力提高
-	if wugongid == 11 and PersonKFJ(personid, 107) then
-		power = power + 200
-	end
-	--武器装备威力加成
-	for i,v in ipairs(CC.ExtraOffense) do
-		if v[1] == JY.Person[personid]["武器"] and v[2] == wugongid then
-			power = power + v[3]
-		end
-	end
-	--只有战斗中才有的加成
-	if JY.Status == GAME_WMAP then
-		--太极拳蓄力
-		if wugongid == 16 and WAR.tmp[3000 + personid] ~= nil and WAR.tmp[3000 + personid] > 0 then
-			power = power + WAR.tmp[3000 + personid]
-		end
-	end
-	--周芷若,谁与争锋
-	if match_ID(personid, 631) and JY.Person[personid]["武器"] == 37 and JY.Wugong[wugongid]["武功类型"] == 3 then
-		power = power + 200
-	end
-	--林朝英,惊才绝艳
-	if match_ID(personid, 605) then
-		power = power * 1.1
-	end
-	return power
+	return powerNew * JY.Person[personid]["攻击力"]
 end
 
 --无酒不欢：判定天赋外功的函数
