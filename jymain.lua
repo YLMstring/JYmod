@@ -4555,14 +4555,6 @@ function ShowMenu(menuItem, numItem, numShow, x1, y1, x2, y2, isBox, isEsc, size
 			if isBox==1 then
 				DrawBox(x1,y1,x1+w,y1+h,C_WHITE);
 			end
-		--C²é¿´
-		elseif In_Battle == true and keyPress == VK_C then
-			local r=MapWatch();
-			ClsN();
-			lib.LoadSur(surid,0,0);
-			if isBox==1 then
-				DrawBox(x1,y1,x1+w,y1+h,C_WHITE);
-			end
 		--ÐîÁ¦
 		elseif (In_Battle == true or In_Tactics == true) and keyPress == VK_P then
 			local r=War_ActupMenu();
@@ -4572,11 +4564,6 @@ function ShowMenu(menuItem, numItem, numShow, x1, y1, x2, y2, isBox, isEsc, size
 				returnValue = 4;
 			end
 			break;
-			ClsN();
-			lib.LoadSur(surid,0,0);
-			if isBox==1 then
-				DrawBox(x1,y1,x1+w,y1+h,C_WHITE);
-			end
 		--·ÀÓù
 		elseif (In_Battle == true or In_Tactics == true) and keyPress == VK_D then
 			local r=War_DefupMenu();

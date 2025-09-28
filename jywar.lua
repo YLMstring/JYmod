@@ -955,7 +955,7 @@ function War_WugongHurtLife(enemyid, wugong, level, ang, x, y)
 		end
 	end
 
-	hurt = War_CalculateDamage(enemyid, wugong)
+	local hurt = War_CalculateDamage(pid, eid, wugong)
 
 	--误伤打到自己人
 	--[[if WAR.Person[WAR.CurID]["我方"] == WAR.Person[enemyid]["我方"] then
@@ -1237,6 +1237,7 @@ function WarSetGlobal()
 	WAR.WGWL = 0		--记录武功10级的攻击力
 	WAR.ZYHB = 0		--左右互搏，1：发动左右的回合，2：左右的额外回合
 	WAR.ZYHBP = -1		--记录发动左右的人的编号
+	WAR.PREVIEW = -1	--记录发动预览的人的编号
 	WAR.ZHB = 0			--周伯通的追加左右判定
 	WAR.AQBS = 0		--暗器倍数
 	WAR.BJ = 0			--暴击
@@ -1943,19 +1944,17 @@ function WarShowHead(id)
 		zdxs = "极"
 	end
   	DrawString(x1 + size*5/2 + myx1, y1 + myy1, zdxs, LimeGreen, size)
-	local wugong = WAR.Person[WAR.CurID]["论剑奖励"]
-	if id ~= WAR.CurID and WAR.Person[id]["我方"] == false and wugong > 0 then
+	if WAR.PREVIEW < 0 then return end
+	local wugong = JY.Person[WAR.PREVIEW]["论剑奖励"]
+	if WAR.Person[id]["我方"] == false and wugong > 0 then
 		y1 = y1 + 3*(CC.RowPixel + size) +12
 		DrawBox(x1-7, y1, x1 + width-7 , y1 + size*6, C_GOLD)
-		--没写完，要设置论剑奖励
-		DrawString(x1+2, y1 + (size + CC.RowPixel) - 18, "使用" + JY.Wugong[wugong]["名称"], C_WHITE, size)
-		DrawString(x1+2, y1 + 2 * (size + CC.RowPixel) - 18, War_CalculateDamage(WAR.Person[WAR.CurID], wugong) + "点伤害", C_WHITE, size)
+		DrawString(x1+2, y1 + (size + CC.RowPixel) - 18, "进攻-" .. JY.Wugong[wugong]["名称"], C_WHITE, size)
+		DrawString(x1+2, y1 + 2 * (size + CC.RowPixel) - 18, "预计" .. War_CalculateDamage(WAR.PREVIEW, pid, wugong) .. "点伤害", C_WHITE, size)
 	end
 end
 
-function War_CalculateDamage(enemyid, wugong)
-	local pid = WAR.Person[WAR.CurID]["人物编号"]
-	local eid = WAR.Person[enemyid]["人物编号"]
+function War_CalculateDamage(pid, eid, wugong)
 	local def = JY.Person[eid]["防御力"]
 	local true_WL = get_skill_power(pid, wugong)
 	return math.max(true_WL - def, 1)
@@ -2202,16 +2201,23 @@ function War_FightMenu(sb, star, wgnum)
 		if r == 0 then
 			return 0
 		end
+		--为了伤害预览添加论剑奖励作为标记
+		WAR.PREVIEW = pid
+		JY.Person[pid]["论剑奖励"] = JY.Person[pid]["武功" .. r]
 		WAR.ShowHead = 0
 		local r2 = War_Fight_Sub(WAR.CurID, r)
+		WAR.PREVIEW = -1
 		WAR.ShowHead = 1
 		Cls()
 		return r2
 	--无酒不欢：数字快捷键直接使用武功
 	else
 		if wgnum <= c then
+			WAR.PREVIEW = pid
+			JY.Person[pid]["论剑奖励"] = JY.Person[pid]["武功" .. canuse[wgnum]]
 			WAR.ShowHead = 0
 			local r2 = War_Fight_Sub(WAR.CurID, canuse[wgnum])
+			WAR.PREVIEW = -1
 			WAR.ShowHead = 1
 			Cls()
 			return r2
