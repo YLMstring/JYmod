@@ -11499,10 +11499,24 @@ end
 
 --战斗查看状态
 function War_StatusMenu()
-	WAR.ShowHead = 0
-	Menu_Status()
-	WAR.ShowHead = 1
-	Cls()
+	--WAR.ShowHead = 0
+	--Menu_Status()
+	--WAR.ShowHead = 1
+	--Cls()
+	local x = WAR.Person[WAR.CurID]["坐标X"];
+    local y = WAR.Person[WAR.CurID]["坐标Y"];
+    WAR.ShowHead = 0
+    War_CalMoveStep(WAR.CurID, 128, 1);
+    WarDrawMap(1, x, y);
+    ShowScreen();
+    x, y = War_SelectMove()
+	if lib.GetWarMap(x, y, 2) > 0 or lib.GetWarMap(x, y, 5) > 0 then
+		local tdID = lib.GetWarMap(x, y, 2)
+		local eid = WAR.Person[tdID]["人物编号"]
+		ShowPersonStatus(1, eid)
+	end
+    --if x == nil then return end
+    WAR.ShowHead = 1
 end
 
 --战斗物品菜单

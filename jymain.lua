@@ -1364,7 +1364,7 @@ end
 
 ---显示队伍状态
 -- 左右键翻页,上下键换队友
-function ShowPersonStatus(teamid)
+function ShowPersonStatus(teamid, realid)
 	local page = 1
 	local pagenum = 3
 	local teamnum = GetTeamNum()
@@ -1381,6 +1381,11 @@ function ShowPersonStatus(teamid)
 		end
 		Cls()
 		local id = JY.Base["队伍" .. teamid]
+		--这里添加战斗时查看敌人信息的功能,使用realid
+		if realid ~= nil then
+			id = realid
+		end
+
 		local sp = JY.Person[id]
 		--天赋ID
 		local tfid;
@@ -8294,7 +8299,7 @@ function get_skill_power(personid, wugongid, wugonglvl)
 	if power >= 1100 then
 		powerNew = 1.6
 	end
-	return powerNew * JY.Person[personid]["攻击力"]
+	return math.modf(powerNew * JY.Person[personid]["攻击力"])
 end
 
 --无酒不欢：判定天赋外功的函数
