@@ -955,14 +955,7 @@ function War_WugongHurtLife(enemyid, wugong, level, ang, x, y)
 		end
 	end
 
-	--无酒不欢：攻方基础攻击
-	--local atk = JY.Person[pid]["攻击力"]
-	--无酒不欢：守方基础防御
-	local def = JY.Person[eid]["防御力"]
-
-	local true_WL = get_skill_power(pid, wugong)
-
-	local hurt =  math.max(true_WL - def, 1)
+	hurt = War_CalculateDamage(enemyid, wugong)
 
 	--误伤打到自己人
 	--[[if WAR.Person[WAR.CurID]["我方"] == WAR.Person[enemyid]["我方"] then
@@ -1950,21 +1943,22 @@ function WarShowHead(id)
 		zdxs = "极"
 	end
   	DrawString(x1 + size*5/2 + myx1, y1 + myy1, zdxs, LimeGreen, size)
-
-	if WAR.Person[id]["我方"] == false then
+	local wugong = WAR.Person[WAR.CurID]["论剑奖励"]
+	if id ~= WAR.CurID and WAR.Person[id]["我方"] == false and wugong > 0 then
 		y1 = y1 + 3*(CC.RowPixel + size) +12
 		DrawBox(x1-7, y1, x1 + width-7 , y1 + size*6, C_GOLD)
-		local hl = 1
-		for i = 1, 4 do
-			local wp = p["携带物品" .. i]
-			local wps = p["携带物品数量" .. i]
-			if wp >= 0 then
-				local wpm = JY.Thing[wp]["名称"]
-				DrawString(x1+2, y1 + hl * (size+CC.RowPixel) - 18, wpm .. wps, C_WHITE, size)
-				hl = hl + 1
-			end
-		end
+		--没写完，要设置论剑奖励
+		DrawString(x1+2, y1 + (size + CC.RowPixel) - 18, "使用" + JY.Wugong[wugong]["名称"], C_WHITE, size)
+		DrawString(x1+2, y1 + 2 * (size + CC.RowPixel) - 18, War_CalculateDamage(WAR.Person[WAR.CurID], wugong) + "点伤害", C_WHITE, size)
 	end
+end
+
+function War_CalculateDamage(enemyid, wugong)
+	local pid = WAR.Person[WAR.CurID]["人物编号"]
+	local eid = WAR.Person[enemyid]["人物编号"]
+	local def = JY.Person[eid]["防御力"]
+	local true_WL = get_skill_power(pid, wugong)
+	return math.max(true_WL - def, 1)
 end
 
 --自动选择合适的武功
