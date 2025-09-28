@@ -11228,10 +11228,6 @@ end
 
 --战斗查看状态
 function War_StatusMenu()
-	--WAR.ShowHead = 0
-	--Menu_Status()
-	--WAR.ShowHead = 1
-	--Cls()
 	local x = WAR.Person[WAR.CurID]["坐标X"];
     local y = WAR.Person[WAR.CurID]["坐标Y"];
     WAR.ShowHead = 0
