@@ -2175,7 +2175,7 @@ function War_FightMenu(sb, star, wgnum)
 		if tmp > 0 then
 			menu[i] = {JY.Wugong[tmp]["名称"], nil, 1}
 
-			--内功无法攻击
+			--[[内功无法攻击
 			--游坦之可以
 			if match_ID(pid, 48) == false and JY.Wugong[tmp]["武功类型"] == 6 then
 				menu[i][3] = 0
@@ -2189,57 +2189,7 @@ function War_FightMenu(sb, star, wgnum)
 			--斗转星移不显示
 			if tmp == 43 then
 				menu[i][3] = 0
-			end
-
-			--如果主角是天罡，内功可攻击，畅想第一格内功可攻击
-			if ((pid == 0 and JY.Base["标准"] == 6) or (pid == 0 and JY.Base["畅想"] > 0 and i == 1)) and JY.Wugong[tmp]["武功类型"] == 6 then
-				menu[i][3] = 1
-			end
-
-			--林平之 东方 显示葵花神功
-			if tmp == 105 and (match_ID(pid, 36) or match_ID(pid, 27)) then
-				menu[i][3] = 1
-			end
-
-			--石破天 显示太玄神功
-			if tmp == 102 and match_ID(pid, 38) then
-				menu[i][3] = 1
-			end
-
-			--张无忌 显示九阳神功
-			if tmp == 106 and match_ID(pid, 9) then
-				menu[i][3] = 1
-			end
-
-			--狄云 显示神经照
-			if tmp == 94 and match_ID(pid, 37) then
-				menu[i][3] = 1
-			end
-
-			--慕容复 显示斗转星移
-			if tmp == 43 and match_ID(pid, 51) then
-				menu[i][3] = 1
-			end
-
-			--欧阳锋 显示逆运
-			if tmp == 104 and match_ID(pid, 60) then
-				menu[i][3] = 1
-			end
-
-			--小昭 显示圣火
-			if tmp == 93 and match_ID(pid, 66) then
-				menu[i][3] = 1
-			end
-
-			--内力少不显示
-			if JY.Person[pid]["内力"] < JY.Wugong[tmp]["消耗内力点数"] then
-				menu[i][3] = 0
-			end
-
-			--体力低于10不显示
-			if JY.Person[pid]["体力"] < 10 then
-				menu[i][3] = 0
-			end
+			end]]
 
 			numwugong = numwugong + 1
 
@@ -3008,91 +2958,6 @@ function War_Fight_Sub(id, wugongnum, x, y)
 				WAR.Person[WAR.CurID]["特效文字4"] = "左右互搏";
 			end
 		end
-	end
-
-	--无酒不欢：连击率用函数计算
-	local LJ;
-
-	LJ = Person_LJ(pid)
-
-	--敌人连击+20%
-	if WAR.Person[id]["我方"] == false then
-		LJ = LJ + 20
-	end
-
-	--连击率上限100
-	if LJ > 100 then
-		LJ = 100
-	end
-
-	if math.random(100) <= LJ then
-		fightnum = 2
-	end
-
-	--高连击武功
-	local glj = {7, 2, 34, 37, 55, 57, 70, 77}
-	for i = 1, 8 do
-		if JY.Person[pid]["武功" .. wugongnum] == glj[i] and JLSD(20, 75, pid) then
-			fightnum = 2
-			break;
-		end
-	end
-
-	--五岳剑法组合额外连击
-	if wugong >= 30 and wugong <= 34 and WuyueJF(pid) and JLSD(30, 60, pid) then
-		fightnum = 2
-	end
-
-	--紫气天罗组合额外连击
-	if (wugong == 3 or wugong == 9 or wugong == 5 or wugong == 21 or wugong == 118) and ZiqiTL(pid) and JLSD(30, 60, pid) then
-		fightnum = 2
-	end
-
-	--天衣无缝组合，刀法连击率+30%
-	if kfkind == 4 and TianYiWF(pid) and JLSD(30, 60, pid) then
-		fightnum = 2
-	end
-
-	--萧中慧夫妻必连
-	if match_ID(pid, 77) and wugong == 62 then
-		fightnum = 2
-	end
-
-	--装备鸳鸯刀，夫妻必连
-	if (JY.Person[pid]["武器"] == 217 or JY.Person[pid]["武器"] == 218) and wugong == 62 then
-		fightnum = 2
-	end
-
-	--狄云，水笙连城高连
-	if (match_ID(pid, 37) or match_ID(pid, 589)) and wugong == 114 and JLSD(20, 75, pid) then
-		fightnum = 2
-	end
-
-	--阿青，暴怒越女剑法必连
-	if match_ID(pid, 604) and wugong == 156 and WAR.LQZ[pid] == 100 then
-		fightnum = 2
-	end
-
-	--枯荣一阳指高连
-	if match_ID(pid, 102) and wugong == 17 and JLSD(20, 75, pid) then
-		fightnum = 2
-	end
-
-	--小龙女玉女素心剑高连
-	if match_ID(pid, 59) and wugong == 139 and JLSD(20, 75, pid) then
-		fightnum = 2
-	end
-
-	--张三丰，太极拳蓄力超过600，必连
-	if wugong == 16 and WAR.tmp[3000 + pid] ~= nil and WAR.tmp[3000 + pid] > 600 and match_ID(pid, 5) then
-		fightnum = 2
-	end
-
-	--倚天密道，成昆必定单击
-	--天外也不会连击
-	if WAR.ZDDH == 237 and pid == 18 then
-		fightnum = 1
-		WAR.TWLJ = 2
 	end
 
 	--无酒不欢：黯然极意和三叠浪
@@ -7475,7 +7340,7 @@ end
 
 
 --武功范围选择
-function War_KfMove(movefanwei, atkfanwei,wugong)
+function War_KfMove(movefanwei, atkfanwei, wugong)
   local kind = movefanwei[1] or 0
   local len = movefanwei[2] or 0
   local x0 = WAR.Person[WAR.CurID]["坐标X"]
@@ -10989,11 +10854,11 @@ function War_ExecuteMenu(flag, thingid)
 end
 
 --选择武功的函数，手动和AI都经过这里
-function War_FightSelectType(movefanwei, atkfanwei, x, y,wugong)
+function War_FightSelectType(movefanwei, atkfanwei, x, y, wugong)
 	local x0 = WAR.Person[WAR.CurID]["坐标X"]
 	local y0 = WAR.Person[WAR.CurID]["坐标Y"]
 	if x == nil and y == nil then
-		x, y = War_KfMove(movefanwei, atkfanwei,wugong)
+		x, y = War_KfMove(movefanwei, atkfanwei, wugong)
 		if x == nil then
 			lib.GetKey()
 			Cls()
@@ -11004,143 +10869,7 @@ function War_FightSelectType(movefanwei, atkfanwei, x, y,wugong)
 		WarDrawAtt(x, y, atkfanwei, 4)
 		WarDrawMap(1, x, y)
 		ShowScreen()
-		--张无忌逆转乾坤
-		if JY.Person[614]["品德"] == 90 then
-			local z = WAR.CurID
-			for j = 0, WAR.PersonNum - 1 do
-				if WAR.Person[j]["人物编号"] == 0 and 0 < JY.Person[0]["生命"] then
-					WAR.CurID = j
-					break
-				end
-			end
-			Cls()
-			CurIDTXDH(WAR.CurID, 114,1,"逆转乾坤",C_ORANGE);
-			WAR.CurID = z
-			local ori_x, ori_y = x, y
-			local min_x, min_y,max_x, max_y = x-2, y-2, x+2, y+2
-			Cls()
-			CleanWarMap(3, 255)
-			local ssx = 0
-			for i = min_x+1, max_x-1 do
-				for j = min_y+1, max_y-1 do
-					SetWarMap(i, j, 3, 0)
-				end
-			end
-			SetWarMap(min_x, y, 3, 0)
-			SetWarMap(max_x, y, 3, 0)
-			SetWarMap(x, min_y, 3, 0)
-			SetWarMap(x, max_y, 3, 0)
-			WarDrawMap(1, x, y)
-			ShowScreen()
-			while true do
-				if JY.Restart == 1 then
-					break
-				end
-				local key, ktype, mx, my = WaitKey(1)
-				if key == VK_UP then
-					if (y > min_y + 1 and x > min_x and x < max_x) or (x == ori_x and y > min_y) then
-						y = y - 1
-					end
-				elseif key == VK_DOWN then
-					if (y < max_y - 1 and x > min_x and x < max_x) or (x == ori_x and y < max_y) then
-						y = y + 1
-					end
-				elseif key == VK_LEFT then
-					if (x > min_x + 1 and y > min_y and y < max_y) or (y == ori_y and x > min_x) then
-						x = x - 1
-					end
-				elseif key == VK_RIGHT then
-					if (x < max_x - 1 and y > min_y and y < max_y) or (y == ori_y and x < max_x) then
-						x = x + 1
-					end
-				elseif key == VK_ESCAPE then
-					x, y = ori_x, ori_y
-					WAR.NZQK = 1
-					CleanWarMap(7, 0)
-					WarDrawAtt(x, y, atkfanwei, 4)
-					WarDrawMap(1, x, y)
-					ShowScreen()
-					break
-				elseif (key == VK_SPACE or key == VK_RETURN) then
-					--内力大于等于300才能使用
-					if JY.Person[0]["内力"] >= 300 then
-						JY.Person[0]["内力"] = JY.Person[0]["内力"] - 300
-						WAR.NZQK = 2
-						break
-					else
-						x, y = ori_x, ori_y
-						WAR.NZQK = 1
-						CleanWarMap(7, 0)
-						WarDrawAtt(x, y, atkfanwei, 4)
-						WarDrawMap(1, x, y)
-						ShowScreen()
-						break
-					end
-				end
-				CleanWarMap(7, 0)
-				WarDrawAtt(x, y, atkfanwei, 4)
-				WarDrawMap(1, x, y)
-				ShowScreen()
-			end
-			JY.Person[614]["品德"] = 80
-		end
-		--主角，迷踪步躲避攻击
-		if JY.Person[606]["品德"] == 90 then
-			local z = WAR.CurID
-			for j = 0, WAR.PersonNum - 1 do
-				if WAR.Person[j]["人物编号"] == 0 and 0 < JY.Person[0]["生命"] then
-					WAR.CurID = j
-					break
-				end
-			end
-			Cls()
-			CurIDTXDH(WAR.CurID, 129,1,"迷踪步",Violet);
-
-			WAR.Person[WAR.CurID]["移动步数"] = 6
-			War_CalMoveStep(WAR.CurID, WAR.Person[WAR.CurID]["移动步数"], 0)
-			local x, y = nil, nil
-			while 1 do
-				if JY.Restart == 1 then
-					break
-				end
-				x, y = War_SelectMove()
-				if x ~= nil then
-					WAR.ShowHead = 0
-					War_MovePerson(x, y)
-					break;
-				end
-			end
-			WAR.CurID = z
-			JY.Person[606]["品德"] = 80
-		end
-		--小昭影步
-		if JY.Person[66]["品德"] == 90 then
-			JY.Person[66]["品德"] = 50
-			if WAR.XZ_YB[1] ~= nil then
-				local z = WAR.CurID
-				for j = 0, WAR.PersonNum - 1 do
-					if WAR.Person[j]["人物编号"] == 0 and 0 < JY.Person[0]["生命"] then
-						WAR.CurID = j
-						break
-					end
-				end
-				Cls()
-				WarDrawMap(0)
-				CurIDTXDH(WAR.CurID, 122,1, "接引离斯毒火海", C_RED)
-				lib.SetWarMap(WAR.Person[WAR.CurID]["坐标X"], WAR.Person[WAR.CurID]["坐标Y"], 5, -1)
-				lib.SetWarMap(WAR.Person[WAR.CurID]["坐标X"], WAR.Person[WAR.CurID]["坐标Y"], 2, -1)
-				WarDrawMap(0)
-				WAR.Person[WAR.CurID]["坐标X"], WAR.Person[WAR.CurID]["坐标Y"] = WAR.XZ_YB[1], WAR.XZ_YB[2]
-				WarDrawMap(0)
-				CurIDTXDH(WAR.CurID, 122,1, "幻光游世常自在", C_RED)
-				lib.SetWarMap(WAR.Person[WAR.CurID]["坐标X"], WAR.Person[WAR.CurID]["坐标Y"], 5, WAR.Person[WAR.CurID]["贴图"])
-				lib.SetWarMap(WAR.Person[WAR.CurID]["坐标X"], WAR.Person[WAR.CurID]["坐标Y"], 2, WAR.CurID)
-				WarDrawMap(0)
-				WAR.XZ_YB[1]=nil
-				WAR.XZ_YB[2]=nil
-				WAR.CurID = z
-			end
-		end
+		
 		CleanWarMap(7,0)
 		lib.Delay(200)
 	end
@@ -13930,21 +13659,6 @@ function Health_in_Battle_Reset()
 	end
 end
 
---战斗中查看敌方简易信息
-function MapWatch()
-	local x = WAR.Person[WAR.CurID]["坐标X"];
-	local y = WAR.Person[WAR.CurID]["坐标Y"];
-	WAR.ShowHead = 0
-	War_CalMoveStep(WAR.CurID,128,1);
-	WarDrawMap(1,x,y);
-	ShowScreen();
-	x,y=War_SelectMove()
-	if x == nil then
-		return
-	end
-	WAR.ShowHead = 1
-end
-
 --无酒不欢：等待指令
 function War_Wait()
 	local id = WAR.Person[WAR.CurID]["人物编号"]
@@ -14119,9 +13833,8 @@ function WarSelectTeam_Enhance()
 	local ty=y+pic_h+30+CC.DefaultFont;
 
 	--单通模式
-	if JY.Base["单通"] == 1 then
-		WAR.Data["自动选择参战人1"] = 0
-		for i = 2, 6 do
+	if true then
+		for i = 1, 6 do
 			WAR.Data["自动选择参战人" .. i] = -1
 		end
 	end
@@ -14240,8 +13953,9 @@ function WarSelectTeam_Enhance()
 			end
 		end
 	end
-
-	--战三渡
+	--现在所有都是3人
+	WAR.MCRS = WAR.MCRS + 3
+	--[[战三渡
 	if WAR.ZDDH == 253 then
 		WAR.MCRS = WAR.MCRS + 3
 	end
@@ -14256,7 +13970,7 @@ function WarSelectTeam_Enhance()
 	--限定2人
 	if WAR.ZDDH == 280 then
 		WAR.MCRS = WAR.MCRS + 4
-	end
+	end]]
 
 	p[0]={name="全部选择"};
 
