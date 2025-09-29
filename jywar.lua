@@ -65,6 +65,27 @@ function unnamed(kfid)
 			end
 		end
 	end
+	--修复ai用现在禁止的老范围打人
+	if m3 > 0 then
+		for i = 1, num do
+			local x = atkarray[i].ax - atkarray[i].x
+			local y = atkarray[i].ay - atkarray[i].y
+			--JY.Person[pid]["姓名"] = x .. "+" .. y
+			if x == 0 and y == 1 then
+				atkarray[i].p = 0
+			end
+			if x == 0 and y == -1 then
+				atkarray[i].p = 0
+			end
+			if x == 1 and y == 0 then
+				atkarray[i].p = 0
+			end
+			if x == -1 and y == 0 then
+				atkarray[i].p = 0
+			end
+		end	
+	end
+
 	for i = 1, num - 1 do
 		for j = i + 1, num do
 			if atkarray[i].p < atkarray[j].p then
