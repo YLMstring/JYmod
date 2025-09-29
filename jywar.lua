@@ -956,7 +956,7 @@ function War_WugongHurtLife(enemyid, wugong, level, ang, x, y)
 	end
 
 	local hurt = War_CalculateDamage(pid, eid, wugong)
-
+	JY.Person[pid]["主运内功"] = wugong
 	--误伤打到自己人
 	--[[if WAR.Person[WAR.CurID]["我方"] == WAR.Person[enemyid]["我方"] then
 		--我方
@@ -1830,7 +1830,7 @@ function WarShowHead(id)
 	MyDrawString(x1 -4 , x1 + width -4, y1 + CC.RowPixel + 2, p["姓名"], color, CC.DefaultFont)
 	--有运功时的显示
 	if p["主运内功"] > 0 then
-		DrawString(x1 + 8, y1 + CC.RowPixel + CC.DefaultFont, "运功", MilkWhite, size)
+		DrawString(x1 + 8, y1 + CC.RowPixel + CC.DefaultFont, "架势", MilkWhite, size)
 		DrawString(x1 + size*3, y1 + CC.RowPixel+ CC.DefaultFont, JY.Wugong[p["主运内功"]]["名称"], TG_Red_Bright, size)
 		y1 = y1 + CC.FontSMALL + 2
 	end
@@ -9910,7 +9910,7 @@ function Pre_Yungong()
 	if WAR.ZDDH == 226 then
 		return
 	end
-	if Num_of_Neigong(0) == 0 then
+	if true then
 		return
 	end
 	local id, x1, y1;
@@ -12263,7 +12263,7 @@ function DrawTimeBar()
 					JY.Person[jqid]["内力"] = JY.Person[jqid]["内力"] + 6
 				end
 
-				--我方运功时，内力低于500，停运
+				--[[我方运功时，内力低于500，停运
 				if JY.Person[jqid]["主运内功"] > 0 and JY.Person[jqid]["内力"] < 500 and inteam(jqid) then
 					JY.Person[jqid]["主运内功"] = 0
 				end
@@ -12285,7 +12285,7 @@ function DrawTimeBar()
 					else
 						JY.Person[jqid]["内力"] = JY.Person[jqid]["内力"] - 9
 					end
-				end
+				end]]
 
 				--每时序回复1点流血
 				if WAR.LXZT[jqid] ~= nil then
@@ -12371,7 +12371,7 @@ function DrawTimeBar()
 						end
 					end
 
-					--主运天赋内功，5时序额外回1内伤
+					--[[主运天赋内功，5时序额外回1内伤
 					if JY.Person[jqid]["主运内功"] ~= 0 and JY.Person[jqid]["主运内功"] == JY.Person[jqid]["天赋内功"] then
 						if WAR.WSX_Counter == 5 then
 							JY.Person[jqid]["受伤程度"] = JY.Person[jqid]["受伤程度"] - 1
@@ -12383,7 +12383,7 @@ function DrawTimeBar()
 						if WAR.SSX_Counter == 3 then
 							JY.Person[jqid]["受伤程度"] = JY.Person[jqid]["受伤程度"] - 1
 						end
-					end
+					end]]
 				end
 
 				--纯阳，九阳，逆运，易筋经，每时序回复1点中毒
@@ -13149,15 +13149,6 @@ function Health_in_Battle()
 			JY.Person[pid]["生命最大值"] = JY.Person[pid]["生命最大值"] * JY.Person[pid]["血量翻倍"]
 			JY.Person[pid]["生命"] = JY.Person[pid]["生命"] * JY.Person[pid]["血量翻倍"]
 			WAR.HP_Bonus_Count[pid] = 1
-		end
-		--无酒不欢：非我方自动运功
-		if inteam(pid) == false or WAR.Person[i]["我方"] == false then
-			if JY.Person[pid]["天赋内功"] > 0 then
-				JY.Person[pid]["主运内功"] = JY.Person[pid]["天赋内功"]
-			end
-			if JY.Person[pid]["天赋轻功"] > 0 then
-				JY.Person[pid]["主运轻功"] = JY.Person[pid]["天赋轻功"]
-			end
 		end
 	end
 end
