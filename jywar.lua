@@ -7083,8 +7083,69 @@ function War_KfMove(movefanwei, atkfanwei, wugong)
 	WarDrawMap(1, x, y)
     WarDrawAtt(x, y, atkfanwei, 4)
 
+	--判断合击，判断是否有合击者
+
+	local ZHEN_ID = -1;
+	for i = 0, WAR.PersonNum - 1 do
+		if WAR.Person[WAR.CurID]["我方"] == WAR.Person[i]["我方"] and i ~= WAR.CurID and WAR.Person[i]["死亡"] == false then
+			local nx = WAR.Person[i]["坐标X"]
+			local ny = WAR.Person[i]["坐标Y"]
+			local fid = WAR.Person[i]["人物编号"]
+			for j = 1, CC.Kungfunum do
+				if JY.Person[fid]["武功" .. j] == wugong then         
+					if math.abs(nx-x0)+math.abs(ny-y0)<9 then
+						local flagx, flagy = 0, 0
+						if math.abs(nx - x0) <= 1 then
+							flagx = 1
+						end
+						if math.abs(ny - y0) <= 1 then
+							flagy = 1
+						end
+						if x0 == nx then
+							flagy = 1
+						end
+						if y0 == ny then
+							flagx = 1
+						end
+						if between(x, x0, nx, flagx) and between(y, y0, ny, flagy) then
+							--合击人的战场编号
+							ZHEN_ID = i
+							
+							--绘画合击的范围
+							local tmp_id = WAR.CurID
+							WAR.CurID = ZHEN_ID
+							WarDrawAtt(WAR.Person[ZHEN_ID]["坐标X"] + x0 - x, WAR.Person[ZHEN_ID]["坐标Y"] + y0 - y, atkfanwei, 4)
+							SetWarMap(nx,ny,7,3)
+							WAR.CurID = tmp_id
+																
+							break;
+						end
+					end
+				end
+			end
+			if ZHEN_ID >= 0 then
+				break;
+			end
+		end
+	end
+    
 	WarDrawMap(1, x, y)
     WarShowHead(GetWarMap(x, y, 2))
+	
+	--合击人标识
+	if ZHEN_ID ~= -1 then
+		local nx = WAR.Person[ZHEN_ID]["坐标X"]
+		local ny = WAR.Person[ZHEN_ID]["坐标Y"]
+		local dx = nx - x0
+		local dy = ny - y0
+		local size = CC.FontSmall;
+		local rx = CC.XScale * (dx - dy) + CC.ScreenW / 2
+		local ry = CC.YScale * (dx + dy) + CC.ScreenH / 2
+									
+		local hb = GetS(JY.SubScene, dx + x0, dy + y0, 4)
+									
+		DrawString(rx - size*1.5, ry-hb-size/2, "合击者", M_DeepSkyBlue, size);
+	end
 
 	--显示可以覆盖的敌人信息
 	for i = 0, CC.WarWidth - 1 do
