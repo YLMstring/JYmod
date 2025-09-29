@@ -37,8 +37,8 @@ function unnamed(kfid)
 	else
 		kungfulv = math.modf(kungfulv / 100) + 1
 	end
-	local m1, m2, a1, a2, a3, a4, a5 = refw(kungfuid, kungfulv)
-	local mfw = {m1, m2}
+	local m1, m2, m3, a1, a2, a3, a4, a5 = refw(kungfuid, kungfulv)
+	local mfw = {m1, m2, m3}
 	local atkfw = {a1, a2, a3, a4, a5}
 	if kungfulv == 11 then
 		kungfulv = 10
@@ -2828,9 +2828,9 @@ function War_Fight_Sub(id, wugongnum, x, y)
 		level = math.modf(level / 100) + 1
 	end
 	WAR.ShowHead = 0
-	local m1, m2, a1, a2, a3, a4, a5 = refw(wugong, level)  --获取武功的范围
+	local m1, m2, m3, a1, a2, a3, a4, a5 = refw(wugong, level)  --获取武功的范围
 
-	local movefanwei = {m1, m2}				--可移动的范围
+	local movefanwei = {m1, m2, m3}				--可移动的范围
 	local atkfanwei = {a1, a2, a3, a4, a5}	--攻击范围
 
 	x, y = War_FightSelectType(movefanwei, atkfanwei, x, y,wugong)
@@ -7343,6 +7343,7 @@ end
 function War_KfMove(movefanwei, atkfanwei, wugong)
   local kind = movefanwei[1] or 0
   local len = movefanwei[2] or 0
+  local negativelen = movefanwei[3] or 0
   local x0 = WAR.Person[WAR.CurID]["坐标X"]
   local y0 = WAR.Person[WAR.CurID]["坐标Y"]
   local x = x0
@@ -7350,7 +7351,13 @@ function War_KfMove(movefanwei, atkfanwei, wugong)
   if kind ~= nil then
     if kind == 0 then
       War_CalMoveStep(WAR.CurID, len, 1)
-	  elseif kind == 1 then
+	  if negativelen > 0 then
+		SetWarMap(x0 + 1, y0 + 1, 3, 255)
+		SetWarMap(x0 - 1, y0 + 1, 3, 255)
+		SetWarMap(x0 + 1, y0 - 1, 3, 255)
+		SetWarMap(x0 - 1, y0 - 1, 3, 255)
+	  end
+	elseif kind == 1 then
 	    War_CalMoveStep(WAR.CurID, len * 2, 1)
 	    for r = 1, len * 2 do
 	      for i = 0, r do
@@ -7363,7 +7370,7 @@ function War_KfMove(movefanwei, atkfanwei, wugong)
 	        end
 	      end
 	    end
-	  elseif kind == 2 then
+	elseif kind == 2 then
 	    War_CalMoveStep(WAR.CurID, len, 1)
 	    for i = 1, len - 1 do
 	      for j = 1, len - 1 do
@@ -7373,7 +7380,13 @@ function War_KfMove(movefanwei, atkfanwei, wugong)
 	        SetWarMap(x0 - i, y0 - j, 3, 255)
 	      end
 	    end
-	  elseif kind == 3 then
+		if negativelen > 0 then
+		SetWarMap(x0 + 1, y0 + 1, 3, 255)
+		SetWarMap(x0 - 1, y0 + 1, 3, 255)
+		SetWarMap(x0 + 1, y0 - 1, 3, 255)
+		SetWarMap(x0 - 1, y0 - 1, 3, 255)
+	  	end
+	elseif kind == 3 then
 	    War_CalMoveStep(WAR.CurID, 2, 1)
 	    SetWarMap(x0 + 2, y0, 3, 255)
 	    SetWarMap(x0 - 2, y0, 3, 255)
@@ -7396,69 +7409,8 @@ function War_KfMove(movefanwei, atkfanwei, wugong)
 	WarDrawMap(1, x, y)
     WarDrawAtt(x, y, atkfanwei, 4)
 
-    --判断合击，判断是否有合击者
-
-	local ZHEN_ID = -1;
-	for i = 0, WAR.PersonNum - 1 do
-		if WAR.Person[WAR.CurID]["我方"] == WAR.Person[i]["我方"] and i ~= WAR.CurID and WAR.Person[i]["死亡"] == false then
-			local nx = WAR.Person[i]["坐标X"]
-			local ny = WAR.Person[i]["坐标Y"]
-			local fid = WAR.Person[i]["人物编号"]
-			for j = 1, CC.Kungfunum do
-				if JY.Person[fid]["武功" .. j] == wugong then
-					if math.abs(nx-x0)+math.abs(ny-y0)<9 then
-						local flagx, flagy = 0, 0
-						if math.abs(nx - x0) <= 1 then
-							flagx = 1
-						end
-						if math.abs(ny - y0) <= 1 then
-							flagy = 1
-						end
-						if x0 == nx then
-							flagy = 1
-						end
-						if y0 == ny then
-							flagx = 1
-						end
-						if between(x, x0, nx, flagx) and between(y, y0, ny, flagy) then
-							--合击人的战场编号
-							ZHEN_ID = i
-
-							--绘画合击的范围
-							local tmp_id = WAR.CurID
-							WAR.CurID = ZHEN_ID
-							WarDrawAtt(WAR.Person[ZHEN_ID]["坐标X"] + x0 - x, WAR.Person[ZHEN_ID]["坐标Y"] + y0 - y, atkfanwei, 4)
-							SetWarMap(nx,ny,7,3)
-							WAR.CurID = tmp_id
-
-							break;
-						end
-					end
-				end
-			end
-			if ZHEN_ID >= 0 then
-				break;
-			end
-		end
-	end
-
 	WarDrawMap(1, x, y)
     WarShowHead(GetWarMap(x, y, 2))
-
-	--合击人标识
-	if ZHEN_ID ~= -1 then
-		local nx = WAR.Person[ZHEN_ID]["坐标X"]
-		local ny = WAR.Person[ZHEN_ID]["坐标Y"]
-		local dx = nx - x0
-		local dy = ny - y0
-		local size = CC.FontSmall;
-		local rx = CC.XScale * (dx - dy) + CC.ScreenW / 2
-		local ry = CC.YScale * (dx + dy) + CC.ScreenH / 2
-
-		local hb = GetS(JY.SubScene, dx + x0, dy + y0, 4)
-
-		DrawString(rx - size*1.5, ry-hb-size/2, "合击者", M_DeepSkyBlue, size);
-	end
 
 	--显示可以覆盖的敌人信息
 	for i = 0, CC.WarWidth - 1 do
@@ -13187,7 +13139,7 @@ function RealJL(id1, id2, len)
 	end
 end
 
---计算武功范围
+--武功范围
 function refw(wugong, level)
   --无酒不欢：参数说明
   --m1为移动范围斜向延伸：
@@ -13208,238 +13160,58 @@ function refw(wugong, level)
 	if JY.Wugong[wugong]["攻击范围"] == -1 then
 		return JY.Wugong[wugong]["加内力1"], JY.Wugong[wugong]["加内力2"], JY.Wugong[wugong]["未知1"], JY.Wugong[wugong]["未知2"], JY.Wugong[wugong]["未知3"], JY.Wugong[wugong]["未知4"], JY.Wugong[wugong]["未知5"]
 	end
-	--0：点
-	--1：线
-	--2：十字
-	--3：面
+	--0：拳指
+	--1：剑
+	--2：刀
+	--3：鞭
+	--4：枪
+	--5：自身
 	local fightscope = JY.Wugong[wugong]["攻击范围"]
 	local kfkind = JY.Wugong[wugong]["武功类型"]
 	local pid = WAR.Person[WAR.CurID]["人物编号"]
-	--六脉神剑算剑法的范围
-	if wugong == 49 then
-		kfkind = 3
-	end
-	--玄女剑法算奇门的范围
-	if wugong == 161 then
-		kfkind = 5
-	end
-	--逍遥神剑算刀法的范围
-	if wugong == 168 then
-		kfkind = 4
-	end
-	--阴风刀算剑法的范围
-	if wugong == 174 then
-		kfkind = 3
-	end
-	--王语嫣妙法无形
-	local MiaofaWX = 0
-	for i = 0, WAR.PersonNum - 1 do
-		local id = WAR.Person[i]["人物编号"]
-		if WAR.Person[i]["死亡"] == false and WAR.Person[i]["我方"] and match_ID(id, 76) and inteam(pid) then
-			MiaofaWX = MiaofaWX + 1
-			break
-		end
-	end
-	--天罗地网也增加攻击范围
-	if Curr_QG(pid,148) then
-		MiaofaWX = MiaofaWX + 1
-	end
-	--方证用拳法范围+1
-	if match_ID(pid, 149) and kfkind == 1 then
-		MiaofaWX = MiaofaWX + 1
-	end
-	--闪电貂和妙手空空范围不增加
-	if wugong == 113 or wugong == 116 then
-		MiaofaWX = 0
-	end
-	--点
+	local m3 = 0
 	if fightscope == 0 then
-		if level > 10 then
-			m1 = 1
-			m2 = JY.Wugong[wugong]["移动范围" .. 10]
-			a1 = 1
-			a2 = 3 + MiaofaWX
-			a3 = 3 + MiaofaWX
-		else
-			m1 = 0
-			m2 = JY.Wugong[wugong]["移动范围" .. level]
-			a1 = 1
-			a2 = math.modf(level / 5) + MiaofaWX
-			a3 = math.modf(level / 8) + MiaofaWX
-		end
-	--线
+		m1 = 0
+		m2 = 1
+		a1 = 0
+		a2 = 0
+		a3 = 0
 	elseif fightscope == 1 then
-		--拳指
-		if kfkind == 1 or kfkind == 2 then
-			a1 = 12
-			if level > 10 then
-				m1 = 3
-				m2 = 1
-				a2 = JY.Wugong[wugong]["移动范围" .. 10] - 1 + MiaofaWX
-			else
-				m1 = 2
-				m2 = 1
-				a2 = JY.Wugong[wugong]["移动范围" .. level] - 1 + MiaofaWX
-			end
-		--剑
-		elseif kfkind == 3 then
-			a1 = 10
-			if level > 10 then
-				m1 = 3
-				m2 = 1
-				a2 = JY.Wugong[wugong]["移动范围" .. 10] + MiaofaWX
-				a3 = a2 - 1
-				a4 = a3 - 1
-			else
-				m1 = 2
-				m2 = 1
-				a2 = JY.Wugong[wugong]["移动范围" .. level] + MiaofaWX
-			end
-			if level > 7 then
-				a3 = a2 - 1
-			end
-		--刀
-		elseif kfkind == 4 then
-			a1 = 11
-			if level > 10 then
-				m1 = 3
-				m2 = 1
-				a2 = JY.Wugong[wugong]["移动范围" .. 10] - 1 + MiaofaWX
-			else
-				m1 = 2
-				m2 = 1
-				a2 = JY.Wugong[wugong]["移动范围" .. level] - 1 + MiaofaWX
-			end
-		--奇
-		elseif kfkind == 5 then
-			m1 = 2
-			if level > 10 then
-				m2 = JY.Wugong[wugong]["移动范围" .. 10] - 1
-				a1 = 7
-				--田字斗转时不会增加范围
-				if WAR.DZXY == 0 then
-					a2 = 1 + math.modf(level / 3) + MiaofaWX
-				else
-					a2 = 1 + math.modf(level / 3)
-				end
-				a3 = a2
-			else
-				m2 = JY.Wugong[wugong]["移动范围" .. level] - 1
-				a1 = 1
-				a2 = 1 + math.modf(level / 3) + MiaofaWX
-			end
-		else
-			a1 = 11
-			if level > 10 then
-				m1 = 3
-				m2 = 1
-				a2 = JY.Wugong[wugong]["移动范围" .. 10] - 1 + MiaofaWX
-			else
-				m1 = 2
-				m2 = 1
-				a2 = JY.Wugong[wugong]["移动范围" .. level] - 1 + MiaofaWX
-			end
-		end
-	--十字
+		m1 = 2
+		m2 = 2
+		a1 = 0
+		a2 = 0
+		a3 = 0
+		m3 = 1
 	elseif fightscope == 2 then
 		m1 = 0
-		m2 = 0
-		--刀
-		if kfkind == 4 then
-			if level > 10 then
-				a1 = 6
-				a2 = JY.Wugong[wugong]["移动范围" .. 10] + MiaofaWX
-			else
-				a1 = 8
-				a2 = JY.Wugong[wugong]["移动范围" .. level] + MiaofaWX
-			end
-		--到极的非刀
-		elseif level > 10 then
-			--拳指
-			if kfkind == 1 or kfkind == 2 then
-				a1 = 5
-				a2 = JY.Wugong[wugong]["移动范围" .. 10] - 1 + MiaofaWX
-				a3 = a2 - 3
-			--剑
-			elseif kfkind == 3 then
-				a1 = 1
-				a2 = JY.Wugong[wugong]["移动范围" .. 10] - 1 + MiaofaWX
-				a3 = a2
-			else
-				a1 = 2
-				a2 = 1 + math.modf(JY.Wugong[wugong]["移动范围" .. 10] / 2) + MiaofaWX
-			end
-		--不到极的非刀
-		else
-			  a1 = 1
-			  a2 = JY.Wugong[wugong]["移动范围" .. level] + MiaofaWX
-			  a3 = 0
-		end
-	--面
+		m2 = 2
+		a1 = 0
+		a2 = 0
+		a3 = 0
+		m3 = 1
 	elseif fightscope == 3 then
 		m1 = 0
-		a1 = 3
-		if level > 10 then
-			m2 = JY.Wugong[wugong]["移动范围" .. 10] + 1
-			a2 = JY.Wugong[wugong]["杀伤范围" .. 10] + MiaofaWX
-			a3 = a2
-		else
-			m2 = JY.Wugong[wugong]["移动范围" .. level]
-			a2 = JY.Wugong[wugong]["杀伤范围" .. level] + MiaofaWX
-		end
-
-	end
-
-	--张三丰，太极拳范围随着蓄力变化
-	--斗转时范围不变化
-	--七夕张无忌也变化
-	if wugong == 16 and level == 11 and WAR.tmp[3000 + pid] ~= nil and WAR.tmp[3000 + pid] > 0 and (match_ID(pid, 5) or match_ID(pid, 608)) and WAR.DZXY == 0 then
-		if WAR.tmp[3000 + pid] > 600 then
-			m1 = 0
-			m2 = 4
-			a1 = 3
-			a2 = 3 + MiaofaWX
-			a3 = a2
-		elseif WAR.tmp[3000 + pid] > 300 then
-			a2 = a2 + 2
-			a3 = a3 + 2
-		else
-			a2 = a2 + 1
-			a3 = a3 + 1
-		end
-	end
-
-	--苗人凤，苗剑范围随御剑系数增加
-	if match_ID(pid, 3) and wugong == 44 then
-		a2 = a2 + MiaofaWX + math.modf(TrueYJ(pid)/100)
-		a3 = a2 - 1
-		a4 = a3 - 1
-	end
-	--玉箫剑法，配合桃花绝技范围增加
-	if wugong == 38 and level == 11 and TaohuaJJ(pid) then
-		a2 = 8 + MiaofaWX
-		a3 = a2 - 1
-		a4 = a3 - 1
-	end
-	--落英神剑掌，配合桃花绝技可移动
-	if wugong == 12 and level == 11 and TaohuaJJ(pid) then
+		m2 = 2
+		a1 = 0
+		a2 = 0
+		a3 = 0
+		m3 = 1
+	elseif fightscope == 4 then
 		m1 = 0
-		m2 = 6
-	end
-	--神雕的玄铁可移动
-	if match_ID(pid, 628) and wugong == 45 then
+		m2 = 3
+		a1 = 0
+		a2 = 0
+		a3 = 0
+		m3 = 1
+	elseif fightscope == 5 then
 		m1 = 0
-		m2 = 4
+		m2 = 0
+		a1 = 0
+		a2 = 0
+		a3 = 0	
 	end
-	--进阶万花，范围+1
-	if wugong == 30 and PersonKF(pid,175) then
-		a2 = a2 + 1
-	end
-	--辟邪剑法手动选择范围
-	if wugong == 48 and level == 11 and inteam(pid) and WAR.AutoFight == 0 and WAR.DZXY == 0 then
-		m1, m2, a1, a2, a3, a4 = BiXieZhaoShi(pid,MiaofaWX)
-	end
-	return m1, m2, a1, a2, a3, a4, a5
+	return m1, m2, m3, a1, a2, a3, a4, a5
 end
 
 --用CC表判断人物是否为队友，不管在不在队
