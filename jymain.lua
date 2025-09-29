@@ -8573,7 +8573,7 @@ function secondary_wugong(wugongid)
 end
 
 --无酒不欢：判定主运内功的函数
-function Curr_NG(personid, NGid)
+function NewCurr_NG(personid, NGid)
 	if JY.Person[personid]["主运内功"] == NGid then
 		return true
 	--天罡的判定
@@ -8590,12 +8590,21 @@ function Curr_NG(personid, NGid)
 end
 
 --无酒不欢：判定主运轻功的函数
-function Curr_QG(personid, QGid)
+function NewCurr_QG(personid, QGid)
 	if JY.Person[personid]["主运轻功"] == QGid then
 		return true
 	else
 		return false
 	end
+end
+
+--老代码
+function Curr_NG(personid, NGid)
+	return false
+end
+
+function Curr_QG(personid, QGid)
+	return false
 end
 
 --无酒不欢：判定人物面板上极的个数
@@ -8610,7 +8619,7 @@ function calc_mas_num(id)
 end
 
 --无酒不欢：判定是否为指定ID的人物,用作天赋等判定
-function match_ID(personid, id)
+function Newmatch_ID(personid, id)
 	if personid == id then
 		return true
 	elseif personid == 0 and JY.Base["畅想"] == id then
@@ -8619,6 +8628,11 @@ function match_ID(personid, id)
 	else
 		return false
 	end
+end
+
+--老代码
+function match_ID(personid, id)
+	return false
 end
 
 --无酒不欢：判定连击率

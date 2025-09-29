@@ -2960,135 +2960,6 @@ function War_Fight_Sub(id, wugongnum, x, y)
 		end
 	end
 
-	--无酒不欢：黯然极意和三叠浪
-	--杨过和拳系主角才能触发
-	if (match_ID(pid, 58) or (pid == 0 and JY.Base["标准"] == 1)) and wugong == 25 and level == 11 then
-		local jl = 0;
-		--内伤大于30时，每点内伤增加1%几率
-		if JY.Person[pid]["受伤程度"] > 30 then
-			jl = jl + (JY.Person[pid]["受伤程度"]-30);
-		end
-		--生命少于70%时，每少一百生命，机率增加10%
-		if JY.Person[pid]["生命"]/JY.Person[pid]["血量翻倍"] < (JY.Person[pid]["生命最大值"]/JY.Person[pid]["血量翻倍"]*0.7) then
-			jl = jl + math.ceil(((JY.Person[pid]["生命最大值"]/JY.Person[pid]["血量翻倍"]*0.7) - JY.Person[pid]["生命"]/JY.Person[pid]["血量翻倍"])/10);
-		end
-		--几率大于0才触发
-		if jl > 0 then
-			--暴怒必触发
-			if WAR.LQZ[pid] == 100 or jl > Rnd(100) then
-				WAR.ARJY = 1
-				--资质大于等于50才能触发三叠浪
-				if JY.Person[pid]["资质"] >= 50 then
-					fightnum = 3;
-					for i = 1, 30 do
-						DrawStrBox(-1, 24, "黯然销魂.物我两忘.黯然三叠浪", M_DeepSkyBlue, 10 + i)
-						ShowScreen()
-						lib.Delay(10)
-					end
-				else
-					fightnum = 2;
-				end
-			end
-		end
-	end
-
-	--乔峰
-	if match_ID(pid, 50) then
-		if WAR.ZDDH == 83 and WAR.FS == 0 then   --打四帮主时的乔峰
-			say("１（唉，这些年轻人闯荡江湖也不容易，也罢，此战就以Ｒ太祖长拳Ｗ来陪你们玩玩吧！）", 50)
-			WAR.FS = 1
-		end
-		JY.Wugong[13]["名称"] = "太祖长拳"
-
-		--如果乔峰用的是降龙，那么有40%的机率三连击，怒气暴发时必三连
-		--音箱提高三叠浪几率，每级+5%
-		local ex_chance = 0
-		if JY.Person[pid]["武器"] == 300 then
-			ex_chance = JY.Thing[300]["装备等级"] * 5
-		end
-		if wugong == 26 and (JLSD(25, 65+ex_chance, pid) or WAR.LQZ[pid] == 100) then
-			WAR.FS = 1
-			fightnum = 3
-			local color = M_Red
-			local display = "六军辟易.奋英雄怒.降龙三叠浪"
-			--装备音箱，暴怒有50%几率出四叠浪
-			if JY.Person[pid]["武器"] == 300 and WAR.LQZ[pid] == 100 and JLSD(25, 75, pid) then
-				fightnum = 4
-				display = "虎啸龙吟.帝释天威.降龙四叠浪"
-				color = C_GOLD
-			end
-			for i = 1, 30 do
-				DrawStrBox(-1, 24, display, color, 10 + i)
-				ShowScreen()
-				lib.Delay(10)
-			end
-		end
-		--NPC乔峰回内
-		if inteam(pid) == false then
-			if JY.Person[pid]["内力"] < 1000 then
-				JY.Person[pid]["内力"] = 1200 + math.random(100)
-			end
-		end
-	end
-
-	--拳主角有30%几率触发降龙三叠浪，暴怒必触发
-	if (pid == 0 and JY.Base["标准"] == 1) and wugong == 26 and level == 11 then
-		if JLSD(30, 60, pid) or WAR.LQZ[pid] == 100 then
-			fightnum = 3
-			for i = 1, 30 do
-				DrawStrBox(-1, 24, "降龙真传.登峰造极.降龙三叠浪", M_Red, 10 + i)
-				ShowScreen()
-				lib.Delay(10)
-			end
-		end
-	end
-
-	--桃花绝技，有40%几率三连击，暴怒必触发
-	if (wugong == 12 or wugong == 18 or wugong == 38) and TaohuaJJ(pid) and (WAR.LQZ[pid] == 100 or JLSD(35, 75, pid)) then
-		fightnum = 3
-		for i = 1, 30 do
-			DrawStrBox(-1, 24, "桃花绝技·奇门五转", PinkRed, 10 + i)
-			ShowScreen()
-			lib.Delay(10)
-		end
-	end
-
-	--令狐冲二次觉醒后，40%几率动如雷震，暴怒必触发
-	if match_ID_awakened(pid, 35, 2) and (WAR.LQZ[pid] == 100 or JLSD(35, 75, pid)) and WAR.DZXY ~= 1 then
-		fightnum = 3
-		for i = 1, 30 do
-			DrawStrBox(-1, 24, "剑魔再临·动如雷震", M_Red, 10 + i)
-			ShowScreen()
-			lib.Delay(10)
-		end
-	end
-
-	--七夕杨过，必三叠浪
-	if match_ID(pid, 614) and wugong == 25 then
-		fightnum = 3
-		WAR.ARJY = 1
-		for i = 1, 30 do
-			DrawStrBox(-1, 24, "黯然销魂.物我两忘.黯然三叠浪", M_DeepSkyBlue, 10 + i)
-			ShowScreen()
-			lib.Delay(10)
-		end
-	end
-
-	--蓝烟清：装备真武剑时使用太极剑法必连击
-	if JY.Person[pid]["武器"] == 236 and wugong == 46 then
-		fightnum = 2;
-	end
-
-	--尼摩星必定单击
-	if match_ID(pid, 159) then
-		fightnum = 1
-	end
-
-	--进阶太岳，连击时为三连击
-	if wugong == 34 and PersonKF(pid,175) and fightnum == 2 then
-		fightnum = 3
-	end
-
 	WAR.ACT = 1
 	WAR.FLHS6 = 0	--如雷数量
 
@@ -3191,126 +3062,6 @@ function War_Fight_Sub(id, wugongnum, x, y)
 		WAR.CurID = tmp_id
     end
 
-    --判断攻击次数大于1，显示连击
-    if WAR.ACT > 1 then
-		local A = "连击"
-		if WAR.TWLJ == 1 then
-			A = "天赋外功.炉火纯青"
-		end
-		if WAR.TJZX_LJ == 1 then
-			A = "太极之形.圆转不断"
-			WAR.TJZX_LJ = 0
-		end
-		--夫妻刀法
-		if wugong == 62 then
-			--萧中慧
-			if match_ID(pid, 77) then
-				A = "碧箫声里双鸣凤"
-			--主角男性
-			elseif pid == 0 and JY.Person[0]["性别"] == 0 then
-				A = "英雄无双风流婿"
-			--主角女性
-			elseif pid == 0 and JY.Person[0]["性别"] ~= 0 then
-				A = "刀光掩映孔雀屏"
-			end
-		end
-		--东方不败
-		if match_ID(pid, 27) then
-			A = "风云再起"
-		end
-		--改到特效文字4显示
-		if WAR.Person[WAR.CurID]["特效文字4"] ~= nil then
-			WAR.Person[WAR.CurID]["特效文字4"] = WAR.Person[WAR.CurID]["特效文字4"] .."·".. A
-		else
-			WAR.Person[WAR.CurID]["特效文字4"] = A;
-		end
-    end
-
-	--玉女心经：进趋如风，第一击有几率发动，追加一次连击
-	if Curr_NG(pid, 154) and WAR.ACT == 1 then
-		local ynjl = 0;
-		if pid == 0 then
-			ynjl = 5
-		end
-		--七夕龙女必发动
-		if match_ID(pid, 615) or WAR.LQZ[pid] == 100 or JLSD(30, 30 + JY.Base["天书数量"] + ynjl, pid) then
-			fightnum = fightnum + 1
-			Set_Eff_Text(id,"特效文字1","进趋如风");
-		end
-	end
-
-	--天外，有33%几率多连击一次
-	if Given_WG(pid, wugong) and JLSD(33, 66, pid) and WAR.TWLJ == 0 and fightnum < 2 then
-		fightnum = fightnum + 1
-		WAR.TWLJ = 1
-	end
-
-	--无酒不欢：暴击率用函数计算
-	local BJ;
-
-	BJ = Person_BJ(pid)
-
-	--敌人暴击+20%
-    if WAR.Person[id]["我方"] == false then
-    	BJ = BJ + 20
-    end
-
-	--暴击率上限100
-    if BJ > 100 then
-		BJ = 100
-    end
-
-	if math.random(100) <= BJ then
-		WAR.BJ = 1
-    end
-
-    --高暴击武功
-    local gbj = {11, 13, 28, 33, 58, 59, 72, 75, 114}
-    for i = 1, 9 do
-		if JY.Person[pid]["武功" .. wugongnum] == gbj[i] and JLSD(20, 75, pid) then
-			WAR.BJ = 1
-			break;
-		end
-    end
-
-    --装备玄铁剑，配合玄铁剑法
-	--1级50%暴击率，6级100%
-	--6级解锁破尽天下，必暴击，无视绝对气防
-    if JY.Person[pid]["武器"] == 36 and wugong == 45 then
-		if JLSD(0, 40 + JY.Thing[36]["装备等级"] * 10, pid) then
-			WAR.BJ = 1
-		end
-		if JY.Thing[36]["装备等级"] == 6 then
-			WAR.PJTX = 1
-			Set_Eff_Text(id,"特效文字0","重剑无锋·破尽天下");
-		end
-    end
-
-	--弹指神通，配合桃花绝技，必暴击
-	if wugong == 18 and TaohuaJJ(pid) then
-		WAR.BJ = 1
-	end
-
-	--天魔功，必暴击
-	if Curr_NG(pid, 160) then
-		WAR.BJ = 1
-	end
-
-    --装备屠龙刀，使用等级为极的刀法，有几率触发两种特效
-	if JY.Person[pid]["武器"] == 43 then
-	  	if kfkind == 4 and level == 11 then
-    		--必流血，并追加等同于武功威力的杀气，50%几率优先判定
-    		if JLSD(25, 75, pid) then
-    			WAR.L_TLD = 1;
-				Set_Eff_Text(id,"特效文字1","武林至尊.宝刀屠龙");
-			--如果没有触发，则还有40%几率触发必定暴击
-    		elseif JLSD(35, 75, pid) then
-    			WAR.BJ = 1
-				Set_Eff_Text(id,"特效文字1","号令天下.莫敢不从");
-    		end
-    	end
-	end
-
 	local ng = 0
 
 	--如果暴击
@@ -3333,83 +3084,6 @@ function War_Fight_Sub(id, wugongnum, x, y)
 		else
 			WAR.Person[WAR.CurID]["特效文字4"] = "暴击";
 		end
-    end
-
-    --无酒不欢：计算内功加力
-	if JY.Person[pid]["主运内功"] > 0 then
-		local cur_NG = JY.Person[pid]["主运内功"]
-		--吸功，金刚不坏，风林六如，五岳剑诀不加力
-		if cur_NG ~= 85 and cur_NG ~= 87 and cur_NG ~= 88 and cur_NG ~= 144 and cur_NG ~= 143 and cur_NG ~= 91 and cur_NG ~= 175 then
-			local cur_NGL = 0;
-			for i = 1, CC.Kungfunum do
-				if JY.Person[pid]["武功"..i] ==  cur_NG then
-					cur_NGL = JY.Person[pid]["武功等级" .. i];
-					if cur_NGL == 999 then
-						cur_NGL = 11
-					else
-						cur_NGL = math.modf(cur_NGL / 100) + 1
-					end
-					break;
-				end
-			end
-			--主运内功有35%的高优先级判定
-			if cur_NGL ~= 0 and JLSD(30, 65, pid) then
-				ng = get_skill_power(pid, cur_NG, cur_NGL);
-				WAR.Person[id]["特效文字2"] = JY.Wugong[JY.Person[pid]["主运内功"]]["名称"] .. "加力"
-				WAR.Person[id]["特效动画"] = 93
-				WAR.NGJL = JY.Person[pid]["主运内功"];
-			end
-		end
-	end
-
-	--如果没有触发主运内功加力，再判定一般加力
-	if WAR.NGJL == 0 then
-		local N_JL = {};
-		local num = 0;	--当前学了多少个内功
-		for i = 1, CC.Kungfunum do
-			local kfid = JY.Person[pid]["武功" .. i]
-			local kflvl = JY.Person[pid]["武功等级" .. i]
-			if kflvl == 999 then
-				kflvl = 11
-			else
-				kflvl = math.modf(kflvl / 100) + 1
-			end
-			--先把内功都存入表格，吸功，金刚不坏，风林六如，五岳剑诀不加力
-			if JY.Wugong[kfid]["武功类型"] == 6 and kfid ~= 85 and kfid ~= 87 and kfid ~= 88 and kfid ~= 144 and kfid ~= 143 and kfid ~= 91 and kfid ~= 175 then
-				num = num + 1;
-				N_JL[num] = {kfid,i,get_skill_power(pid, kfid, kflvl)};
-			end
-		end
-
-		--如果学有内功
-		if num > 0 then
-			--按照威力从大到小排序，威力一样的话按照面板的先后顺序
-			for i = 1, num - 1 do
-				for j = i + 1, num do
-					if N_JL[i][3] < N_JL[j][3] or (N_JL[i][3] == N_JL[j][3] and N_JL[i][2] > N_JL[j][2])then
-						N_JL[i], N_JL[j] = N_JL[j], N_JL[i]
-					end
-				end
-			end
-			--按顺序判定触发
-			for i = 1, num do
-				--王重阳北斗七闪状态必定加力
-				if (match_ID(pid, 129) and WAR.CYZX[pid] ~= nil and WAR.BDQS > 0) or myrandom(10, pid) then
-					ng = N_JL[i][3];
-					WAR.Person[id]["特效文字2"] = JY.Wugong[N_JL[i][1]]["名称"] .. "加力"
-					WAR.Person[id]["特效动画"] = 87 + math.random(6)
-					WAR.NGJL = N_JL[i][1];
-					break;
-				end
-			end
-		end
-	end
-
-	--张无忌补偿加力
-    if match_ID(pid, 9) and WAR.NGJL == 0 and PersonKF(pid, 106) then
-		WAR.Person[id]["特效动画"] = math.fmod(106, 10) + 85
-		WAR.Person[id]["特效文字2"] = "九阳神功加力"
-		ng = ng + 1200
     end
 
 	--蟾震九天，斗转不触发
@@ -13244,7 +12918,7 @@ function isteam(p)
 end
 
 --判断人物是否有某种武功
-function PersonKF(p, kf)
+function NewPersonKF(p, kf)
 	for i = 1, CC.Kungfunum do
 		if JY.Person[p]["武功" .. i] <= 0 then
 			return false;
@@ -13255,15 +12929,12 @@ function PersonKF(p, kf)
 	return false
 end
 
---判断人物是否有某种武功，并且等级为极
+--老代码
+function PersonKF(p, kf)
+	return false
+end
+
 function PersonKFJ(p, kf)
-	for i = 1, CC.Kungfunum do
-		if JY.Person[p]["武功" .. i] == -1 then
-			return false;
-		elseif JY.Person[p]["武功" .. i] == kf and JY.Person[p]["武功等级" .. i] == 999 then
-			return true
-		end
-	end
 	return false
 end
 
