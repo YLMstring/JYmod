@@ -7352,10 +7352,10 @@ function War_KfMove(movefanwei, atkfanwei, wugong)
     if kind == 0 then
       War_CalMoveStep(WAR.CurID, len, 1)
 	  if negativelen > 0 then
-		SetWarMap(x0 + 1, y0 + 1, 3, 255)
-		SetWarMap(x0 - 1, y0 + 1, 3, 255)
-		SetWarMap(x0 + 1, y0 - 1, 3, 255)
-		SetWarMap(x0 - 1, y0 - 1, 3, 255)
+		SetWarMap(x0 + 1, y0, 3, 255)
+		SetWarMap(x0 - 1, y0, 3, 255)
+		SetWarMap(x0, y0 + 1, 3, 255)
+		SetWarMap(x0, y0 - 1, 3, 255)
 	  end
 	elseif kind == 1 then
 	    War_CalMoveStep(WAR.CurID, len * 2, 1)
@@ -7381,10 +7381,10 @@ function War_KfMove(movefanwei, atkfanwei, wugong)
 	      end
 	    end
 		if negativelen > 0 then
-		SetWarMap(x0 + 1, y0 + 1, 3, 255)
-		SetWarMap(x0 - 1, y0 + 1, 3, 255)
-		SetWarMap(x0 + 1, y0 - 1, 3, 255)
-		SetWarMap(x0 - 1, y0 - 1, 3, 255)
+		SetWarMap(x0 + 1, y0, 3, 255)
+		SetWarMap(x0 - 1, y0, 3, 255)
+		SetWarMap(x0, y0 + 1, 3, 255)
+		SetWarMap(x0, y0 - 1, 3, 255)
 	  	end
 	elseif kind == 3 then
 	    War_CalMoveStep(WAR.CurID, 2, 1)
@@ -7473,14 +7473,29 @@ function War_KfMove(movefanwei, atkfanwei, wugong)
 	CleanWarMap(7, 0)
 
     local key, ktype, mx, my = WaitKey(1)
-
+	local movetime = 1
+	if negativelen > 0 and x == x0 and y == y0 then
+		movetime = 2
+	end
     if key == VK_UP then
-      y2 = y - 1
+      y2 = y - movetime
     elseif key == VK_DOWN then
-      y2 = y + 1
+      y2 = y + movetime
     elseif key == VK_LEFT then
-      x2 = x - 1
+      x2 = x - movetime
     elseif key == VK_RIGHT then
+      x2 = x + movetime
+	elseif key == VK_Q then
+	  y2 = y - 1
+      x2 = x - 1
+	elseif key == VK_E then
+      y2 = y - 1
+      x2 = x + 1
+	elseif key == VK_Z then
+      y2 = y + 1
+      x2 = x - 1
+	elseif key == VK_C then
+      y2 = y + 1
       x2 = x + 1
     elseif (key == VK_SPACE or key == VK_RETURN) then
       return x, y
@@ -13196,7 +13211,6 @@ function refw(wugong, level)
 		a1 = 0
 		a2 = 0
 		a3 = 0
-		m3 = 1
 	elseif fightscope == 4 then
 		m1 = 0
 		m2 = 3
