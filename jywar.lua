@@ -65,26 +65,6 @@ function unnamed(kfid)
 			end
 		end
 	end
-	--修复ai用现在禁止的老范围打人
-	if m3 > 0 then
-		for i = 1, num do
-			local x = atkarray[i].ax - atkarray[i].x
-			local y = atkarray[i].ay - atkarray[i].y
-			--JY.Person[pid]["姓名"] = x .. "+" .. y
-			if x == 0 and y == 1 then
-				atkarray[i].p = 0
-			end
-			if x == 0 and y == -1 then
-				atkarray[i].p = 0
-			end
-			if x == 1 and y == 0 then
-				atkarray[i].p = 0
-			end
-			if x == -1 and y == 0 then
-				atkarray[i].p = 0
-			end
-		end	
-	end
 
 	for i = 1, num - 1 do
 		for j = i + 1, num do
@@ -348,7 +328,7 @@ end
 function GetAtkNum(x, y, movfw, atkfw, atk)
   local point = {}
   local num = 0
-  local kind, len = movfw[1], movfw[2]
+  local kind, len, negative = movfw[1], movfw[2], movfw[3]
 
   if kind == 0 then
     local array = MY_CalMoveStep(x, y, len, 1)
@@ -468,7 +448,9 @@ function GetAtkNum(x, y, movfw, atkfw, atk)
       SetWarMap(point[i][1], point[i][2], 4, atknum)
     end
     if atknum~= nil and maxnum < atknum then
-      maxnum, maxx, maxy = atknum, point[i][1], point[i][2]
+		if negative < 1 or math.abs(point[i][1]) + math.abs(point[i][2]) > 1 then
+			maxnum, maxx, maxy = atknum, point[i][1], point[i][2]
+		end
     end
   end
 
@@ -978,6 +960,7 @@ function War_WugongHurtLife(enemyid, wugong, level, ang, x, y)
 
 	local hurt = War_CalculateDamage(pid, eid, wugong)
 	JY.Person[pid]["主运内功"] = wugong
+	WAR.Person[enemyid]["反击武功"] = JY.Person[eid]["主运内功"]
 	--误伤打到自己人
 	--[[if WAR.Person[WAR.CurID]["我方"] == WAR.Person[enemyid]["我方"] then
 		--我方
@@ -1293,7 +1276,6 @@ function WarSetGlobal()
 	WAR.LYSH = 0 		--两仪守护
 	WAR.TKXJ = 0		--太空卸劲
 	WAR.DZXY = 0		--斗转星移
-	WAR.DZXYLV = {}
 	WAR.fthurt = 0		--乾坤反弹的伤害
 	WAR.LXZQ = 0		--拳主大招
 	WAR.LXYZ = 0		--指主大招
@@ -2816,17 +2798,8 @@ function War_Fight_Sub(id, wugongnum, x, y)
 		x = WAR.Person[WAR.CurID]["坐标X"] - x
 		y = WAR.Person[WAR.CurID]["坐标Y"] - y
 		WarDrawMap(0)
-		local fj = "错误"		--斗转错误
-		--斗转星移提示的文字
-		if WAR.DZXYLV[pid] == 115 then
-			fj = string.format("%s发动幻梦星辰反击", JY.Person[pid]["姓名"])
-		elseif WAR.DZXYLV[pid] == 110 then
-			fj = string.format("%s发动离合参商反击", JY.Person[pid]["姓名"])
-		elseif WAR.DZXYLV[pid] == 85 then
-			fj = string.format("%s发动斗转星移反击", JY.Person[pid]["姓名"])
-		elseif WAR.DZXYLV[pid] == 60 then
-			fj = string.format("%s发动北斗移辰反击", JY.Person[pid]["姓名"])
-		end
+		local fj = "反击"		--斗转错误
+
 		for i = 1, 20 do
 			DrawStrBox(-1, 24, fj, C_ORANGE, 10 + i)
 			ShowScreen()
@@ -2858,14 +2831,6 @@ function War_Fight_Sub(id, wugongnum, x, y)
 
 	if x == nil then
 		return 0
-	end
-
-	--使用了辟邪，该招式进入冷却
-	--林平之无冷却
-	if wugong == 48 and level == 11 and inteam(pid) and WAR.AutoFight == 0 and WAR.DZXY == 0 then
-		if not match_ID(pid, 36) then
-			WAR.BXLQ[pid][WAR.BXZS] = WAR.BXCD[WAR.BXZS] + 1
-		end
 	end
 
 	--判断合击
@@ -2984,14 +2949,9 @@ function War_Fight_Sub(id, wugongnum, x, y)
 	WAR.ACT = 1
 	WAR.FLHS6 = 0	--如雷数量
 
-	--斗转
+	--斗转1次
 	if WAR.DZXY == 1 then
-		--慕容博两次，其他人一次
-		if match_ID(pid, 113) then
-			fightnum = 2
-		else
-			fightnum = 1
-		end
+		fightnum = 1
 	end
 
   while WAR.ACT <= fightnum do
@@ -3476,9 +3436,7 @@ function War_Fight_Sub(id, wugongnum, x, y)
     end
 
 	--斗转幻梦星辰特效动画
-	if WAR.DZXYLV[id] == 115 then
-		WAR.Person[id]["特效动画"] = 107
-    end
+	--WAR.Person[id]["特效动画"] = 107
 
     --使用降龙十八掌
     if wugong == 26 then
@@ -4297,16 +4255,6 @@ function War_Fight_Sub(id, wugongnum, x, y)
 			end
 		end
 	end
-
-	--无酒不欢：斗转第四层，幻梦星辰，反击全屏
-    if WAR.DZXYLV[pid] == 115 then
-		CleanWarMap(4, 0)
-		for i = 0, WAR.PersonNum - 1 do
-			if WAR.Person[i]["我方"] ~= WAR.Person[WAR.CurID]["我方"] and WAR.Person[i]["死亡"] == false then
-				SetWarMap(WAR.Person[i]["坐标X"], WAR.Person[i]["坐标Y"], 4, 1)
-			end
-		end
-    end
 
     local pz = math.modf(JY.Person[0]["资质"] / 10)
 
@@ -5365,7 +5313,7 @@ function War_Fight_Sub(id, wugongnum, x, y)
 		end
 	end
 
-	--斗转星移计算
+	--斗转星移计算，现在人人能反击，好时代来临力
 	local dz = {}
 	local dznum = 0
 	for i = 0, WAR.PersonNum - 1 do
@@ -5376,26 +5324,46 @@ function War_Fight_Sub(id, wugongnum, x, y)
 		end
 	end
 	for i = 1, dznum do
-		local tmp = WAR.CurID
-		WAR.CurID = dz[i][1]
-		WAR.DZXY = 1
-		if WAR.DZXYLV[WAR.Person[WAR.CurID]["人物编号"]] == 1 then
-			WAR.DZXYLV[WAR.Person[WAR.CurID]["人物编号"]] = 60
-		elseif WAR.DZXYLV[WAR.Person[WAR.CurID]["人物编号"]] == 2 then
-			WAR.DZXYLV[WAR.Person[WAR.CurID]["人物编号"]] = 85
-		elseif WAR.DZXYLV[WAR.Person[WAR.CurID]["人物编号"]] == 3 then
-			WAR.DZXYLV[WAR.Person[WAR.CurID]["人物编号"]] = 110
-		elseif WAR.DZXYLV[WAR.Person[WAR.CurID]["人物编号"]] == 4 then	--无酒不欢：增加斗转第四层
-			WAR.DZXYLV[WAR.Person[WAR.CurID]["人物编号"]] = 115
+		local data = CanRetaliate(dz[i][1], dz[i][2], dz[i][3])
+		if data ~= nil then
+			local tmp = WAR.CurID
+			WAR.CurID = dz[i][1]
+			WAR.DZXY = 1
+
+			War_Fight_Sub(dz[i][1], data[1], WAR.Person[WAR.CurID]["坐标X"], WAR.Person[WAR.CurID]["坐标Y"])
+			WAR.Person[WAR.CurID]["反击武功"] = -1
+			WAR.CurID = tmp
+			WAR.DZXY = 0
 		end
-		War_Fight_Sub(dz[i][1], dz[i][2] + 100, dz[i][3], dz[1][4])
-		WAR.Person[WAR.CurID]["反击武功"] = -1
-		WAR.DZXYLV[WAR.Person[WAR.CurID]["人物编号"]] = nil
-		WAR.CurID = tmp
-		WAR.DZXY = 0
 	end
 
 	return 1;
+end
+
+--修复ai用现在禁止的老范围打人
+function CanRetaliate(warid, x, y)
+	local pid = WAR.Person[warid]["人物编号"]
+	local kfid = JY.Person[pid]["主运内功"]
+	if kfid == 0 then
+		return nil
+	end
+	JY.Person[pid]["姓名"] = "猪头"
+	local kungfuid = JY.Person[pid]["主运内功"]
+	local kungfulv = 10
+	
+	local m1, m2, m3, a1, a2, a3, a4, a5 = refw(kungfuid, kungfulv)
+	local mfw = {m1, m2, m3}
+	local atkfw = {a1, a2, a3, a4, a5}
+
+	--AI也用新的威力判定
+	local kungfuatk = get_skill_power(pid, kungfuid, kungfulv)
+	local atk1, atk2, atk3 = GetAtkNum(WAR.Person[warid]["坐标X"], WAR.Person[warid]["坐标Y"], mfw, atkfw, kungfuatk)
+	
+	if atk1 > 0 then
+		return {kfid + 100, atk2, atk3}
+		--War_Fight_Sub(WAR.CurID, kfid, atkarray[select].ax, atkarray[select].ay)
+	end
+	return nil
 end
 
 --无酒不欢：选择移动
@@ -12957,8 +12925,8 @@ function refw(wugong, level)
 	elseif fightscope == 2 then
 		m1 = 0
 		m2 = 2
-		a1 = 0
-		a2 = 0
+		a1 = 3
+		a2 = 1
 		a3 = 0
 		m3 = 1
 	elseif fightscope == 3 then
