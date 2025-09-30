@@ -960,7 +960,10 @@ function War_WugongHurtLife(enemyid, wugong, level, ang, x, y)
 
 	local hurt = War_CalculateDamage(pid, eid, wugong)
 	JY.Person[pid]["主运内功"] = wugong
-	WAR.Person[enemyid]["反击武功"] = JY.Person[eid]["主运内功"]
+	
+	if WAR.DZXY ~= 1 and WAR.Person[WAR.CurID]["我方"] ~= WAR.Person[enemyid]["我方"] and JY.Person[eid]["主运内功"] > 0 then
+		WAR.Person[enemyid]["反击武功"] = JY.Person[eid]["主运内功"]
+	end
 	--误伤打到自己人
 	--[[if WAR.Person[WAR.CurID]["我方"] == WAR.Person[enemyid]["我方"] then
 		--我方
@@ -999,7 +1002,7 @@ function War_WugongHurtLife(enemyid, wugong, level, ang, x, y)
 			WAR.SZSD = -1
 		end
 	end
-	--误伤不显示动画
+	--[[误伤不显示动画
 	if DWPD() == false then
 		WAR.Person[enemyid]["特效动画"] = -1
 		WAR.Person[enemyid]["特效文字0"] = nil
@@ -1007,7 +1010,7 @@ function War_WugongHurtLife(enemyid, wugong, level, ang, x, y)
 		WAR.Person[enemyid]["特效文字2"] = nil
 		WAR.Person[enemyid]["特效文字3"] = nil
 		WAR.Person[enemyid]["特效文字4"] = nil
-	end
+	end]]
 
 	return limitX(hurt, 0, hurt);
 end
@@ -2784,27 +2787,21 @@ end
 function War_Fight_Sub(id, wugongnum, x, y)
 	local pid = WAR.Person[id]["人物编号"]
 	local wugong = 0
+	--JY.Person[pid]["姓名"] = wugongnum
 	if wugongnum < 100 then
 		wugong = JY.Person[pid]["武功" .. wugongnum]
 	else
 		wugong = wugongnum - 100
-		wugongnum = 1
-		for i = 1, CC.Kungfunum do
-			if JY.Person[pid]["武功" .. i] == 43 then	--如果学习有斗转星移
-				wugongnum = i							--记录斗转武功位置
-				break;
-			end
-		end
-		x = WAR.Person[WAR.CurID]["坐标X"] - x
-		y = WAR.Person[WAR.CurID]["坐标Y"] - y
+		--x = WAR.Person[WAR.CurID]["坐标X"] - x
+		--y = WAR.Person[WAR.CurID]["坐标Y"] - y
 		WarDrawMap(0)
-		local fj = "反击"		--斗转错误
+		local fj = JY.Wugong[wugong]["名称"] .. "-反击"		
 
 		for i = 1, 20 do
 			DrawStrBox(-1, 24, fj, C_ORANGE, 10 + i)
 			ShowScreen()
 			if i == 20 then
-				lib.Delay(40)
+				lib.Delay(240)
 			else
 				lib.Delay(10)
 			end
@@ -2814,13 +2811,8 @@ function War_Fight_Sub(id, wugongnum, x, y)
 	WAR.WGWL = JY.Wugong[wugong]["攻击力10"]
 	local fightscope = JY.Wugong[wugong]["攻击范围"]		--没啥用的玩意
 	local kfkind = JY.Wugong[wugong]["武功类型"]
-	local level = JY.Person[pid]["武功等级" .. wugongnum]   --判断武功是否为极
+	local level = 11   
 
-	if level == 999 then
-		level = 11
-	else
-		level = math.modf(level / 100) + 1
-	end
 	WAR.ShowHead = 0
 	local m1, m2, m3, a1, a2 = refw(wugong, level)  --获取武功的范围
 
@@ -5101,64 +5093,6 @@ function War_Fight_Sub(id, wugongnum, x, y)
 
     WAR.Person[WAR.CurID]["经验"] = WAR.Person[WAR.CurID]["经验"] + 2
 
-    --武功增加经验和升级
-    if inteam(pid) then
-		if JY.Person[pid]["武功等级" .. wugongnum] < 900 then
-			JY.Person[pid]["武功等级" .. wugongnum] = JY.Person[pid]["武功等级" .. wugongnum] + 10
-		elseif JY.Person[pid]["武功等级" .. wugongnum] < 999 then
-			--JY.Person[pid]["武功等级" .. wugongnum] = JY.Person[pid]["武功等级" .. wugongnum] + math.modf(JY.Person[pid]["资质"] / 20 + math.random(2)) + rz
-			--无酒不欢：空挥一次到极
-			JY.Person[pid]["武功等级" .. wugongnum] = JY.Person[pid]["武功等级" .. wugongnum] + 99;
-			--武功提升为极
-			if 999 <= JY.Person[pid]["武功等级" .. wugongnum] then
-				JY.Person[pid]["武功等级" .. wugongnum] = 999
-				PlayWavAtk(42)
-				DrawStrBoxWaitKey(string.format("%s修炼%s到登峰造极", JY.Person[pid]["姓名"], JY.Wugong[JY.Person[pid]["武功" .. wugongnum]]["名称"]), C_ORANGE, CC.DefaultFont)
-
-				--虚竹 天山折梅手为极，资质变回50
-				if match_ID(pid, 49) and wugong == 14 then
-					say("逍遥派的武学果然博大精深，让小僧有醍醐灌顶之感。", 49, 0);
-					DrawStrBoxWaitKey("虚竹资质改变！", C_ORANGE, CC.DefaultFont)
-					set_potential(49, 50)
-				end
-
-				--石破天 太玄神功为极，增加轻功50
-				if match_ID(pid, 38) and wugong == 102 then
-					say("１控制这蝌蚪一样的气流在体内游走越发随心所欲了！真有趣！", 38, 0);
-					DrawStrBoxWaitKey("石破天轻功上升50点", C_ORANGE, CC.DefaultFont)
-					AddPersonAttrib(pid, "轻功", 50)
-				end
-
-				--狄云 神照功为极，增加轻功20点
-				if match_ID(pid, 37) and wugong == 94 then
-					say("神照经当真奇妙，四肢百骸感觉劲力充盈。丁大哥，我一定不会让你失望的！", 37, 0);
-					DrawStrBoxWaitKey("狄云领悟神照经的真髓，轻功加二十", C_ORANGE, CC.DefaultFont)
-					AddPersonAttrib(pid, "轻功", 20)
-				end
-
-				--胡斐，胡家刀法到极，增加10点耍刀技巧
-				if match_ID(pid, 1) and wugong == 67 then
-					say("刀法真是越练越精妙。", 1, 0);
-					DrawStrBoxWaitKey("胡斐攻、防、轻、耍刀技巧各增加10点", C_ORANGE, CC.DefaultFont)
-					AddPersonAttrib(pid, "攻击力", 10)
-					AddPersonAttrib(pid, "防御力", 10)
-					AddPersonAttrib(pid, "轻功", 10)
-					AddPersonAttrib(pid, "耍刀技巧", 10)
-				end
-			end
-		end
-
-		--武功提升普通等级
-		if level < math.modf(JY.Person[pid]["武功等级" .. wugongnum] / 100) + 1 then
-			level = math.modf(JY.Person[pid]["武功等级" .. wugongnum] / 100) + 1
-			DrawStrBox(-1, -1, string.format("%s 升为 %d 级", JY.Wugong[JY.Person[pid]["武功" .. wugongnum]]["名称"], level), C_ORANGE, CC.DefaultFont)
-			ShowScreen()
-			lib.Delay(500)
-			Cls()
-			ShowScreen()
-		end
-    end
-
     --我方，消耗的内力
     if WAR.Person[WAR.CurID]["我方"] then
 		local nl = nil
@@ -5314,30 +5248,35 @@ function War_Fight_Sub(id, wugongnum, x, y)
 	end
 
 	--斗转星移计算，现在人人能反击，好时代来临力
+	if WAR.Person[WAR.CurID]["反击武功"] ~= 9999 then
 	local dz = {}
 	local dznum = 0
 	for i = 0, WAR.PersonNum - 1 do
 		if WAR.Person[i]["反击武功"] ~= -1 and WAR.Person[i]["反击武功"] ~= 9999 then
 			dznum = dznum + 1
-			dz[dznum] = {i, WAR.Person[i]["反击武功"], x - WAR.Person[WAR.CurID]["坐标X"], y - WAR.Person[WAR.CurID]["坐标Y"]}
+			dz[dznum] = {i, WAR.Person[i]["反击武功"], WAR.Person[WAR.CurID]["坐标X"], WAR.Person[WAR.CurID]["坐标Y"]}
 			WAR.Person[i]["反击武功"] = 9999
 		end
 	end
 	for i = 1, dznum do
-		local kongfuid = JY.Person[dz[i][1]]["主运内功"]
+		local rid = WAR.Person[dz[i][1]]["人物编号"]
+		local kongfuid = JY.Person[rid]["主运内功"]
+		
 		local datas = GetValidTargets(dz[i][1], kongfuid)
-		local data
+		--JY.Person[dz[i][1]]["姓名"] = JY.Person[dz[i][1]]["主运内功"].."猪头1"
+		local data = {}
 		data.x, data.y = dz[i][2], dz[i][3]
-		if data ~= nil and Contains(datas, data) then
+		if true then--Contains(datas, data) then
 			local tmp = WAR.CurID
 			WAR.CurID = dz[i][1]
 			WAR.DZXY = 1
 
-			War_Fight_Sub(dz[i][1], data[1], dz[i][2], dz[i][3])
+			War_Fight_Sub(dz[i][1], kongfuid + 100, WAR.Person[tmp]["坐标X"], WAR.Person[tmp]["坐标Y"])
 			WAR.Person[WAR.CurID]["反击武功"] = -1
 			WAR.CurID = tmp
 			WAR.DZXY = 0
 		end
+	end
 	end
 
 	return 1;
@@ -5369,6 +5308,7 @@ function GetNonEmptyTargets(warid, targets)
 		local mid = GetWarMap(targets[i].x + xx, targets[i].y + yy, 2)
 		if mid or 0 > 0 and WAR.Person[mid]["我方"] == WAR.Person[warid]["我方"] then
 			targets2index = targets2index + 1
+			targets2[targets2index] = {}
 			targets2[targets2index].x = targets[i].x
 			targets2[targets2index].y = targets[i].y
 		end
@@ -5379,6 +5319,7 @@ end
 function GetValidTargets(warid, kungfuid)
 	local pid = WAR.Person[warid]["人物编号"]
 	local kfid = JY.Person[pid]["主运内功"]
+	--JY.Person[pid]["姓名"] = kfid.."猪头2"
 	if kfid == 0 then
 		return nil
 	end
@@ -5391,6 +5332,7 @@ function GetValidTargets(warid, kungfuid)
 			if m1 == 1 then
 				if math.abs(i) > m3 and math.abs(i) <= m2 then
 					targetsindex = targetsindex + 1
+					targets[targetsindex] = {}
 					targets[targetsindex].x = i
 					targets[targetsindex].y = j
 				end
@@ -5399,6 +5341,7 @@ function GetValidTargets(warid, kungfuid)
 				distance = math.abs(i) + math.abs(j)
 				if distance > m3 and distance <= m2 then
 					targetsindex = targetsindex + 1
+					targets[targetsindex] = {}
 					targets[targetsindex].x = i
 					targets[targetsindex].y = j
 				end
@@ -5407,6 +5350,7 @@ function GetValidTargets(warid, kungfuid)
 				distance = math.max(i, j)
 				if math.min(i, j) == 0 and distance > m3 and distance <= m2 then
 					targetsindex = targetsindex + 1
+					targets[targetsindex] = {}
 					targets[targetsindex].x = i
 					targets[targetsindex].y = j
 				end
