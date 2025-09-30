@@ -37,9 +37,9 @@ function unnamed(kfid)
 	else
 		kungfulv = math.modf(kungfulv / 100) + 1
 	end
-	local m1, m2, m3, a1, a2, a3, a4, a5 = refw(kungfuid, kungfulv)
+	local m1, m2, m3, a1, a2 = refw(kungfuid, kungfulv)
 	local mfw = {m1, m2, m3}
-	local atkfw = {a1, a2, a3, a4, a5}
+	local atkfw = {a1, a2}
 	if kungfulv == 11 then
 		kungfulv = 10
 	end
@@ -2822,10 +2822,10 @@ function War_Fight_Sub(id, wugongnum, x, y)
 		level = math.modf(level / 100) + 1
 	end
 	WAR.ShowHead = 0
-	local m1, m2, m3, a1, a2, a3, a4, a5 = refw(wugong, level)  --获取武功的范围
+	local m1, m2, m3, a1, a2 = refw(wugong, level)  --获取武功的范围
 
 	local movefanwei = {m1, m2, m3}				--可移动的范围
-	local atkfanwei = {a1, a2, a3, a4, a5}	--攻击范围
+	local atkfanwei = {a1, a2}	--攻击范围
 
 	x, y = War_FightSelectType(movefanwei, atkfanwei, x, y,wugong)
 
@@ -5324,13 +5324,16 @@ function War_Fight_Sub(id, wugongnum, x, y)
 		end
 	end
 	for i = 1, dznum do
-		local data = CanRetaliate(dz[i][1], dz[i][2], dz[i][3])
-		if data ~= nil then
+		local kongfuid = JY.Person[dz[i][1]]["主运内功"]
+		local datas = GetValidTargets(dz[i][1], kongfuid)
+		local data
+		data.x, data.y = dz[i][2], dz[i][3]
+		if data ~= nil and Contains(datas, data) then
 			local tmp = WAR.CurID
 			WAR.CurID = dz[i][1]
 			WAR.DZXY = 1
 
-			War_Fight_Sub(dz[i][1], data[1], WAR.Person[WAR.CurID]["坐标X"], WAR.Person[WAR.CurID]["坐标Y"])
+			War_Fight_Sub(dz[i][1], data[1], dz[i][2], dz[i][3])
 			WAR.Person[WAR.CurID]["反击武功"] = -1
 			WAR.CurID = tmp
 			WAR.DZXY = 0
@@ -5340,30 +5343,78 @@ function War_Fight_Sub(id, wugongnum, x, y)
 	return 1;
 end
 
---修复ai用现在禁止的老范围打人
-function CanRetaliate(warid, x, y)
+function Contains(targets, target)
+	if targets == nil then
+		return false
+	end
+	for i = 1, #targets do
+		if targets[i] == target then
+			return true
+		end
+	end
+	return false
+end
+
+function GetNonEmptyTargets(warid, targets)
+	local pid = WAR.Person[warid]["人物编号"]
+	local kfid = JY.Person[pid]["主运内功"]
+	local xx = WAR.Person[warid]["坐标X"]
+	local yy = WAR.Person[warid]["坐标Y"]
+	if kfid == 0 then
+		return nil
+	end
+	local targets2 = {}
+	local targets2index = 0
+	for i = 1, #targets do
+		local mid = GetWarMap(targets[i].x + xx, targets[i].y + yy, 2)
+		if mid or 0 > 0 and WAR.Person[mid]["我方"] == WAR.Person[warid]["我方"] then
+			targets2index = targets2index + 1
+			targets2[targets2index].x = targets[i].x
+			targets2[targets2index].y = targets[i].y
+		end
+	end
+	return targets2
+end
+
+function GetValidTargets(warid, kungfuid)
 	local pid = WAR.Person[warid]["人物编号"]
 	local kfid = JY.Person[pid]["主运内功"]
 	if kfid == 0 then
 		return nil
 	end
-	JY.Person[pid]["姓名"] = "猪头"
-	local kungfuid = JY.Person[pid]["主运内功"]
-	local kungfulv = 10
-	
-	local m1, m2, m3, a1, a2, a3, a4, a5 = refw(kungfuid, kungfulv)
-	local mfw = {m1, m2, m3}
-	local atkfw = {a1, a2, a3, a4, a5}
-
-	--AI也用新的威力判定
-	local kungfuatk = get_skill_power(pid, kungfuid, kungfulv)
-	local atk1, atk2, atk3 = GetAtkNum(WAR.Person[warid]["坐标X"], WAR.Person[warid]["坐标Y"], mfw, atkfw, kungfuatk)
-	
-	if atk1 > 0 then
-		return {kfid + 100, atk2, atk3}
-		--War_Fight_Sub(WAR.CurID, kfid, atkarray[select].ax, atkarray[select].ay)
+	local targets = {}
+	local targetsindex = 0
+	local m1, m2, m3, a1, a2 = refw(kungfuid, 10)
+	local distance = 0
+	for i = -10, 10 do
+		for j = -10, 10 do
+			if m1 == 1 then
+				if math.abs(i) > m3 and math.abs(i) <= m2 then
+					targetsindex = targetsindex + 1
+					targets[targetsindex].x = i
+					targets[targetsindex].y = j
+				end
+			end
+			if m1 == 0 then
+				distance = math.abs(i) + math.abs(j)
+				if distance > m3 and distance <= m2 then
+					targetsindex = targetsindex + 1
+					targets[targetsindex].x = i
+					targets[targetsindex].y = j
+				end
+			end
+			if m1 == 2 then
+				distance = math.max(i, j)
+				if math.min(i, j) == 0 and distance > m3 and distance <= m2 then
+					targetsindex = targetsindex + 1
+					targets[targetsindex].x = i
+					targets[targetsindex].y = j
+				end
+			end
+		end
 	end
-	return nil
+
+	return targets
 end
 
 --无酒不欢：选择移动
@@ -7272,7 +7323,7 @@ function War_KfMove(movefanwei, atkfanwei, wugong)
 end
 --WarDrawAtt 
 function WarDrawAtt(x, y, fanwei, flag, cx, cy, atk)
-  local x0, y0 = nil
+  local x0, y0 = nil, nil
   if cx == nil or cy == nil then
     x0 = WAR.Person[WAR.CurID]["坐标X"]
     y0 = WAR.Person[WAR.CurID]["坐标Y"]
@@ -10081,131 +10132,6 @@ function War_AnqiHurt(pid, emenyid, thingid, emeny)
 	return r
 end
 
---计算从(x,y)开始攻击最多能够击中几个敌人
-function War_AutoCalMaxEnemy(x, y, wugongid, level)
-  local wugongtype = JY.Wugong[wugongid]["攻击范围"]
-  local movescope = JY.Wugong[wugongid]["移动范围" .. level]
-  local fightscope = JY.Wugong[wugongid]["杀伤范围" .. level]
-  local maxnum = 0
-  local xmax, ymax = nil, nil
-  if wugongtype == 0 or wugongtype == 3 then
-    local movestep = War_CalMoveStep(WAR.CurID, movescope, 1)	--计算武功移动步数
-    for i = 1, movescope do
-      local step_num = movestep[i].num
-      if step_num == 0 then
-        break;
-      end
-      for j = 1, step_num do
-        local xx = movestep[i].x[j]
-        local yy = movestep[i].y[j]
-        local enemynum = 0
-        for n = 0, WAR.PersonNum - 1 do
-          if n ~= WAR.CurID and WAR.Person[n]["死亡"] == false and WAR.Person[n]["我方"] ~= WAR.Person[WAR.CurID]["我方"] then
-            local x = math.abs(WAR.Person[n]["坐标X"] - xx)
-            local y = math.abs(WAR.Person[n]["坐标Y"] - yy)
-          end
-          if x <= fightscope and y <= fightscope then
-            enemynum = enemynum + 1
-          end
-        end
-        if maxnum < enemynum then
-          maxnum = enemynum
-          xmax = xx
-          ymax = yy
-        end
-      end
-    end
-  elseif wugongtype == 1 then
-    for direct = 0, 3 do
-      local enemynum = 0
-      for i = 1, movescope do
-        local xnew = x + CC.DirectX[direct + 1] * i
-        local ynew = y + CC.DirectY[direct + 1] * i
-        if xnew >= 0 and xnew < CC.WarWidth and ynew >= 0 and ynew < CC.WarHeight then
-          local id = GetWarMap(xnew, ynew, 2)
-        end
-        if id >= 0 and WAR.Person[WAR.CurID]["我方"] ~= WAR.Person[id]["我方"] then
-          enemynum = enemynum + 1
-        end
-      end
-      if maxnum < enemynum then
-        maxnum = enemynum
-        xmax = x + CC.DirectX[direct + 1]
-        ymax = y + CC.DirectY[direct + 1]
-      end
-    end
-  elseif wugongtype == 2 then
-    local enemynum = 0
-    for direct = 0, 3 do
-      for i = 1, movescope do
-        local xnew = x + CC.DirectX[direct + 1] * i
-        local ynew = y + CC.DirectY[direct + 1] * i
-        if xnew >= 0 and xnew < CC.WarWidth and ynew >= 0 and ynew < CC.WarHeight then
-          local id = GetWarMap(xnew, ynew, 2)
-        end
-        if id >= 0 and WAR.Person[WAR.CurID]["我方"] ~= WAR.Person[id]["我方"] then
-          enemynum = enemynum + 1
-        end
-      end
-    end
-  end
-  if enemynum > 0 then
-    maxnum = enemynum
-    xmax = x
-    ymax = y
-  end
-  return maxnum, xmax, ymax
-end
-
-
---得到可以走到攻击到敌人的最近位置。
---scope可以攻击的范围
---返回 x,y。如果无法走到攻击位置，返回空
-function War_AutoCalMaxEnemyMap(wugongid, level)
-  local wugongtype = JY.Wugong[wugongid]["攻击范围"]
-  local movescope = JY.Wugong[wugongid]["移动范围" .. level]
-  local fightscope = JY.Wugong[wugongid]["杀伤范围" .. level]
-  local x0 = WAR.Person[WAR.CurID]["坐标X"]
-  local y0 = WAR.Person[WAR.CurID]["坐标Y"]
-  CleanWarMap(4, 0)
-  if wugongtype == 0 or wugongtype == 3 then
-    for n = 0, WAR.PersonNum - 1 do
-      if n ~= WAR.CurID and WAR.Person[n]["死亡"] == false and WAR.Person[n]["我方"] ~= WAR.Person[WAR.CurID]["我方"] then
-        local xx = WAR.Person[n]["坐标X"]
-        local yy = WAR.Person[n]["坐标Y"]
-        local movestep = War_CalMoveStep(n, movescope, 1)
-        for i = 1, movescope do
-          local step_num = movestep[i].num
-	        if step_num == 0 then
-
-	        else
-	          for j = 1, step_num do
-	            SetWarMap(movestep[i].x[j], movestep[i].y[j], 4, 1)
-	          end
-	        end
-	      end
-      end
-    end
-  elseif wugongtype == 1 or wugongtype == 2 then
-    for n = 0, WAR.PersonNum - 1 do
-      if n ~= WAR.CurID and WAR.Person[n]["死亡"] == false and WAR.Person[n]["我方"] ~= WAR.Person[WAR.CurID]["我方"] then
-        local xx = WAR.Person[n]["坐标X"]
-        local yy = WAR.Person[n]["坐标Y"]
-        for direct = 0, 3 do
-          for i = 1, movescope do
-            local xnew = xx + CC.DirectX[direct + 1] * i
-            local ynew = yy + CC.DirectY[direct + 1] * i
-            if xnew >= 0 and xnew < CC.WarWidth and ynew >= 0 and ynew < CC.WarHeight then
-              local v = GetWarMap(xnew, ynew, 4)
-              SetWarMap(xnew, ynew, 4, v + 1)
-            end
-          end
-        end
-      end
-    end
-  end
-end
-
 --自动医疗
 function War_AutoDoctor()
   local x1 = WAR.Person[WAR.CurID]["坐标X"]
@@ -10394,21 +10320,6 @@ function War_AutoEscape()
 
   War_CalMoveStep(WAR.CurID, WAR.Person[WAR.CurID]["移动步数"], 0)
   War_MovePerson(x, y)	--移动到相应的位置
-end
-
-
---自动执行战斗，此时的位置一定可以打到敌人
-function War_AutoExecuteFight(wugongnum)
-  local pid = WAR.Person[WAR.CurID]["人物编号"]
-  local x0 = WAR.Person[WAR.CurID]["坐标X"]
-  local y0 = WAR.Person[WAR.CurID]["坐标Y"]
-  local wugongid = JY.Person[pid]["武功" .. wugongnum]
-  local level = math.modf(JY.Person[pid]["武功等级" .. wugongnum] / 100) + 1
-  local maxnum, x, y = War_AutoCalMaxEnemy(x0, y0, wugongid, level)
-  if x ~= nil then
-    War_Fight_Sub(WAR.CurID, wugongnum, x, y)
-    WAR.Person[WAR.CurID].Action = {"atk", x - WAR.Person[WAR.CurID]["坐标X"], y - WAR.Person[WAR.CurID]["坐标Y"]}
-  end
 end
 
 --自动战斗
@@ -12895,7 +12806,7 @@ function refw(wugong, level)
 	--0：点攻，大于0时，距离 = a4
   --a5为攻击范围宽度(偏移3格)距离：
 	--0：点攻，大于0时，距离 = a5
-	local m1, m2, a1, a2, a3, a4, a5 = nil, nil, nil, nil, nil, nil, nil
+	local m1, m2, a1, a2 = nil, nil, nil, nil
 	if JY.Wugong[wugong]["攻击范围"] == -1 then
 		return JY.Wugong[wugong]["加内力1"], JY.Wugong[wugong]["加内力2"], JY.Wugong[wugong]["未知1"], JY.Wugong[wugong]["未知2"], JY.Wugong[wugong]["未知3"], JY.Wugong[wugong]["未知4"], JY.Wugong[wugong]["未知5"]
 	end
@@ -12914,42 +12825,36 @@ function refw(wugong, level)
 		m2 = 1
 		a1 = 0
 		a2 = 0
-		a3 = 0
 	elseif fightscope == 1 then
 		m1 = 2
 		m2 = 2
 		a1 = 0
 		a2 = 0
-		a3 = 0
 		m3 = 1
 	elseif fightscope == 2 then
 		m1 = 0
 		m2 = 2
 		a1 = 3
 		a2 = 1
-		a3 = 0
 		m3 = 1
 	elseif fightscope == 3 then
 		m1 = 0
 		m2 = 2
 		a1 = 0
 		a2 = 0
-		a3 = 0
 	elseif fightscope == 4 then
 		m1 = 0
 		m2 = 3
 		a1 = 0
 		a2 = 0
-		a3 = 0
 		m3 = 1
 	elseif fightscope == 5 then
 		m1 = 0
 		m2 = 0
 		a1 = 0
 		a2 = 0
-		a3 = 0	
 	end
-	return m1, m2, m3, a1, a2, a3, a4, a5
+	return m1, m2, m3, a1, a2
 end
 
 --用CC表判断人物是否为队友，不管在不在队
