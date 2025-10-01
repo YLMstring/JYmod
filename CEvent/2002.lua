@@ -5,7 +5,7 @@
   say("£±‡≈£≠£≠£≠£≠£¨Õ∑∫√‘Œ£°£°£°")
   JY.MyPic = 1
   for i = 2997, 3006 do
-    SetS(80, 30, 42, 1, i  2)
+    --SetS(80, 30, 42, 1, i  2)
     DrawSMap()
     ShowScreen()
     lib.Delay(200)
@@ -36,8 +36,8 @@
     SetS(80, 25, 41, 2, 0)
     SetS(80, 25, 41, 1, 7094)
     SetS(80, 25, 41, 2, 7120)
-    SetS(80, 25, 41, 4, 100 - i  5)
-    SetS(80, 25, 41, 5, 60 - i  5)
+    --SetS(80, 25, 41, 4, 100 - i  5)
+    --SetS(80, 25, 41, 5, 60 - i  5)
     DrawSMap()
     ShowScreen()
     lib.Delay(1)
@@ -66,7 +66,7 @@
   end
   SetS(80, 28, 41, 1, 7100)
   for i = 1, 20 do
-    SetS(80, 25, 41, 5, i  10)
+    --SetS(80, 25, 41, 5, i  10)
     DrawSMap()
     ShowScreen()
     lib.Delay(1)

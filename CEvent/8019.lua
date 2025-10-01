@@ -10,7 +10,7 @@ local content = string.format("小子，看你那愁眉苦脸的样。"
 															.."其实我和你祖辈一直都很有渊源"
 															.."长话就不多说了，做为一个新的接班人"
 															.."觉得自己的家世更像什么呢？"
-															.."把你的感觉说出来", ZJTF[JY.Thing[201][WZ7]]);
+															.."把你的感觉说出来");
 
 local m = JYMsgBox("身世之迷",content, ss, limitX(JY.Base["难度"],1,#ss), 0)
 
@@ -27,7 +27,7 @@ if m == 1 then
 elseif m == 2 then
 	
 	say("哈哈，没错。你们家族世代经商，只可惜，唉。这些钱留给你的闯江湖用的，希望能打出你的名堂", 0, 5, "龙的传人")
-	instruct_2(174, 2000limitX(CC.CircleNum,1,5) + 800JY.Base["难度"]);
+	--instruct_2(174, 2000limitX(CC.CircleNum,1,5) + 800JY.Base["难度"]);
 	
 	say("还有这个护身符，也拿去", 0, 5, "龙的传人")
 	instruct_32(238, 1);

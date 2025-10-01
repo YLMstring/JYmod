@@ -28,7 +28,7 @@ function War_realjl(ida, idb)
 end
 
 --AI选择目标的函数
-function unnamed(kfid)
+function AIThink(kfid)
 	local pid = WAR.Person[WAR.CurID]["人物编号"]
 	local kungfuid = JY.Person[pid]["武功" .. kfid]
 	local kungfulv = JY.Person[pid]["武功等级" .. kfid]
@@ -119,7 +119,7 @@ function unnamed(kfid)
 	else
 		--葵花尊者，打不到人会瞬移
 		if WAR.ZDDH == 54 and JY.Person[27]["品德"] == 20 and WAR.MCRS == 1 and pid == 27 and kuihuameiying() then
-			unnamed(kfid)
+			AIThink(kfid)
 		else
 			--打不到人，考虑吃药
 			local jl, nx, ny = War_realjl()
@@ -2412,7 +2412,7 @@ function War_AutoFight()
 		War_RestMenu()
 		return
 	end
-	unnamed(wugongnum)
+	AIThink(wugongnum)
 end
 
 --自动战斗
@@ -5254,7 +5254,7 @@ function War_Fight_Sub(id, wugongnum, x, y)
 	for i = 0, WAR.PersonNum - 1 do
 		if WAR.Person[i]["反击武功"] ~= -1 and WAR.Person[i]["反击武功"] ~= 9999 then
 			dznum = dznum + 1
-			dz[dznum] = {i, WAR.Person[i]["反击武功"], WAR.Person[WAR.CurID]["坐标X"] - x, WAR.Person[WAR.CurID]["坐标Y"] - y}
+			dz[dznum] = {i, WAR.Person[WAR.CurID]["坐标X"] - WAR.Person[i]["坐标X"], WAR.Person[WAR.CurID]["坐标Y"] - WAR.Person[i]["坐标Y"]}
 			WAR.Person[i]["反击武功"] = 9999
 		end
 	end
@@ -5263,7 +5263,7 @@ function War_Fight_Sub(id, wugongnum, x, y)
 		local kongfuid = JY.Person[rid]["主运内功"]
 		
 		local datas = GetValidTargets(dz[i][1], kongfuid)
-		--JY.Person[dz[i][1]]["姓名"] = JY.Person[dz[i][1]]["主运内功"].."猪头1"
+		--JY.Person[rid]["姓名"] = dz[i][2].."猪头"..dz[i][3]
 		local data = {}
 		data.x, data.y = dz[i][2], dz[i][3]
 		if Contains(datas, data) then
@@ -5272,10 +5272,11 @@ function War_Fight_Sub(id, wugongnum, x, y)
 			WAR.DZXY = 1
 
 			War_Fight_Sub(dz[i][1], kongfuid + 100, WAR.Person[tmp]["坐标X"], WAR.Person[tmp]["坐标Y"])
-			WAR.Person[WAR.CurID]["反击武功"] = -1
+			
 			WAR.CurID = tmp
 			WAR.DZXY = 0
 		end
+		WAR.Person[dz[i][1]]["反击武功"] = -1
 	end
 	end
 
@@ -5287,7 +5288,7 @@ function Contains(targets, target)
 		return false
 	end
 	for i = 1, #targets do
-		if targets[i] == target then
+		if targets[i].x == target.x and targets[i].y == target.y then
 			return true
 		end
 	end
