@@ -325,136 +325,30 @@ function MY_CalMoveStep(x, y, stepmax, flag)
 	return steparray
 end
 
-function GetAtkNum(x, y, movfw, atkfw, atk)
-  local point = {}
-  local num = 0
-  local kind, len, negative = movfw[1], movfw[2], movfw[3]
-
-  if kind == 0 then
-    local array = MY_CalMoveStep(x, y, len, 1)
-    for i = 0, len do
-      local step_num = array[i].num
-      if step_num ~= nil then
-        if step_num == 0 then
-          break;
-        end
-	      for j = 1, step_num do
-	        num = num + 1
-	        point[num] = {array[i].x[j], array[i].y[j]}
-	      end
-	    end
-    end
-  elseif kind == 1 then
-    local array = MY_CalMoveStep(x, y, len * 2, 1)
-    for r = 1, len * 2 do
-      for i = 0, r do
-        local j = r - i
-        if len < i or len < j then
-          SetWarMap(x + i, y + j, 3, 255)
-          SetWarMap(x + i, y - j, 3, 255)
-          SetWarMap(x - i, y + j, 3, 255)
-          SetWarMap(x - i, y - j, 3, 255)
-        end
-      end
-    end
-    for i = 0, len do
-      local step_num = array[i].num
-      if step_num ~= nil then
-        if step_num == 0 then
-          break;
-        end
-	      for j = 1, step_num do
-	        if GetWarMap(array[i].x[j], array[i].y[j], 3) < 128 then
-	          num = num + 1
-	          point[num] = {array[i].x[j], array[i].y[j]}
-	        end
-	      end
-	    end
-    end
-  elseif kind == 2 then
-    if not len then
-      len = 1
-    end
-    for i = 1, len do
-      if x + i < CC.WarWidth - 1 and GetWarMap(x + i, y, 1) > 0 and CC.WarWater[GetWarMap(x + i, y, 0)] == nil then
-        break;
-      end
-      num = num + 1
-      point[num] = {x + i, y}
-    end
-    for i = 1, len do
-      if x - i > 0 and GetWarMap(x - i, y, 1) > 0 and CC.WarWater[GetWarMap(x - i, y, 0)] == nil then
-        break;
-      end
-      num = num + 1
-      point[num] = {x - i, y}
-    end
-    for i = 1, len do
-      if y + i < CC.WarHeight - 1 and GetWarMap(x, y + i, 1) > 0 and CC.WarWater[GetWarMap(x, y + i, 0)] == nil then
-        break;
-      end
-      num = num + 1
-      point[num] = {x, y + i}
-    end
-    for i = 1, len do
-      if y - i > 0 and GetWarMap(x, y - i, 1) > 0 and CC.WarWater[GetWarMap(x, y - i, 0)] == nil then
-        break;
-      end
-      num = num + 1
-      point[num] = {x, y - i}
-    end
-  elseif kind == 3 then
-    if x + 1 < CC.WarWidth - 1 and GetWarMap(x + 1, y, 1) == 0 and CC.WarWater[GetWarMap(x + 1, y, 0)] == nil then
-      num = num + 1
-      point[num] = {x + 1, y}
-    end
-    if x - 1 > 0 and GetWarMap(x - 1, y, 1) == 0 and CC.WarWater[GetWarMap(x - 1, y, 0)] == nil then
-      num = num + 1
-      point[num] = {x - 1, y}
-    end
-    if y + 1 < CC.WarHeight - 1 and GetWarMap(x, y + 1, 1) == 0 and CC.WarWater[GetWarMap(x, y + 1, 0)] == nil then
-      num = num + 1
-      point[num] = {x, y + 1}
-    end
-    if y - 1 > 0 and GetWarMap(x, y - 1, 1) == 0 and CC.WarWater[GetWarMap(x, y - 1, 0)] == nil then
-      num = num + 1
-      point[num] = {x, y - 1}
-    end
-    if x + 1 < CC.WarWidth - 1 and y + 1 < CC.WarHeight - 1 and GetWarMap(x + 1, y + 1, 1) == 0 and CC.WarWater[GetWarMap(x + 1, y + 1, 0)] == nil then
-      num = num + 1
-      point[num] = {x + 1, y + 1}
-    end
-    if x - 1 > 0 and y + 1 < CC.WarHeight - 1 and GetWarMap(x - 1, y + 1, 1) == 0 and CC.WarWater[GetWarMap(x - 1, y + 1, 0)] == nil then
-      num = num + 1
-      point[num] = {x - 1, y + 1}
-    end
-    if x + 1 < CC.WarWidth - 1 and y - 1 > 0 and GetWarMap(x + 1, y - 1, 1) == 0 and CC.WarWater[GetWarMap(x + 1, y - 1, 0)] == nil then
-      num = num + 1
-      point[num] = {x + 1, y - 1}
-    end
-    if x - 1 > 0 and y - 1 > 0 and GetWarMap(x - 1, y - 1, 1) == 0 and CC.WarWater[GetWarMap(x - 1, y - 1, 0)] == nil then
-    	num = num + 1
-    	point[num] = {x - 1, y - 1}
-  	end
-  end
-  local maxx, maxy, maxnum, atknum = 0, 0, 0, 0
-
-
-  for i = 1, num do
-    atknum = GetWarMap(point[i][1], point[i][2], 4)
-
-    if atknum == -1 or atkfw[1] > 9 then
-      atknum = WarDrawAtt(point[i][1], point[i][2], atkfw, 2, x, y, atk)
-      SetWarMap(point[i][1], point[i][2], 4, atknum)
-    end
-    if atknum~= nil and maxnum < atknum then
-		if negative < 1 or math.abs(point[i][1]) + math.abs(point[i][2]) > 1 then
-			maxnum, maxx, maxy = atknum, point[i][1], point[i][2]
+function GetAtkNum(x, y, warid, kungfuid)
+	local pid = WAR.Person[warid]["人物编号"]
+	local targets = GetValidTargets(warid, kungfuid)
+  	local enemys = GetNonEmptyTargets(warid, targets)
+	if enemys == nil then
+		return 0, 0, 0
+	end
+	local target = {}
+	target.x = 0
+	target.y = 0
+	target.p = 0
+	for i = 1, #enemys do
+		local eid = GetWarMap(enemys[i].x + x, enemys[i].y + y, 2)
+		local dmg = War_CalculateDamage(pid, eid, kungfuid)
+		local ehp = JY.Person[eid]["生命"]
+		local rate = dmg * 1000 / ehp
+		if rate > target.p then
+			target.x = enemys[i].x
+			target.y = enemys[i].y
+			target.p = rate
 		end
-    end
-  end
+	end
 
-  return maxnum, maxx, maxy
+ 	return target.p, target.x, target.y
 end
 
 function War_FindNextStep1(steparray,step,id,idb)      --设置下一步可移动的坐标
