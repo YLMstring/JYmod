@@ -5254,7 +5254,7 @@ function War_Fight_Sub(id, wugongnum, x, y)
 	for i = 0, WAR.PersonNum - 1 do
 		if WAR.Person[i]["反击武功"] ~= -1 and WAR.Person[i]["反击武功"] ~= 9999 then
 			dznum = dznum + 1
-			dz[dznum] = {i, WAR.Person[i]["反击武功"], WAR.Person[WAR.CurID]["坐标X"], WAR.Person[WAR.CurID]["坐标Y"]}
+			dz[dznum] = {i, WAR.Person[i]["反击武功"], WAR.Person[WAR.CurID]["坐标X"] - x, WAR.Person[WAR.CurID]["坐标Y"] - y}
 			WAR.Person[i]["反击武功"] = 9999
 		end
 	end
@@ -5266,7 +5266,7 @@ function War_Fight_Sub(id, wugongnum, x, y)
 		--JY.Person[dz[i][1]]["姓名"] = JY.Person[dz[i][1]]["主运内功"].."猪头1"
 		local data = {}
 		data.x, data.y = dz[i][2], dz[i][3]
-		if true then--Contains(datas, data) then
+		if Contains(datas, data) then
 			local tmp = WAR.CurID
 			WAR.CurID = dz[i][1]
 			WAR.DZXY = 1
