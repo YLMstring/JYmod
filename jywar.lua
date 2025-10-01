@@ -7218,8 +7218,9 @@ function War_KfMove(movefanwei, atkfanwei, wugong)
       y2 = y + 1
       x2 = x + 1
     elseif (key == VK_SPACE or key == VK_RETURN) then
-      return x, y
-
+		if WAR.Person[GetWarMap(x, y, 2)] ~= nil and WAR.Person[GetWarMap(x, y, 2)]["我方"] == false then
+      		return x, y
+		end
     elseif key == VK_ESCAPE or ktype == 4 then
       return nil
     elseif ktype == 2 or ktype == 3 then
@@ -7254,7 +7255,9 @@ function War_KfMove(movefanwei, atkfanwei, wugong)
 
       x2, y2 = mx + x0, my + y0
 	    if ktype == 3 and (kind < 2 or x ~= x0 or y ~= y0) then
-	      return x, y
+	      	if WAR.Person[GetWarMap(x, y, 2)] ~= nil and WAR.Person[GetWarMap(x, y, 2)]["我方"] == false then
+      			return x, y
+			end
 	    end
 
     end
