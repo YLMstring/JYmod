@@ -8990,7 +8990,9 @@ function WarMain(warid, isexp)
 				War_Show_Count(WAR.CurID, "罗汉伏魔功恢复生命");
 			end
 			--回合结束消耗体力内力
-			JY.Person[id]["体力"] = math.max(JY.Person[id]["体力"] - 1, 0)
+			if inteam(id) then
+				JY.Person[id]["体力"] = math.max(JY.Person[id]["体力"] - 1, 0)
+			end
 			NeiLiDamage(id, 100 - JY.Person[id]["体力"])
 
 			if GetWarMap(WAR.Person[WAR.CurID]["坐标X"], WAR.Person[WAR.CurID]["坐标Y"], 6) == 3 then
