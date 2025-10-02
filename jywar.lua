@@ -31,20 +31,8 @@ end
 function AIThink(kfid)
 	local pid = WAR.Person[WAR.CurID]["人物编号"]
 	local kungfuid = JY.Person[pid]["武功" .. kfid]
-	local kungfulv = JY.Person[pid]["武功等级" .. kfid]
-	if kungfulv == 999 then
-		kungfulv = 11
-	else
-		kungfulv = math.modf(kungfulv / 100) + 1
-	end
-	local m1, m2, m3, a1, a2 = refw(kungfuid, kungfulv)
-	local mfw = {m1, m2, m3}
-	local atkfw = {a1, a2}
-	if kungfulv == 11 then
-		kungfulv = 10
-	end
+	local kungfulv = 10
 	--AI也用新的威力判定
-	local kungfuatk = get_skill_power(pid, kungfuid, kungfulv)
 	local atkarray = {}
 	local num = 0
 	CleanWarMap(4, -1)
@@ -61,7 +49,7 @@ function AIThink(kfid)
 				num = num + 1
 				atkarray[num] = {}
 				atkarray[num].x, atkarray[num].y = xx, yy
-				atkarray[num].p, atkarray[num].ax, atkarray[num].ay = GetAtkNum(xx, yy, mfw, atkfw, kungfuatk)
+				atkarray[num].p, atkarray[num].ax, atkarray[num].ay = GetAtkNum(xx, yy, WAR.CurID, kungfuid)
 			end
 		end
 	end
@@ -328,8 +316,10 @@ end
 function GetAtkNum(x, y, warid, kungfuid)
 	local pid = WAR.Person[warid]["人物编号"]
 	local targets = GetValidTargets(warid, kungfuid)
-  	local enemys = GetNonEmptyTargets(warid, targets)
+  	local enemys = GetNonEmptyTargets(warid, targets, x, y)
 	if enemys == nil then
+		lib.Debug(JY.Person[pid]["姓名"])
+		lib.Debug("nil")
 		return 0, 0, 0
 	end
 	local target = {}
@@ -337,6 +327,8 @@ function GetAtkNum(x, y, warid, kungfuid)
 	target.y = 0
 	target.p = 0
 	for i = 1, #enemys do
+		lib.Debug(JY.Person[pid]["姓名"])
+		lib.Debug("do")
 		local eid = GetWarMap(enemys[i].x + x, enemys[i].y + y, 2)
 		local dmg = War_CalculateDamage(pid, eid, kungfuid)
 		local ehp = JY.Person[eid]["生命"]
@@ -345,6 +337,10 @@ function GetAtkNum(x, y, warid, kungfuid)
 			target.x = enemys[i].x
 			target.y = enemys[i].y
 			target.p = rate
+			lib.Debug(JY.Person[pid]["姓名"])
+			lib.Debug(target.x)
+			lib.Debug(target.y)
+			lib.Debug(target.p)
 		end
 	end
 
@@ -5189,19 +5185,27 @@ function Contains(targets, target)
 	return false
 end
 
-function GetNonEmptyTargets(warid, targets)
-	local pid = WAR.Person[warid]["人物编号"]
-	local kfid = JY.Person[pid]["主运内功"]
-	local xx = WAR.Person[warid]["坐标X"]
-	local yy = WAR.Person[warid]["坐标Y"]
-	if kfid == 0 then
-		return nil
+function GetNonEmptyTargets(warid, targets, xx, yy)
+	if targets == nil then
+		return
 	end
+	local pid = WAR.Person[warid]["人物编号"]
+	if xx == nil then
+		xx = 0
+	end
+	if yy == nil then
+		yy = 0
+	end
+	xx = xx + WAR.Person[warid]["坐标X"]
+	yy = yy + WAR.Person[warid]["坐标Y"]
 	local targets2 = {}
 	local targets2index = 0
 	for i = 1, #targets do
 		local mid = GetWarMap(targets[i].x + xx, targets[i].y + yy, 2)
-		if mid or 0 > 0 and WAR.Person[mid]["我方"] == WAR.Person[warid]["我方"] then
+		lib.Debug(JY.Person[pid]["姓名"])
+		lib.Debug("map")
+		if mid and WAR.Person[mid]["我方"] ~= WAR.Person[warid]["我方"] then
+			lib.Debug(JY.Person[mid]["姓名"])
 			targets2index = targets2index + 1
 			targets2[targets2index] = {}
 			targets2[targets2index].x = targets[i].x
@@ -5214,7 +5218,6 @@ end
 function GetValidTargets(warid, kungfuid)
 	local pid = WAR.Person[warid]["人物编号"]
 	local kfid = JY.Person[pid]["主运内功"]
-	--JY.Person[pid]["姓名"] = kfid.."猪头2"
 	if kfid == 0 then
 		return nil
 	end
