@@ -31,8 +31,6 @@ end
 function AIThink(kfid)
 	local pid = WAR.Person[WAR.CurID]["人物编号"]
 	local kungfuid = JY.Person[pid]["武功" .. kfid]
-	local kungfulv = 10
-	--AI也用新的威力判定
 	local atkarray = {}
 	local num = 0
 	CleanWarMap(4, -1)
@@ -61,6 +59,8 @@ function AIThink(kfid)
 			end
 		end
 	end
+	--lib.Debug(JY.Person[pid]["姓名"])
+	--lib.Debug(atkarray[1].p)
 	if atkarray[1].p > 0 then
 		for i = 2, num do
 			if atkarray[i].p == 0 or atkarray[i].p < atkarray[1].p / 2 then
@@ -84,12 +84,6 @@ function AIThink(kfid)
 				elseif atkarray[i].p == atkarray[j].p and math.random(2) > 1 then
 					atkarray[i], atkarray[j] = atkarray[j], atkarray[i]
 				end
-			end
-		end
-		for i = 2, num do
-			if atkarray[i].p < atkarray[1].p *4/5 then
-				num = i - 1
-				break;
 			end
 		end
 
@@ -325,7 +319,8 @@ function GetAtkNum(x, y, warid, kungfuid)
 	target.y = 0
 	target.p = 0
 	for i = 1, #enemys do
-		local eid = GetWarMap(enemys[i].x + x, enemys[i].y + y, 2)
+		local mid = GetWarMap(enemys[i].x + x, enemys[i].y + y, 2)
+		local eid = WAR.Person[mid]["人物编号"]
 		local dmg = War_CalculateDamage(pid, eid, kungfuid)
 		local ehp = JY.Person[eid]["生命"]
 		local rate = dmg * 1000 / ehp
@@ -5235,8 +5230,8 @@ function GetValidTargets(warid, kungfuid)
 				end
 			end
 			if m1 == 2 then
-				distance = math.max(i, j)
-				if math.min(i, j) == 0 and distance > m3 and distance <= m2 then
+				distance = math.max(math.abs(i), math.abs(j))
+				if math.min(math.abs(i), math.abs(j)) == 0 and distance > m3 and distance <= m2 then
 					targetsindex = targetsindex + 1
 					targets[targetsindex] = {}
 					targets[targetsindex].x = i
