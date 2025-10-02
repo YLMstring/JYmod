@@ -4974,7 +4974,7 @@ function War_Fight_Sub(id, wugongnum, x, y)
 
     WAR.Person[WAR.CurID]["经验"] = WAR.Person[WAR.CurID]["经验"] + 2
 
-    --我方，消耗的内力
+    --[[我方，消耗的内力
     if WAR.Person[WAR.CurID]["我方"] then
 		local nl = nil
 
@@ -5018,7 +5018,7 @@ function War_Fight_Sub(id, wugongnum, x, y)
 	--NPC的耗内
 	else
 		AddPersonAttrib(pid, "内力", -math.modf((level + 3) / 2) * JY.Wugong[wugong]["消耗内力点数"]/7*2)
-    end
+    end]]
 
     if JY.Person[pid]["内力"] < 0 then
 		JY.Person[pid]["内力"] = 0
