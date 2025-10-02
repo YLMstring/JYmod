@@ -8277,13 +8277,13 @@ end
 function get_skill_power(personid, wugongid, wugonglvl)
 	local power = JY.Wugong[wugongid]["¹¥»÷Á¦10"]
 	local powerNew = 1
-	if power >= 500 then
+	if power == 2 then
 		powerNew = 1.2
 	end
-	if power >= 800 then
+	if power == 3 then
 		powerNew = 1.4
 	end
-	if power >= 1100 then
+	if power == 4 then
 		powerNew = 1.6
 	end
 	return math.modf(powerNew * JY.Person[personid]["¹¥»÷Á¦"])
