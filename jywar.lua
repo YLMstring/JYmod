@@ -8227,80 +8227,14 @@ end
 
 --黄蓉：奇门遁甲
 function WarNewLand(id, x, y)
-	if WAR.ZDDH == 226 then
-		return
-	end
-	local r = JYMsgBox("奇门遁甲", "是否要开启奇门遁甲？", {"否","是"}, 2, WAR.tmp[5000+id])
-	if r == 1 then
-		return
-	end
-	local s = WAR.CurID
-	WAR.CurID =  id
 	--1绿色，2红色，3蓝色，4紫色
 	CleanWarMap(6,-1);
 
-	local QMDJ = {"休","生","伤","杜","景","死","惊","开"}
-
 	--在自身周围绘制奇阵
-	SetWarMap(x, y, 6, math.random(4));
-
-	for j=1, 2 do
-	    SetWarMap(x + math.random(6), y + math.random(6), 6, math.random(4));
-		for i = 30, 40 do
-			NewDrawString(-1, -1, QMDJ[j], C_GOLD, CC.DefaultFont+i*2)
-			ShowScreen()
-			if i == 40 then
-				lib.Delay(300)
-				Cls()
-			else
-				lib.Delay(1)
-			end
-		end
-	end
-
-	for j=3, 4 do
-		SetWarMap(x + math.random(6), y - math.random(6), 6, math.random(4));
-		for i = 30, 40 do
-			NewDrawString(-1, -1, QMDJ[j], C_GOLD, CC.DefaultFont+i*2)
-			ShowScreen()
-			if i == 40 then
-				lib.Delay(300)
-				Cls()
-			else
-				lib.Delay(1)
-			end
-		end
-	end
-
-	for j=5, 6 do
-	    SetWarMap(x - math.random(6), y - math.random(6), 6, math.random(4));
-		for i = 30, 40 do
-			NewDrawString(-1, -1, QMDJ[j], C_GOLD, CC.DefaultFont+i*2)
-			ShowScreen()
-			if i == 40 then
-				lib.Delay(300)
-				Cls()
-			else
-				lib.Delay(1)
-			end
-		end
-	end
-
-	for j=7, 8 do
-		SetWarMap(x - math.random(6), y + math.random(6), 6, math.random(4));
-		for i = 30, 40 do
-			NewDrawString(-1, -1, QMDJ[j], C_GOLD, CC.DefaultFont+i*2)
-			ShowScreen()
-			if i == 40 then
-				lib.Delay(300)
-				Cls()
-			else
-				lib.Delay(1)
-			end
-		end
-	end
-
-	WAR.CurID =  s
+	SetWarMap(x + math.random(4), y + math.random(4), 6, math.random(2, 3));
+	SetWarMap(x + math.random(4), y + math.random(4), 6, math.random(2, 3));
+	SetWarMap(x + math.random(4), y + math.random(4), 6, math.random(2, 3));
+	SetWarMap(x + math.random(4), y + math.random(4), 6, math.random(2, 3));
 end
 
 --战斗主函数
@@ -8757,6 +8691,8 @@ function WarMain(warid, isexp)
 	buzhen()
 	--Pre_Yungong()	--无酒不欢：战前运功
 
+	local bagua = math.random(0, WAR.PersonNum - 1)
+	WarNewLand(bagua, WAR.Person[bagua]["坐标X"], WAR.Person[bagua]["坐标Y"])
 	--黄蓉奇门遁甲，我方才触发
 	for j = 0, WAR.PersonNum - 1 do
 		if match_ID(WAR.Person[j]["人物编号"], 56) and WAR.Person[j]["我方"] == true then
