@@ -326,6 +326,8 @@ function GetAtkNum(x, y, warid, kungfuid)
 	target.x = 0
 	target.y = 0
 	target.p = 0
+	lib.Debug("doo")
+	lib.Debug(#enemys)
 	for i = 1, #enemys do
 		lib.Debug(JY.Person[pid]["姓名"])
 		lib.Debug("do")
@@ -5203,9 +5205,10 @@ function GetNonEmptyTargets(warid, targets, xx, yy)
 	for i = 1, #targets do
 		local mid = GetWarMap(targets[i].x + xx, targets[i].y + yy, 2)
 		lib.Debug(JY.Person[pid]["姓名"])
-		lib.Debug("map")
-		if mid and WAR.Person[mid]["我方"] ~= WAR.Person[warid]["我方"] then
-			lib.Debug(JY.Person[mid]["姓名"])
+		lib.Debug(targets[i].x.."map"..targets[i].y)
+		lib.Debug(xx.."map"..yy)
+		if mid ~= nil and mid >= 0 and WAR.Person[WAR.CurID]["我方"] ~= WAR.Person[mid]["我方"] then
+			lib.Debug(mid)
 			targets2index = targets2index + 1
 			targets2[targets2index] = {}
 			targets2[targets2index].x = targets[i].x
@@ -5217,8 +5220,10 @@ end
 
 function GetValidTargets(warid, kungfuid)
 	local pid = WAR.Person[warid]["人物编号"]
-	local kfid = JY.Person[pid]["主运内功"]
-	if kfid == 0 then
+	if kungfuid == nil then
+		kungfuid = JY.Person[pid]["主运内功"]
+	end
+	if kungfuid == 0 then
 		return nil
 	end
 	local targets = {}
