@@ -109,7 +109,7 @@ function AIThink(kfid)
 			--默认为休息
 			local what_to_do = 0
 			local can_eat_drug = 0
-			--非我方，会考虑吃药
+			--[[非我方，会考虑吃药
 			if WAR.Person[WAR.CurID]["我方"] == false then
 				can_eat_drug = 1
 			--如果是我方，只有在队且允许才会吃药
@@ -117,7 +117,7 @@ function AIThink(kfid)
 				if inteam(pid) and JY.Person[pid]["是否吃药"] == 1 then
 					can_eat_drug = 1
 				end
-			end
+			end]]
 			--左右第二下，不能吃药
 			if WAR.ZYHB == 2 then
 				can_eat_drug = 0
@@ -209,7 +209,7 @@ end
 function AutoMove()
 	local x, y = nil, nil
 	local minDest = math.huge
-	local enemyid=War_AutoSelectEnemy()   --选择最近敌人
+	local enemyid = War_AutoSelectEnemy()   --选择最近敌人
 
 	War_CalMoveStep(WAR.CurID,100,0);   --计算移动步数 假设最大100步
 
@@ -233,7 +233,7 @@ function AutoMove()
 		end
 	end
 
-	if minDest<math.huge then   --有路可走
+	if minDest < math.huge then   --有路可走
 	    while true do    --从目的位置反着找到可以移动的位置，作为移动的次序
 			local i=GetWarMap(x,y,3);
 			if i<=WAR.Person[WAR.CurID]["移动步数"] then
@@ -329,6 +329,12 @@ function GetAtkNum(x, y, warid, kungfuid)
 			target.y = enemys[i].y + y
 			target.p = rate
 		end
+	end
+	--奇门遁甲
+	if GetWarMap(x, y, 6) == 3 then
+		target.p = target.p * 1.1
+	elseif GetWarMap(x, y, 6) == 2 then
+		target.p = target.p * 1.01
 	end
 
  	return target.p, target.x, target.y
@@ -2661,7 +2667,17 @@ function War_EndPersonData(isexp, warStatus)
 		return
 	end
 end
-
+--孤注一掷
+function IsAlone(id)
+	local alone = true
+	for j = 0, WAR.PersonNum - 1 do
+		if j ~= id and WAR.Person[j]["我方"] == WAR.Person[id]["我方"] and WAR.Person[j]["死亡"] == false then
+			alone = false
+		end
+	end
+	return alone
+end
+	
 --执行战斗，自动和手动战斗都调用
 --id战斗人物编号
 --wugongnum 使用的武功在位置
@@ -2697,7 +2713,15 @@ function War_Fight_Sub(id, wugongnum, x, y)
 
 	WAR.ShowHead = 0
 	local m1, m2, m3, a1, a2 = refw(wugong, level)  --获取武功的范围
-
+	if GetWarMap(WAR.Person[id]["坐标X"], WAR.Person[id]["坐标Y"], 6) == 2 then
+		a1 = 3
+		a2 = a2 + 1
+	end --红色
+	
+	if IsAlone(id) then
+		a1 = 3
+		a2 = a2 + 1
+	end
 	local movefanwei = {m1, m2, m3}				--可移动的范围
 	local atkfanwei = {a1, a2}	--攻击范围
 
@@ -4539,17 +4563,25 @@ function War_Fight_Sub(id, wugongnum, x, y)
 		end
     end
 
-    --怒气暴发，气攻+1200
-    if WAR.LQZ[pid] == 100 and WAR.DZXY ~= 1 then
-		WAR.HXZYJ = 1
+    --怒气暴发
+
+	if IsAlone(id) then
 		WAR.Person[id]["特效动画"] = 6
-		if WAR.Person[id]["特效文字1"] ~= nil then
-			WAR.Person[id]["特效文字1"] = WAR.Person[id]["特效文字1"] .. "+会心之一击"
+		if WAR.Person[id]["特效文字3"] ~= nil then
+			WAR.Person[id]["特效文字3"] = WAR.Person[id]["特效文字3"] .. "+孤注一掷"
 		else
-			WAR.Person[id]["特效文字1"] = "会心之一击"   --会心之一击
+			WAR.Person[id]["特效文字3"] = "孤注一掷"
 		end
-		ng = ng + 1200
     end
+
+	if GetWarMap(WAR.Person[id]["坐标X"], WAR.Person[id]["坐标Y"], 6) == 2 then
+		WAR.Person[id]["特效动画"] = 6
+		if WAR.Person[id]["特效文字3"] ~= nil then
+			WAR.Person[id]["特效文字3"] = WAR.Person[id]["特效文字3"] .. "+八卦正位"
+		else
+			WAR.Person[id]["特效文字3"] = "八卦正位"
+		end
+	end --红色
 
 	--全真七子，天罡北斗阵，文字显示
 	if WAR.ZDDH == 73 then
@@ -8226,7 +8258,7 @@ PNLBD[298] = function()
 end
 
 --黄蓉：奇门遁甲
-function WarNewLand(id, x, y)
+function WarNewLand(x, y)
 	--1绿色，2红色，3蓝色，4紫色
 	CleanWarMap(6,-1);
 
@@ -8691,19 +8723,19 @@ function WarMain(warid, isexp)
 	buzhen()
 	--Pre_Yungong()	--无酒不欢：战前运功
 
-	local bagua = math.random(0, WAR.PersonNum - 1)
-	WarNewLand(bagua, WAR.Person[bagua]["坐标X"], WAR.Person[bagua]["坐标Y"])
-	--黄蓉奇门遁甲，我方才触发
+	--黄蓉奇门遁甲
+	local baguax = 0
+	local baguay = 0
 	for j = 0, WAR.PersonNum - 1 do
-		if match_ID(WAR.Person[j]["人物编号"], 56) and WAR.Person[j]["我方"] == true then
-			WarNewLand(j, WAR.Person[j]["坐标X"], WAR.Person[j]["坐标Y"])
-			break
-		end
+		baguax = baguax + WAR.Person[j]["坐标X"]
+		baguay = baguay + WAR.Person[j]["坐标Y"]
 	end
+	baguax = math.modf(baguax / WAR.PersonNum)
+	baguay = math.modf(baguay / WAR.PersonNum)
+	WarNewLand(baguax, baguay)
 
 	WAR.Delay = GetJiqi()
 	local startt, endt = lib.GetTime()
-
 
   --战斗主循环
   while true do
@@ -8812,6 +8844,11 @@ function WarMain(warid, isexp)
         if match_ID(pid, 51) then
 			WAR.TZ_MRF = 0
         end
+
+		--重置黄蓉八卦位置
+		if GetWarMap(WAR.Person[WAR.CurID]["坐标X"], WAR.Person[WAR.CurID]["坐标Y"], 6) > 0 then
+			WarNewLand(WAR.Person[WAR.CurID]["坐标X"], WAR.Person[WAR.CurID]["坐标Y"])
+		end
 
 		--阿青，行动前内伤中毒清0
 	    if match_ID(pid, 604) then
@@ -8952,8 +8989,16 @@ function WarMain(warid, isexp)
 				Cls();
 				War_Show_Count(WAR.CurID, "罗汉伏魔功恢复生命");
 			end
-			--回合结束消耗内力
+			--回合结束消耗体力内力
+			JY.Person[id]["体力"] = math.max(JY.Person[id]["体力"] - 1, 0)
 			NeiLiDamage(id, 100 - JY.Person[id]["体力"])
+
+			if GetWarMap(WAR.Person[WAR.CurID]["坐标X"], WAR.Person[WAR.CurID]["坐标Y"], 6) == 3 then
+				local heal_amount = math.modf(JY.Person[id]["生命最大值"] * 0.1)
+				WAR.Person[WAR.CurID]["生命点数"] = AddPersonAttrib(id, "生命", heal_amount);
+				Cls();
+				War_Show_Count(WAR.CurID, "八卦逆位气血回复");
+			end
 
 	        --紫霞神功行动后，回复内力
 			if PersonKF(id, 89) then
@@ -10527,7 +10572,7 @@ end
 function War_RestMenu()
 	if WAR.CurID and WAR.CurID >= 0  then
 		local pid = WAR.Person[WAR.CurID]["人物编号"]
-		--走火不能休息
+		--[[走火不能休息
 		if WAR.tmp[1000 + pid] == 1 then
 			return 1
 		end
@@ -10550,7 +10595,7 @@ function War_RestMenu()
 			WAR.Person[WAR.CurID]["内力点数"] = AddPersonAttrib(pid, "内力", v)
 		end
 
-		War_Show_Count(WAR.CurID);		--显示当前控制人的点数
+		War_Show_Count(WAR.CurID);		--显示当前控制人的点数]]
 
 		--阿凡提休息带蓄力+防御
 		if match_ID(pid, 606) then
@@ -10562,16 +10607,6 @@ function War_RestMenu()
 			ShowScreen()
 			lib.Delay(400)
 			return 1;
-		--NPC休息会自动蓄力
-		--先天调息不触发
-		elseif not inteam(pid) and WAR.XTTX == 0 then
-			if math.modf(JY.Person[pid]["生命最大值"] / 2) < JY.Person[pid]["生命"] then
-				Cls()
-				return War_ActupMenu()
-			else
-				Cls()
-				return War_DefupMenu()
-			end
 		else
 			return 1
 		end
@@ -12552,12 +12587,6 @@ function refw(wugong, level)
 	--0：点攻，1：十字，2：菱形，3：面攻，5：十字，6：井字，7：田字，8：卍字，9：卐字，10：直线，11：正三角，12：倒三角，13：横线
   --a2为攻击范围长度距离：
 	--0：点攻，大于0时，距离 = a2
-  --a3为攻击范围宽度(偏移1格)距离：
-	--0：点攻，大于0时，距离 = a3  
-  --a4为攻击范围宽度(偏移2格)距离：
-	--0：点攻，大于0时，距离 = a4
-  --a5为攻击范围宽度(偏移3格)距离：
-	--0：点攻，大于0时，距离 = a5
 	local m1, m2, a1, a2 = nil, nil, nil, nil
 	if JY.Wugong[wugong]["攻击范围"] == -1 then
 		return JY.Wugong[wugong]["加内力1"], JY.Wugong[wugong]["加内力2"], JY.Wugong[wugong]["未知1"], JY.Wugong[wugong]["未知2"], JY.Wugong[wugong]["未知3"], JY.Wugong[wugong]["未知4"], JY.Wugong[wugong]["未知5"]
@@ -12569,8 +12598,6 @@ function refw(wugong, level)
 	--4：枪
 	--5：自身
 	local fightscope = JY.Wugong[wugong]["攻击范围"]
-	local kfkind = JY.Wugong[wugong]["武功类型"]
-	local pid = WAR.Person[WAR.CurID]["人物编号"]
 	local m3 = 0
 	if fightscope == 0 then
 		m1 = 0
@@ -12606,6 +12633,7 @@ function refw(wugong, level)
 		a1 = 0
 		a2 = 0
 	end
+
 	return m1, m2, m3, a1, a2
 end
 
