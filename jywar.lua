@@ -1832,7 +1832,13 @@ function WarShowHead(id)
 		y1 = y1 + 3*(CC.RowPixel + size) +12
 		DrawBox(x1-7, y1, x1 + width-7 , y1 + size*6, C_GOLD)
 		DrawString(x1+2, y1 + (size + CC.RowPixel) - 18, "进攻-" .. JY.Wugong[wugong]["名称"], C_WHITE, size)
-		DrawString(x1+2, y1 + 2 * (size + CC.RowPixel) - 18, "预计" .. War_CalculateDamage(WAR.PREVIEW, pid, wugong) .. "点伤害", C_WHITE, size)
+		DrawString(x1+2, y1 + 2 * (size + CC.RowPixel) - 18, "预计伤害：" .. War_CalculateDamage(WAR.PREVIEW, pid, wugong), C_WHITE, size)
+		local wugong2 = JY.Person[pid]["主运内功"]
+		if wugong2 > 0 then
+			local fanjinum = War_CalculateDamage(pid, WAR.PREVIEW, wugong2)
+			DrawString(x1+2, y1 + 3 * (size + CC.RowPixel) - 18, "若被反击：" .. fanjinum, C_WHITE, size)
+			DrawString(x1+2, y1 + 4 * (size + CC.RowPixel) - 18, "剩余气血：" .. (JY.Person[WAR.PREVIEW]["生命"] - fanjinum), C_WHITE, size)
+		end
 	end
 end
 
@@ -5094,34 +5100,10 @@ function War_Fight_Sub(id, wugongnum, x, y)
 	end
 
 	--计算消耗的体力
-	local jtl = 0
-	if 1100 <= WAR.WGWL then
-		jtl = 7
-	elseif 900 <= WAR.WGWL then
-		jtl = 5
-	elseif 600 <= WAR.WGWL then
-		jtl = 3
-	else
-		jtl = 1
-	end
+	local jtl = 1
 
-	--太玄被动减少体力消耗2点
-	if PersonKF(pid, 102) then
-		jtl = jtl - 2
-		if jtl < 1 then
-			jtl = 1
-		end
-	end
-
-	--人厨子攻击不消耗体力
-	--NPC只消耗1点
-	if match_ID(pid, 89) == false then
-		if WAR.Person[WAR.CurID]["我方"] then
-			AddPersonAttrib(pid, "体力", -(jtl))
-		else
-			AddPersonAttrib(pid, "体力", -1);
-		end
-	end
+	--攻击消耗体力
+	AddPersonAttrib(pid, "体力", -jtl);
 
 	--斗转星移计算，现在人人能反击，好时代来临力
 	if WAR.Person[WAR.CurID]["反击武功"] ~= 9999 then
@@ -9034,6 +9016,8 @@ function WarMain(warid, isexp)
 				Cls();
 				War_Show_Count(WAR.CurID, "罗汉伏魔功恢复生命");
 			end
+			--回合结束消耗内力
+			NeiLiDamage(id, 100 - JY.Person[id]["体力"])
 
 	        --紫霞神功行动后，回复内力
 			if PersonKF(id, 89) then
@@ -11993,6 +11977,8 @@ function DrawTimeBar()
 					JY.Person[jqid]["内力"] = JY.Person[jqid]["内力"] + 6
 				end
 
+				
+				--JY.Person[jqid]["内力"] = JY.Person[jqid]["内力"] - 100 + JY.Person[jqid]["体力"]
 				--[[我方运功时，内力低于500，停运
 				if JY.Person[jqid]["主运内功"] > 0 and JY.Person[jqid]["内力"] < 500 and inteam(jqid) then
 					JY.Person[jqid]["主运内功"] = 0
@@ -13475,6 +13461,21 @@ function kuihuameiying()
 		return true
 	else
 		return false
+	end
+end
+
+function NeiLiDamage(pid, dmg)
+	if JY.Person[pid]["体力"] == 0 then
+		dmg = dmg * 2
+	end
+	local neili = JY.Person[pid]["内力"]
+	if neili >= dmg then
+		JY.Person[pid]["内力"] = JY.Person[pid]["内力"] - dmg
+	else
+		WAR.Person[WAR.CurID]["生命点数"] = AddPersonAttrib(pid, "生命", - 2 * dmg + 2 * JY.Person[pid]["内力"]);
+		JY.Person[pid]["内力"] = 0
+		Cls();
+		War_Show_Count(WAR.CurID, "油尽灯枯气血流失");
 	end
 end
 
