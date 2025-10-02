@@ -2130,28 +2130,11 @@ function ShowPersonStatus_sub(id, page, istart, tfid, max_row, case, AI_s1, AI_s
 	   --经验值
 		DrawString(x1, y1 + h * (i), "升级", C_WHITE, size)
 		local kk = nil
-		if p["等级"] >= 30 then
-			kk = "   ="
-		else
-			kk = 2 * (p["经验"] - CC.Exp[p["等级"] - 1])
-			if kk < 0 then
-				kk = "  0"
-			elseif kk < 10 then
-				kk = "   " .. kk
-			elseif kk < 100 then
-				kk = "  " .. kk
-			elseif kk < 1000 then
-				kk = " " .. kk
-			end
-		end
+		kk = "   ="
 		--等级
 		DrawString(x1 + size * 2 + 16, y1 + h * (i), kk, C_GOLD, size)
 		local tmp = nil
-		if CC.Level <= p["等级"] then
-			tmp = "="
-		else
-			tmp = 2 * (CC.Exp[p["等级"]] - CC.Exp[p["等级"] - 1])
-		end
+		tmp = "="
 		DrawString(x1 + size * 4 + 16, y1 + h * (i), "/" .. tmp, C_GOLD, size)
 
 		--修炼物品
