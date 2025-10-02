@@ -318,31 +318,21 @@ function GetAtkNum(x, y, warid, kungfuid)
 	local targets = GetValidTargets(warid, kungfuid)
   	local enemys = GetNonEmptyTargets(warid, targets, x, y)
 	if enemys == nil then
-		lib.Debug(JY.Person[pid]["姓名"])
-		lib.Debug("nil")
 		return 0, 0, 0
 	end
 	local target = {}
 	target.x = 0
 	target.y = 0
 	target.p = 0
-	lib.Debug("doo")
-	lib.Debug(#enemys)
 	for i = 1, #enemys do
-		lib.Debug(JY.Person[pid]["姓名"])
-		lib.Debug("do")
 		local eid = GetWarMap(enemys[i].x + x, enemys[i].y + y, 2)
 		local dmg = War_CalculateDamage(pid, eid, kungfuid)
 		local ehp = JY.Person[eid]["生命"]
 		local rate = dmg * 1000 / ehp
 		if rate > target.p then
-			target.x = enemys[i].x
-			target.y = enemys[i].y
+			target.x = enemys[i].x + x
+			target.y = enemys[i].y + y
 			target.p = rate
-			lib.Debug(JY.Person[pid]["姓名"])
-			lib.Debug(target.x)
-			lib.Debug(target.y)
-			lib.Debug(target.p)
 		end
 	end
 
@@ -852,7 +842,6 @@ function War_WugongHurtLife(enemyid, wugong, level, ang, x, y)
 
 	local hurt = War_CalculateDamage(pid, eid, wugong)
 	JY.Person[pid]["主运内功"] = wugong
-	
 	if WAR.DZXY ~= 1 and WAR.Person[WAR.CurID]["我方"] ~= WAR.Person[enemyid]["我方"] and JY.Person[eid]["主运内功"] > 0 then
 		WAR.Person[enemyid]["反击武功"] = JY.Person[eid]["主运内功"]
 	end
@@ -2711,7 +2700,7 @@ function War_Fight_Sub(id, wugongnum, x, y)
 	local movefanwei = {m1, m2, m3}				--可移动的范围
 	local atkfanwei = {a1, a2}	--攻击范围
 
-	x, y = War_FightSelectType(movefanwei, atkfanwei, x, y,wugong)
+	x, y = War_FightSelectType(movefanwei, atkfanwei, x, y, wugong)
 
 	if x == nil then
 		return 0
@@ -5198,17 +5187,13 @@ function GetNonEmptyTargets(warid, targets, xx, yy)
 	if yy == nil then
 		yy = 0
 	end
-	xx = xx + WAR.Person[warid]["坐标X"]
-	yy = yy + WAR.Person[warid]["坐标Y"]
+	--xx = xx + WAR.Person[warid]["坐标X"]
+	--yy = yy + WAR.Person[warid]["坐标Y"]
 	local targets2 = {}
 	local targets2index = 0
 	for i = 1, #targets do
 		local mid = GetWarMap(targets[i].x + xx, targets[i].y + yy, 2)
-		lib.Debug(JY.Person[pid]["姓名"])
-		lib.Debug(targets[i].x.."map"..targets[i].y)
-		lib.Debug(xx.."map"..yy)
-		if mid ~= nil and mid >= 0 and WAR.Person[WAR.CurID]["我方"] ~= WAR.Person[mid]["我方"] then
-			lib.Debug(mid)
+		if mid ~= nil and mid >= 0 and WAR.Person[warid]["我方"] ~= WAR.Person[mid]["我方"] then
 			targets2index = targets2index + 1
 			targets2[targets2index] = {}
 			targets2[targets2index].x = targets[i].x
