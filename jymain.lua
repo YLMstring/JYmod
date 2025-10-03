@@ -227,7 +227,7 @@ function NewMainCycle()
 		lib.LoadPNG(1, 1000 * 2 , 0 , 0, 1)
 		local battlenum = JY.Base["天书数量"]
 		local des = GetBattleDescription(battles[battlenum])
-		local mainOption = myJYMsgBox("行走江湖", des, {"开战","状态","敌人","系统"}, 4, 19)
+		local mainOption = myJYMsgBox("行走江湖", des, {"开战","武学","敌人","系统"}, 4, 19)
 		if mainOption == 1 then
 			JY.SubScene = 28
 			if WarMain(battles[battlenum], 0) == true then
@@ -237,7 +237,7 @@ function NewMainCycle()
 			JY.SubScene = -1
 		end
 		if mainOption == 2 then
-			Menu_Status()
+			NewMenu_Status()
 		end
 		if mainOption == 3 then
 			for i = battlenum, 12 do
@@ -259,6 +259,32 @@ function NewMainCycle()
 			end
 		end
 	end
+end
+
+--状态子菜单
+function NewMenu_Status()
+	--无酒不欢：各状态下对应X轴
+	local xcor = CC.MainSubMenuX +2*CC.MenuBorderPixel+4*CC.DefaultFont+5
+	if JY.Status == GAME_WMAP then
+		xcor = CC.MainSubMenuX + 15
+	end
+    DrawStrBox(xcor,CC.MainSubMenuY,"查看一名门派成员，*等级落后者可在门派藏经阁中挑选一门武功学习",LimeGreen,CC.DefaultFont,C_GOLD);
+	local nexty=CC.MainSubMenuY+CC.SingleLineHeight;
+
+    local r = SelectTeamMenu(xcor,nexty);
+    if r > 0 then
+        ShowPersonStatus(r)
+		local pid = JY.Base["队伍" .. r]
+		if JY.Person[pid]["等级"] < JY.Base["天书数量"] then
+			BookShelf(pid)
+		end
+	else
+        Cls(xcor,CC.MainSubMenuY,CC.ScreenW,CC.ScreenH);
+	end
+end
+
+function BookShelf(pid)
+	--药材总量
 end
 
 function StartMenu()
@@ -428,6 +454,8 @@ end
 function InitMC()
 	--状态
 	ShowPersonStatus(1, 0)
+	ClsN()
+	lib.LoadPNG(1, 1000 * 2 , 0 , 0, 1)
 	local type = myJYMsgBox("初始武功选择", "带艺投师：随机基础外功三选一*若未学习，可在门派藏经阁中挑选一门武功学习", {"带艺投师","不必"}, 2, 5)
 	if type == 2 then
 		return
@@ -452,6 +480,9 @@ end
 
 function InitTeammate(pid)
 	local wugong = 0
+	ShowPersonStatus(1, pid)
+	ClsN()
+	lib.LoadPNG(1, 1000 * 2 , 0 , 0, 1)
 	if pid == 35 then --岳灵珊
 		wugong = 42
 	end
@@ -461,7 +492,7 @@ function InitTeammate(pid)
 	if pid == 79 then --令狐冲
 		wugong = 34
 	end
-	local type = myJYMsgBox("初始武功选择",GetWugongDescription(wugong), {"学习","不必"}, 2, 5)
+	local type = myJYMsgBox(JY.Person[pid]["姓名" .. "初始武功"],GetWugongDescription(wugong), {"学习","不必"}, 2, pid)
 	if type == 1 then
 		LearnWugong(pid, wugong)
 	end
