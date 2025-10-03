@@ -264,18 +264,18 @@ end
 --状态子菜单
 function NewMenu_Status()
 	--无酒不欢：各状态下对应X轴
-	local xcor = CC.MainSubMenuX +2*CC.MenuBorderPixel+4*CC.DefaultFont+5
-	if JY.Status == GAME_WMAP then
-		xcor = CC.MainSubMenuX + 15
-	end
-    DrawStrBox(xcor,CC.MainSubMenuY,"查看一名门派成员，*等级落后者可在门派藏经阁中挑选一门武功学习",LimeGreen,CC.DefaultFont,C_GOLD);
-	local nexty=CC.MainSubMenuY+CC.SingleLineHeight;
+	local xcor = CC.MainSubMenuX
+    DrawStrBox(xcor,CC.MainSubMenuY,"查看一名门派成员",LimeGreen,CC.DefaultFont,C_GOLD);
+	DrawStrBox(xcor,CC.MainSubMenuY+CC.SingleLineHeight,"等级落后者可在门派藏经阁中挑选武功学习",LimeGreen,CC.DefaultFont,C_GOLD);
+	local nexty=CC.MainSubMenuY+CC.SingleLineHeight+CC.SingleLineHeight;
 
     local r = SelectTeamMenu(xcor,nexty);
     if r > 0 then
         ShowPersonStatus(r)
 		local pid = JY.Base["队伍" .. r]
 		if JY.Person[pid]["等级"] < JY.Base["天书数量"] then
+			ClsN()
+			lib.LoadPNG(1, 1000 * 2 , 0 , 0, 1)
 			BookShelf(pid)
 		end
 	else
@@ -301,14 +301,13 @@ function BookShelf(pid)
 	local str = "在门派藏经阁中挑选一门武功学习"
 	local btn = {"学习","不必"};
 	local num = #btn;
-	local r = JYMsgBox(title,str,btn,num,pid);
-	Cls();
+	local r = myJYMsgBox(title,str,btn,num,pid);
 	if r == 1 then
 		local x1 = CC.ScreenW/2 - 190;
 		local y1 = CC.ScreenH/2 - 180;
 		local menu = {}
 		for i=1, #shelf do 
-			menu[i] = {drupsName[i]};
+			menu[i] = {drupsName[i], nil, 1};
 		end
 		
 		local numItem = #menu;
@@ -328,7 +327,7 @@ function BookShelf(pid)
 			local type2 = myJYMsgBox(JY.Wugong[shelf[r]]["名称"], GetWugongDescription(shelf[r]),
 				{"确定","返回"}, 2, pid)
 			if type2 == 1 then
-				LearnWugong(pid, shelf[r])
+				LearnWugong(pid, shelf[r2])
 				return
 			end
 		end
@@ -543,15 +542,15 @@ function InitTeammate(pid)
 	ClsN()
 	lib.LoadPNG(1, 1000 * 2 , 0 , 0, 1)
 	if pid == 35 then --岳灵珊
-		wugong = 42
+		wugong = 34
 	end
 	if pid == 54 then --袁承志
 		wugong = 121
 	end
 	if pid == 79 then --令狐冲
-		wugong = 34
+		wugong = 42
 	end
-	local type = myJYMsgBox(JY.Person[pid]["姓名" .. "初始武功"],GetWugongDescription(wugong), {"学习","不必"}, 2, pid)
+	local type = myJYMsgBox(JY.Person[pid]["姓名"].. "初始武功", GetWugongDescription(wugong), {"学习","不必"}, 2, pid)
 	if type == 1 then
 		LearnWugong(pid, wugong)
 	end
@@ -4400,7 +4399,7 @@ end
 --;
 -- 返回值  0 Esc返回
 --         >0 选中的菜单项(1表示第一项)
---         <0 选中的菜单项,调用函数要求退出父菜单,这个用于退出多层菜单
+--         <0 选中的菜单项,调用函数要求退出父菜单,这个用于退出多层菜单--藏经阁
 
 function ShowMenu(menuItem, numItem, numShow, x1, y1, x2, y2, isBox, isEsc, size, color, selectColor)
 	local w = 0
