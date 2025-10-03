@@ -208,7 +208,7 @@ function TitleSelection()
 end
 
 function NewMainCycle()
-	local p = JY.Person[0]
+	local p = JY.Person[642]
 	local battles = {p["武功等级1"],
 					p["武功等级2"],
 					p["武功等级3"],
@@ -405,7 +405,7 @@ function CleanMemory()            --清理lua内存
 end
 
 function Generate12Battles()
-	local p = JY.Person[0]
+	local p = JY.Person[642]
 	p["武功等级1"] = 11;
 	p["武功等级2"] = 99;
 	p["武功等级3"] = 202;
