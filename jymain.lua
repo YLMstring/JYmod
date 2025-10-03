@@ -2344,9 +2344,16 @@ function ShowPersonStatus_sub(id, page, istart, tfid, max_row, case, AI_s1, AI_s
 					lib.SetClip(0, 0, 0, 0)
 				end
 				--等级
-				DrawString(x1 + size * 6 -6, y1 + h * (i), T[level], C_WHITE, size)
+				if JY.Wugong[wugong]["武功类型"] < 6 then
+					DrawString(x1 + size * 6 -6, y1 + h * (i), T[level], C_WHITE, size)
+				elseif JY.Wugong[wugong]["武功类型"] == 7 then
+					DrawString(x1 + size * 6 -6, y1 + h * (i), "轻", C_WHITE, size)
+				else
+					DrawString(x1 + size * 6 -6, y1 + h * (i), "心", C_WHITE, size)
+				end
+				
 				--如果是特技,显示特技
-				if secondary_wugong(wugong) then
+				if JY.Wugong[wugong]["武功类型"] > 5 then
 					DrawString(x1 + size * 8 -14, y1 + h * (i), "特技", M_PaleGreen, size)
 				--如果不是,则显示武功威力
 				else
