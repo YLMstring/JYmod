@@ -284,7 +284,55 @@ function NewMenu_Status()
 end
 
 function BookShelf(pid)
-	--药材总量
+	local shelf = {}
+	local shelfnum = 0
+	for i = 1, 175 do
+		if JY.Wugong[i]["攻击力1"] == 1 then
+			shelfnum = shelfnum + 1
+			shelf[shelfnum] = i
+		end
+	end
+	
+	local drupsName = {};
+	for i=1, #shelf do
+		drupsName[i] = JY.Wugong[shelf[i]]["名称"];
+	end
+	local title = "藏经阁";
+	local str = "在门派藏经阁中挑选一门武功学习"
+	local btn = {"学习","不必"};
+	local num = #btn;
+	local r = JYMsgBox(title,str,btn,num,pid);
+	Cls();
+	if r == 1 then
+		local x1 = CC.ScreenW/2 - 190;
+		local y1 = CC.ScreenH/2 - 180;
+		local menu = {}
+		for i=1, #shelf do 
+			menu[i] = {drupsName[i]};
+		end
+		
+		local numItem = #menu;
+		local size = CC.DefaultFont;
+		local r2 = ShowMenu(menu,numItem,0,x1,y1+40,0,0,1,1,size,C_ORANGE,C_WHITE);
+		
+		if r2 > 0 then
+			Cls();
+			LearnWugong(pid, shelf[r])
+		end
+
+		while true do
+			local r2 = ShowMenu(menu,numItem,0,x1,y1+40,0,0,1,1,size,C_ORANGE,C_WHITE);
+			if r2 <= 0 then
+				return
+			end
+			local type2 = myJYMsgBox(JY.Wugong[shelf[r]]["名称"], GetWugongDescription(shelf[r]),
+				{"确定","返回"}, 2, pid)
+			if type2 == 1 then
+				LearnWugong(pid, shelf[r])
+				return
+			end
+		end
+	end
 end
 
 function StartMenu()
@@ -407,12 +455,12 @@ function NewGame()     --选择新游戏,设置主角初始属性
 		local player_type = myJYMsgBox("初始门派选择", "选择你喜欢的门派", {"华山派","敬请期待"}, 2, 378)
 
 		if player_type == 1 then
-			local checkSure = myJYMsgBox("华山派", "初始角色：岳灵珊,袁承志,令狐冲", {"确定","返回"}, 2, 19)
+			local checkSure = myJYMsgBox("华山派", "初始角色：令狐冲，袁承志，岳灵珊", {"确定","返回"}, 2, 19)
 			if checkSure == 1 then
-				--JY.Base["队伍1"] = 79
 				instruct_10(35)
 				instruct_10(54)
 				instruct_10(79)
+				InitBookShelf(player_type)
 				break
 			end
 		end
@@ -451,6 +499,18 @@ function NewGame()     --选择新游戏,设置主角初始属性
 	end
 end
 
+function InitBookShelf(id)
+	if id == 1 then --华山派
+		JY.Wugong[121]["攻击力1"] = 1
+		JY.Wugong[34]["攻击力1"] = 1
+		JY.Wugong[42]["攻击力1"] = 1
+		JY.Wugong[162]["攻击力1"] = 1
+		JY.Wugong[60]["攻击力1"] = 1
+		JY.Wugong[74]["攻击力1"] = 1
+		JY.Wugong[89]["攻击力1"] = 1
+		JY.Wugong[90]["攻击力1"] = 1
+	end
+end
 function InitMC()
 	--状态
 	ShowPersonStatus(1, 0)
@@ -460,16 +520,15 @@ function InitMC()
 	if type == 2 then
 		return
 	end
-	local wugonglist = {}
-	local player_type = 0
+	local wugonglist = {12, 13, 14}
 
-	while player_type == 0 do
+	while true do
 		local type = myJYMsgBox("带艺投师选择", "选择一门武功查看详情*若未学习，可在门派藏经阁中挑选一门武功学习",
 			{JY.Wugong[wugonglist[1]]["名称"],JY.Wugong[wugonglist[2]]["名称"],JY.Wugong[wugonglist[3]]["名称"],"不必"}, 4, 5)
 		if type == 4 then
 			return
 		end
-		local type2 = myJYMsgBox("带艺投师选择", GetWugongDescription(wugonglist[type]),
+		local type2 = myJYMsgBox(JY.Wugong[wugonglist[type]]["名称"], GetWugongDescription(wugonglist[type]),
 			{"确定","返回"}, 2, 5)
 		if type2 == 1 then
 			LearnWugong(0, wugonglist[type])
