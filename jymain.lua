@@ -312,19 +312,15 @@ function BookShelf(pid)
 		
 		local numItem = #menu;
 		local size = CC.DefaultFont;
-		local r2 = ShowMenu(menu,numItem,0,x1,y1+40,0,0,1,1,size,C_ORANGE,C_WHITE);
-		
-		if r2 > 0 then
-			Cls();
-			LearnWugong(pid, shelf[r])
-		end
 
 		while true do
 			local r2 = ShowMenu(menu,numItem,0,x1,y1+40,0,0,1,1,size,C_ORANGE,C_WHITE);
 			if r2 <= 0 then
 				return
 			end
-			local type2 = myJYMsgBox(JY.Wugong[shelf[r]]["名称"], GetWugongDescription(shelf[r]),
+			ClsN()
+			lib.LoadPNG(1, 1000 * 2 , 0 , 0, 1)
+			local type2 = myJYMsgBox(JY.Wugong[shelf[r2]]["名称"], GetWugongDescription(shelf[r2]),
 				{"确定","返回"}, 2, pid)
 			if type2 == 1 then
 				LearnWugong(pid, shelf[r2])
@@ -1658,7 +1654,7 @@ function ShowPersonStatus(teamid, realid)
 		local keypress, ktype, mx, my = lib.GetKey()
 		lib.Delay(CC.Frame)
 		--ktype  1：键盘,2：鼠标移动,3:鼠标左键,4：鼠标右键,5：鼠标中键,6：滚动上,7：滚动下
-		if keypress == VK_ESCAPE or ktype == 4 then
+		if keypress == VK_ESCAPE or ktype == 4 or keypress == VK_SPACE or keypress == VK_RETURN then
 			if page == 3 and AI_menu_selected > 0 then
 				AI_menu_selected = 0
 			else
@@ -1815,6 +1811,7 @@ function ShowPersonStatus(teamid, realid)
 				end
 			else
 				page = page + 1
+				page = math.min(page, 2)
 				if istart > 1 then
 					istart = 1
 				end
@@ -2119,13 +2116,14 @@ function ShowPersonStatus_sub(id, page, istart, tfid, max_row, case, AI_s1, AI_s
 		end
 		DrawString(x1 + 5 * size-2, y1 + h * (i), string.format("%5s", p["生命最大值"]), color, size)
 		i = i + 1
-		if p["内力性质"] == 0 then
+		--[[if p["内力性质"] == 0 then
 			color = RGB(208, 152, 208)
 		elseif p["内力性质"] == 1 then
 			color = RGB(236, 200, 40)
 		else
 			color = RGB(236, 236, 236)
-		end
+		end]]
+		color = RGB(208, 152, 208)
 		--天罡内力颜色
 		if JY.Base["标准"] == 6 and id == 0 then
 			color = TG_Red
@@ -2330,7 +2328,7 @@ function ShowPersonStatus_sub(id, page, istart, tfid, max_row, case, AI_s1, AI_s
 		DrawString(x1 + 2 , y1 + h * i, "所会功夫", C_RED, size)
 		DrawString(x1 + size*4 + 22, y1 + h * i, "等级", C_RED, size)
 		DrawString(x1 + size*6 + 44, y1 + h * i, "威力", C_RED, size)
-		local T = {"一", "二", "三", "四", "五", "六", "七", "八", "九", "十", "极"}
+		local T = {"黄", "玄", "地", "天"}
 		local SortingNum = {"01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"}
 		for j = 1, CC.Kungfunum do
 			i = i + 1
@@ -2338,10 +2336,7 @@ function ShowPersonStatus_sub(id, page, istart, tfid, max_row, case, AI_s1, AI_s
 			if wugong > 0 then
 				lib.LoadPNG(1, 1005 * 2 , x1 -38, y1 + h * (i)-8, 1)
 				DrawString(x1 -25, y1 + h * (i)+6, SortingNum[j], C_WHITE, CC.FontSMALL)
-				local level = math.modf(p["武功等级" .. j] / 100) + 1
-				if p["武功等级" .. j] == 999 then
-					level = 11
-				end
+				local level = math.min(JY.Wugong[wugong]["攻击力10"], 4)
 				DrawString(x1, y1 + h * (i), string.format("%s", JY.Wugong[wugong]["名称"]), C_GOLD, size)
 				if p["武功等级" .. j] > 900 then
 					lib.SetClip(x1, y1 + h * 1, x1 + size + string.len(JY.Wugong[wugong]["名称"]) * size * (p["武功等级" .. j] - 900) / 200, y1 + h * (i) + h)
@@ -2408,11 +2403,7 @@ function ShowPersonStatus_sub(id, page, istart, tfid, max_row, case, AI_s1, AI_s
 		x1 = dx - size *3 -10
 		i = 19
 		if case == nil then
-			if JY.Status ~= GAME_WMAP then
-				DrawString(x1-size*1.5, y1 + h * (i)+2, "上下键换人 →键显示人物天赋 Q键换装 ESC退出", LimeGreen, size*0.98)
-			else
-				DrawString(x1, y1 + h * (i)+2, "上下键换人 →键显示人物天赋 ESC退出", LimeGreen, size*0.98)
-			end
+			DrawString(x1, y1 + h * (i)+2, "上下键换人 →键显示武功详情 空格继续", LimeGreen, size*0.98)
 		else
 			DrawString(x1-size*1.5, y1 + h * (i)+2, "上下键选择属性 左右键减少/增加 回车键确认加点", LimeGreen, size*0.98)
 		end
@@ -2482,10 +2473,10 @@ function ShowPersonStatus_sub(id, page, istart, tfid, max_row, case, AI_s1, AI_s
 				end
 			end
 		end
-		x1 = dx - size *6 -10
+		x1 = dx - size *3 -10
 		y1 = size*2
 		i = 19
-		DrawString(x1, y1 + h * (i)+2, "上下键浏览 ←键返回状态页面 →键进入AI设定 ESC退出", LimeGreen, size*0.98)
+		DrawString(x1, y1 + h * (i)+2, "上下键浏览 ←键返回状态页面 空格继续", LimeGreen, size*0.98)
 	--AI设定页面
 	elseif page == 3 then
 		lib.LoadPNG(1, 1000 * 2 , 0 , 0, 1)
