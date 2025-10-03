@@ -383,9 +383,10 @@ function NewGame()     --选择新游戏,设置主角初始属性
 		if player_type == 1 then
 			local checkSure = myJYMsgBox("华山派", "初始角色：岳灵珊,袁承志,令狐冲", {"确定","返回"}, 2, 19)
 			if checkSure == 1 then
-				JY.Base["队伍1"] = 79
-				instruct_10(54)
+				--JY.Base["队伍1"] = 79
 				instruct_10(35)
+				instruct_10(54)
+				instruct_10(79)
 				break
 			end
 		end
@@ -414,6 +415,8 @@ function NewGame()     --选择新游戏,设置主角初始属性
 		JY.Person[p]["防御力"] = level * 5 + 30 + JY.Person[p]["休战"] * 5
 		JY.Person[p]["轻功"] = 50 + JY.Person[p]["论剑奖励"] * 5
 	end
+
+	
 end
 
 --无酒不欢：机率判定函数
@@ -5779,6 +5782,10 @@ function instruct_10(personid)
 		lib.Debug("instruct_10 error: person id not exist")
 		return 
 	end
+	JY.Person[personid]["等级"] = 0
+	JY.Person[personid]["武功1"] = 0
+	JY.Person[personid]["武功2"] = 0
+	JY.Person[personid]["武功3"] = 0
 	local add = 0
 	--无酒不欢：畅想不能收自己
 	if personid ~= JY.Base["畅想"] then
