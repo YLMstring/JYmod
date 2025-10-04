@@ -464,15 +464,40 @@ function NewGame()     --选择新游戏,设置主角初始属性
 	JY.Person[0]["姓名"] = CC.NewPersonName;
 	JY.Person[0]["资质"] = 100
 	JY.Person[0]["等级"] = 0
+	JY.Person[0]["拳掌功夫"] = 0
+	JY.Person[0]["指法技巧"] = 0
+	JY.Person[0]["御剑能力"] = 0
+	JY.Person[0]["耍刀技巧"] = 0
+	JY.Person[0]["特殊兵器"] = 0
+	JY.Person[0]["武学常识"] = 0
+	JY.Person[0]["暗器技巧"] = 3
 	JY.Base["标准"] = 1
 
 	--人物初始化
 	for p = 0, JY.PersonNum-1 do
+		local abilitylist = {0,0,0,0,0}
+		local qi = 0
+		local move = 3
 		for i = 1, CC.Kungfunum do
 			if JY.Person[p]["武功" .. i] > 0 then
 				JY.Person[p]["武功等级" .. i] = 999
+				local kind = JY.Wugong[JY.Person[p]["武功" .. i]]["武功类型"]
+				if kind < 6 then
+					abilitylist[kind] = math.max(abilitylist[kind], JY.Wugong[JY.Person[p]["武功" .. i]]["攻击力10"])
+				elseif kind == 6 then
+					qi = qi + 1
+				elseif kind == 7 then
+					move = move + 1
+				end
+				JY.Person[p]["拳掌功夫"] = abilitylist[1]
+				JY.Person[p]["指法技巧"] = abilitylist[2]
+				JY.Person[p]["御剑能力"] = abilitylist[3]
+				JY.Person[p]["耍刀技巧"] = abilitylist[4]
+				JY.Person[p]["特殊兵器"] = abilitylist[5]
+				JY.Person[p]["武学常识"] = qi
+				JY.Person[p]["暗器技巧"] = move
 			else
-				break;
+				break
 			end
 		end
 		local level = JY.Person[p]["等级"]
@@ -572,7 +597,39 @@ function LearnWugong(pid, wugong)
 		AddPersonAttrib(pid, "防御力", JY.Wugong[wugong]["攻击力8"])
 		AddPersonAttrib(pid, "轻功", JY.Wugong[wugong]["攻击力9"])
 	end
+	local kind = JY.Wugong[wugong]["武功类型"]
+	if kind < 6 then
+		CheckWugongProgress(pid)
+	elseif kind == 6 then
+		JY.Person[pid]["武学常识"] = JY.Person[pid]["武学常识"] + 1
+	elseif kind == 6 then
+		JY.Person[pid]["暗器技巧"] = JY.Person[pid]["暗器技巧"] + 1
+	end
 	ShowPersonStatus(1, pid)
+end
+
+function CheckWugongProgress(p)
+	local abilitylist = {JY.Person[p]["拳掌功夫"],JY.Person[p]["指法技巧"],JY.Person[p]["御剑能力"],JY.Person[p]["耍刀技巧"],JY.Person[p]["特殊兵器"]}
+	local change = false
+	for i = 1, CC.Kungfunum do
+		if JY.Person[p]["武功" .. i] > 0 then
+			local kind = JY.Wugong[JY.Person[p]["武功" .. i]]["武功类型"]
+			if kind < 6 and JY.Wugong[JY.Person[p]["武功" .. i]]["攻击力10"] == abilitylist[kind] + 1 then
+				abilitylist[kind] = JY.Wugong[JY.Person[p]["武功" .. i]]["攻击力10"]
+				change = true
+			end
+			JY.Person[p]["拳掌功夫"] = abilitylist[1]
+			JY.Person[p]["指法技巧"] = abilitylist[2]
+			JY.Person[p]["御剑能力"] = abilitylist[3]
+			JY.Person[p]["耍刀技巧"] = abilitylist[4]
+			JY.Person[p]["特殊兵器"] = abilitylist[5]
+		else
+			break
+		end
+	end
+	if change then
+		CheckWugongProgress(p)
+	end
 end
 
 function GetWugongDescription(wugong)
@@ -5951,6 +6008,13 @@ function instruct_10(personid)
 	JY.Person[personid]["武功1"] = 0
 	JY.Person[personid]["武功2"] = 0
 	JY.Person[personid]["武功3"] = 0
+	JY.Person[personid]["拳掌功夫"] = 0
+	JY.Person[personid]["指法技巧"] = 0
+	JY.Person[personid]["御剑能力"] = 0
+	JY.Person[personid]["耍刀技巧"] = 0
+	JY.Person[personid]["特殊兵器"] = 0
+	JY.Person[personid]["武学常识"] = 0
+	JY.Person[personid]["暗器技巧"] = 3
 	local add = 0
 	--无酒不欢：畅想不能收自己
 	if personid ~= JY.Base["畅想"] then
