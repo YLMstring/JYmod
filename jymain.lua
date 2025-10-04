@@ -323,8 +323,15 @@ function BookShelf(pid)
 			local type2 = myJYMsgBox(JY.Wugong[shelf[r2]]["名称"], GetWugongDescription(shelf[r2]),
 				{"确定","返回"}, 2, pid)
 			if type2 == 1 then
-				LearnWugong(pid, shelf[r2])
-				return
+				if CanLearn(pid, shelf[r2]) then
+					LearnWugong(pid, shelf[r2])
+					return
+				end
+				ClsN()
+				lib.LoadPNG(1, 1000 * 2 , 0 , 0, 1)
+				DrawStrBoxWaitKey("尚未满足学习条件", C_WHITE, CC.DefaultFont)
+				ClsN()
+				lib.LoadPNG(1, 1000 * 2 , 0 , 0, 1)
 			end
 		end
 	end
@@ -531,6 +538,7 @@ function InitBookShelf(id)
 		JY.Wugong[90]["攻击力1"] = 1
 	end
 end
+
 function InitMC()
 	--状态
 	ShowPersonStatus(1, 0)
@@ -540,7 +548,10 @@ function InitMC()
 	if type == 2 then
 		return
 	end
-	local wugonglist = {12, 13, 14}
+	local wg1 = RandomReward(0, 6)
+	local wg2 = RandomReward(0, 6, wg1)
+	local wg3 = RandomReward(0, 6, wg1, wg2)
+	local wugonglist = {wg1, wg2, wg3}
 
 	while true do
 		local type = myJYMsgBox("带艺投师选择", "选择一门武功查看详情*若未学习，可在门派藏经阁中挑选一门武功学习",
@@ -553,6 +564,31 @@ function InitMC()
 		if type2 == 1 then
 			LearnWugong(0, wugonglist[type])
 			return
+		end
+	end
+end
+
+function RandomReward(pid, isInit, former1, former2, former3)
+	local pool = {}
+	local poolnum = 0
+	for i = 1, 175 do
+		if JY.Wugong[i]["攻击力1"] ~= 1 and NewPersonKF(pid, i) == false and JY.Wugong[i]["武功类型"] < isInit then
+			if CanLearn(pid, i) then
+				poolnum = poolnum + 1
+				pool[poolnum] = i
+			end
+			--天赋武功双倍概率
+			if IsSpecialized(pid, i) then
+				poolnum = poolnum + 1
+				pool[poolnum] = i
+			end
+		end
+	end
+	while true do
+		local seed = math.random(poolnum)
+		local wugong = pool[seed]
+		if wugong ~= former1 and wugong ~= former2 and wugong ~= former3 then
+			return wugong
 		end
 	end
 end
@@ -606,6 +642,44 @@ function LearnWugong(pid, wugong)
 		JY.Person[pid]["暗器技巧"] = JY.Person[pid]["暗器技巧"] + 1
 	end
 	ShowPersonStatus(1, pid)
+end
+
+function IsSpecialized(pid, wugong)
+	if wugong == JY.Person[pid]["天赋外功1"] or wugong == JY.Person[pid]["天赋外功2"]
+	or wugong == JY.Person[pid]["天赋内功"] or wugong == JY.Person[pid]["天赋轻功"] then
+		return true	
+	end
+	return false
+end
+
+function CanLearn(pid, wugong)
+	if IsSpecialized(pid, wugong) then
+		return true	
+	end
+	local kind = JY.Wugong[wugong]["武功类型"]
+	local requirement = JY.Wugong[wugong]["攻击力10"]
+	if kind == 1 and JY.Person[pid]["拳掌功夫"] + 1 >= requirement then
+		return true
+	end
+	if kind == 2 and JY.Person[pid]["指法技巧"] + 1 >= requirement then
+		return true
+	end
+	if kind == 3 and JY.Person[pid]["御剑能力"] + 1 >= requirement then
+		return true
+	end
+	if kind == 4 and JY.Person[pid]["耍刀技巧"] + 1 >= requirement then
+		return true
+	end
+	if kind == 5 and JY.Person[pid]["特殊兵器"] + 1 >= requirement then
+		return true
+	end
+	if kind == 6 and JY.Person[pid]["武学常识"] >= requirement then
+		return true
+	end
+	if kind == 7 then
+		return true
+	end
+	return false
 end
 
 function CheckWugongProgress(p)
