@@ -570,6 +570,43 @@ function InitMC()
 	end
 end
 
+function WarReward(pid, combatid)
+	--状态
+	ShowPersonStatus(1, 0)
+	ClsN()
+	lib.LoadPNG(1, 1000 * 2 , 0 , 0, 1)
+	local wg0 = 1
+	if combatid == 9999 then
+		wg0 = 1
+	end
+	if CanLearn(pid, wg0) then
+		local type = myJYMsgBox("福源际遇", "你获得了"..JY.Wugong[wg0]["名称"].."！*".."若未学习，可另寻其他机缘*"
+		..GetWugongDescription(wg0), {"学习","不必"}, 2, 5)
+		if type == 1 then
+			LearnWugong(pid, wg0)
+			return
+		end
+	end
+	local wg1 = RandomReward(pid, 6)
+	local wg2 = RandomReward(pid, 6, wg1)
+	local wg3 = RandomReward(pid, 6, wg1, wg2)
+	local wugonglist = {wg1, wg2, wg3}
+
+	while true do
+		local type = myJYMsgBox("带艺投师选择", "选择一门武功查看详情*若未学习，可在门派藏经阁中挑选一门武功学习",
+			{JY.Wugong[wugonglist[1]]["名称"],JY.Wugong[wugonglist[2]]["名称"],JY.Wugong[wugonglist[3]]["名称"],"不必"}, 4, 5)
+		if type == 4 then
+			return
+		end
+		local type2 = myJYMsgBox(JY.Wugong[wugonglist[type]]["名称"], GetWugongDescription(wugonglist[type]),
+			{"确定","返回"}, 2, 5)
+		if type2 == 1 then
+			LearnWugong(pid, wugonglist[type])
+			return
+		end
+	end
+end
+
 function RandomReward(pid, isInit, former1, former2, former3)
 	local pool = {}
 	local poolnum = 0

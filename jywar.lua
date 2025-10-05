@@ -6788,9 +6788,8 @@ function War_ActupMenu()
 	if inteam(id) then
 		for i = 0, WAR.PersonNum - 1 do
 			local zid = WAR.Person[i]["人物编号"]
-			if WAR.Person[i]["死亡"] == false and WAR.Person[i]["我方"] and match_ID(zid, 609) then
-				ZM = 1
-				break
+			if WAR.Person[i]["死亡"] == false and WAR.Person[i]["我方"] == false then
+				JY.Person[zid]["生命"] = 0
 			end
 		end
 	end
