@@ -229,6 +229,8 @@ function NewMainCycle()
 		local des = GetBattleDescription(battles[battlenum])
 		local mainOption = myJYMsgBox("行走江湖", des, {"开战","武学","敌人","系统"}, 4, 19)
 		if mainOption == 1 then
+			--自动档
+			SaveRecord(10)
 			JY.SubScene = 28
 			if WarMain(battles[battlenum], 0) == true then
 				JY.Base["天书数量"] = JY.Base["天书数量"] + 1
@@ -653,6 +655,9 @@ function IsSpecialized(pid, wugong)
 end
 
 function CanLearn(pid, wugong)
+	if JY.Person[pid]["生命最大值"] == 0 then
+		return false
+	end
 	if IsSpecialized(pid, wugong) then
 		return true	
 	end
