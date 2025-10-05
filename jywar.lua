@@ -2556,12 +2556,11 @@ end
 function War_EndPersonData(isexp, warStatus)
 	--无酒不欢：血量还原函数
 	Health_in_Battle_Reset()
-
 	for i = 0, WAR.PersonNum - 1 do
 		local pid = WAR.Person[i]["人物编号"]
 		if WAR.Person[i]["我方"] == true and inteam(pid) then
-			if JY.Person[WAR.Person[i]["人物编号"]]["生命"] > 0 then
-				--reward
+			if WAR.Person[i]["死亡"] == false then
+				WarReward(pid, WAR.ZDDH)
 			elseif JY.Base["难度"] > 1 then
 				JY.Person[pid]["生命最大值"] = 0
 				JY.Person[pid]["内力最大值"] = 0

@@ -517,7 +517,7 @@ function NewGame()     --选择新游戏,设置主角初始属性
 		JY.Person[p]["内力"] = hitpoint
 		JY.Person[p]["攻击力"] = level * 5 + 70 + JY.Person[p]["出战"] * 5
 		JY.Person[p]["防御力"] = level * 5 + 30 + JY.Person[p]["休战"] * 5
-		JY.Person[p]["轻功"] = 50 + JY.Person[p]["论剑奖励"] * 5
+		JY.Person[p]["轻功"] = level * 5 + 50 + JY.Person[p]["论剑奖励"] * 5
 	end
 	InitMC()
 	for i = 1, CC.TeamNum do
@@ -556,7 +556,7 @@ function InitMC()
 	local wugonglist = {wg1, wg2, wg3}
 
 	while true do
-		local type = myJYMsgBox("带艺投师选择", "选择一门武功查看详情*若未学习，可在门派藏经阁中挑选一门武功学习",
+		local type = myJYMsgBox("带艺投师", "选择一门武功查看详情*若未学习，可在门派藏经阁中挑选一门武功学习",
 			{JY.Wugong[wugonglist[1]]["名称"],JY.Wugong[wugonglist[2]]["名称"],JY.Wugong[wugonglist[3]]["名称"],"不必"}, 4, 5)
 		if type == 4 then
 			return
@@ -572,7 +572,7 @@ end
 
 function WarReward(pid, combatid)
 	--状态
-	ShowPersonStatus(1, 0)
+	ShowPersonStatus(1, pid)
 	ClsN()
 	lib.LoadPNG(1, 1000 * 2 , 0 , 0, 1)
 	local wg0 = 1
@@ -580,7 +580,7 @@ function WarReward(pid, combatid)
 		wg0 = 1
 	end
 	if CanLearn(pid, wg0) then
-		local type = myJYMsgBox("福源际遇", "你获得了"..JY.Wugong[wg0]["名称"].."！*".."若未学习，可另寻其他机缘*"
+		local type = myJYMsgBox(JY.Person[pid]["姓名"].."福源际遇", "你获得了"..JY.Wugong[wg0]["名称"].."！*".."若未学习，可另寻其他机缘*"
 		..GetWugongDescription(wg0), {"学习","不必"}, 2, 5)
 		if type == 1 then
 			LearnWugong(pid, wg0)
@@ -593,7 +593,7 @@ function WarReward(pid, combatid)
 	local wugonglist = {wg1, wg2, wg3}
 
 	while true do
-		local type = myJYMsgBox("带艺投师选择", "选择一门武功查看详情*若未学习，可在门派藏经阁中挑选一门武功学习",
+		local type = myJYMsgBox("江湖历练", "选择一门武功查看详情*若未学习，可在门派藏经阁中挑选一门武功学习",
 			{JY.Wugong[wugonglist[1]]["名称"],JY.Wugong[wugonglist[2]]["名称"],JY.Wugong[wugonglist[3]]["名称"],"不必"}, 4, 5)
 		if type == 4 then
 			return
