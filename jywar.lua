@@ -1833,15 +1833,24 @@ function WarShowHead(id)
 	end
   	DrawString(x1 + size*5/2 + myx1, y1 + myy1, zdxs, LimeGreen, size)
 	if WAR.PREVIEW < 0 then return end
+
+	local pidq = JY.Person[WAR.PREVIEW]["轻功"]
+	local eidq = JY.Person[pid]["轻功"]
+	local fightnum = 1 + math.modf((pidq - eidq) / 20)
+	fightnum = math.max(1, fightnum)
+
+	local fightnum2 = 1 + math.modf((eidq - pidq) / 20)
+	fightnum2 = math.max(1, fightnum2)
+
 	local wugong = JY.Person[WAR.PREVIEW]["论剑奖励"]
 	if WAR.Person[id]["我方"] == false and wugong > 0 then
 		y1 = y1 + 3*(CC.RowPixel + size) +12
 		DrawBox(x1-7, y1, x1 + width-7 , y1 + size*6, C_GOLD)
 		DrawString(x1+2, y1 + (size + CC.RowPixel) - 18, "进攻-" .. JY.Wugong[wugong]["名称"], C_WHITE, size)
-		DrawString(x1+2, y1 + 2 * (size + CC.RowPixel) - 18, "预计伤害：" .. War_CalculateDamage(WAR.PREVIEW, pid, wugong), C_WHITE, size)
+		DrawString(x1+2, y1 + 2 * (size + CC.RowPixel) - 18, "预计伤害：" .. (fightnum * War_CalculateDamage(WAR.PREVIEW, pid, wugong)), C_WHITE, size)
 		local wugong2 = JY.Person[pid]["主运内功"]
 		if wugong2 > 0 then
-			local fanjinum = War_CalculateDamage(pid, WAR.PREVIEW, wugong2)
+			local fanjinum = War_CalculateDamage(pid, WAR.PREVIEW, wugong2) * fightnum2
 			DrawString(x1+2, y1 + 3 * (size + CC.RowPixel) - 18, "若被反击：" .. fanjinum, C_WHITE, size)
 			DrawString(x1+2, y1 + 4 * (size + CC.RowPixel) - 18, "剩余气血：" .. (JY.Person[WAR.PREVIEW]["生命"] - fanjinum), C_WHITE, size)
 		end
@@ -2776,7 +2785,17 @@ function War_Fight_Sub(id, wugongnum, x, y)
 
 	--攻击次数
 	local fightnum = 1
+	WAR.ACT = 1
+	WAR.FLHS6 = 0	--如雷数量
 
+	local emeny = GetWarMap(x, y, 2)
+	if emeny >= 0 and emeny ~= WAR.CurID then
+		local pidq = JY.Person[pid]["轻功"]
+		local ljid = WAR.Person[emeny]["人物编号"]
+		local eidq = JY.Person[ljid]["轻功"]
+		fightnum = 1 + math.modf((pidq - eidq) / 20)
+		fightnum = math.max(1, fightnum)
+	end
 	--判定左右
 	if JY.Person[pid]["左右互搏"] == 1 and WAR.ZYHB == 0 then
 		--判断左右，80-资质
@@ -2848,9 +2867,6 @@ function War_Fight_Sub(id, wugongnum, x, y)
 			end
 		end
 	end
-
-	WAR.ACT = 1
-	WAR.FLHS6 = 0	--如雷数量
 
 	--斗转1次
 	if WAR.DZXY == 1 then
@@ -3449,7 +3465,7 @@ function War_Fight_Sub(id, wugongnum, x, y)
 
     --铜人阵，9个强力铜人，直接触发达摩掌
     if pid > 480 and pid < 490 then
-		WAR.Person[id]["特效文字2"] = "易经筋加力"
+		WAR.Person[id]["特效文字2"] = "易筋经加力"
 		ng = ng + 1200
 		WAR.JGZ_DMZ = 1
     end
