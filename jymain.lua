@@ -575,8 +575,8 @@ function WarReward(pid, combatid)
 	ClsN()
 	lib.LoadPNG(1, 1000 * 2 , 0 , 0, 1)
 	local wg0 = 1
-	if combatid == 9999 then
-		wg0 = 1
+	if WAR.Data["音乐"] > 1 then
+		wg0 = WAR.Data["音乐"]
 	end
 	if CanLearn(pid, wg0) then
 		local type = myJYMsgBox(JY.Person[pid]["姓名"].."福源际遇", "你获得了"..JY.Wugong[wg0]["名称"].."！*".."若未学习，可另寻其他机缘*"
