@@ -2726,7 +2726,7 @@ function War_Fight_Sub(id, wugongnum, x, y)
 	local level = 11   
 
 	WAR.ShowHead = 0
-	local m1, m2, m3, a1, a2 = refw(wugong, level)  --获取武功的范围
+	local m1, m2, m3, a1, a2 = WugongArea(wugong, level)  --获取武功的范围
 	if GetWarMap(WAR.Person[id]["坐标X"], WAR.Person[id]["坐标Y"], 6) == 2 then
 		a1 = 3
 		a2 = a2 + 1
@@ -2868,10 +2868,10 @@ function War_Fight_Sub(id, wugongnum, x, y)
 		end
 	end
 
-	--斗转1次
+	--[[斗转1次
 	if WAR.DZXY == 1 then
 		fightnum = 1
-	end
+	end]]
 
   while WAR.ACT <= fightnum do
 	if JY.Restart == 1 then
@@ -5243,7 +5243,7 @@ function GetValidTargets(warid, kungfuid)
 	end
 	local targets = {}
 	local targetsindex = 0
-	local m1, m2, m3, a1, a2 = refw(kungfuid, 10)
+	local m1, m2, m3, a1, a2 = WugongArea(kungfuid, 10)
 	local distance = 0
 	for i = -10, 10 do
 		for j = -10, 10 do
@@ -12560,7 +12560,7 @@ function RealJL(id1, id2, len)
 end
 
 --武功范围
-function refw(wugong, level)
+function WugongArea(wugong, level)
   --无酒不欢：参数说明
   --m1为移动范围斜向延伸：
 	--0：延伸为直线距离-1，1：延伸至直线距离，2：延伸为0 3：移动范围固定为自身周围8格
@@ -12592,12 +12592,11 @@ function refw(wugong, level)
 		m2 = 2
 		a1 = 0
 		a2 = 0
-		m3 = 1
 	elseif fightscope == 2 then
 		m1 = 0
 		m2 = 2
-		a1 = 3
-		a2 = 1
+		a1 = 0
+		a2 = 0
 		m3 = 1
 	elseif fightscope == 3 then
 		m1 = 0

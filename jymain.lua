@@ -275,7 +275,7 @@ function NewMenu_Status()
     if r > 0 then
         ShowPersonStatus(r)
 		local pid = JY.Base["队伍" .. r]
-		if JY.Person[pid]["等级"] < JY.Base["天书数量"] then
+		if JY.Person[pid]["等级"] < 12 then --JY.Base["天书数量"] then
 			ClsN()
 			lib.LoadPNG(1, 1000 * 2 , 0 , 0, 1)
 			BookShelf(pid)
