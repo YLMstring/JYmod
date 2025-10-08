@@ -8292,6 +8292,7 @@ end
 --战斗主函数
 function WarMain(warid, isexp)
 	WarLoad(warid)			--初始化战斗数据
+	JY.SubScene = WAR.Data["地图"]
 	WarSelectTeam_Enhance()	--选择我方（优化版）
 	WarSelectEnemy()		--选择敌人
 
