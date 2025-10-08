@@ -8784,51 +8784,12 @@ function WarMain(warid, isexp)
         else
         	--计算移动步数
 			WAR.Person[p]["移动步数"] = getnewmove(JY.Person[WAR.Person[p]["人物编号"]]["暗器技巧"])
-
-			--毒王中毒移动能力补偿
-			if id == 0 and JY.Base["标准"] == 9 then
-				WAR.Person[p]["移动步数"] = WAR.Person[p]["移动步数"] + math.modf(JY.Person[id]["中毒程度"] / 50)
-			end
-			for j = 0, WAR.PersonNum - 1 do
-				--小昭，敌人移步数少三格
-				if match_ID(WAR.Person[j]["人物编号"], 66) and WAR.Person[j]["死亡"] == false and WAR.Person[j]["我方"] ~= WAR.Person[p]["我方"] then
-					WAR.Person[p]["移动步数"] = WAR.Person[p]["移动步数"] - 3
-				end
-			end
-			--天罗地网，柔网势，敌人移动减一格
-			if WAR.TLDW[WAR.Person[p]["人物编号"]] ~= nil and WAR.TLDW[WAR.Person[p]["人物编号"]] == 1 then
-				WAR.Person[p]["移动步数"] = WAR.Person[p]["移动步数"] - 1
-				WAR.TLDW[WAR.Person[p]["人物编号"]] = nil
-			end
-			if WAR.Person[p]["移动步数"] < 1 then
-				WAR.Person[p]["移动步数"] = 1
-			end
-			--令狐冲，灭绝，血刀老祖，阿凡提，神雕移动+3格
-			if match_ID(id, 35) or match_ID(id, 6) or match_ID(id, 97) or match_ID(id, 606) or match_ID(id, 628) then
-				WAR.Person[p]["移动步数"] = WAR.Person[p]["移动步数"] + 3
-			end
-			--张三丰，移动至少8格
-			if match_ID(id, 5) and WAR.Person[p]["移动步数"] < 8 then
-				WAR.Person[p]["移动步数"] = 8
-			end
-			--主运飞天，凌波，天罗，移动+1
-			if Curr_QG(id,145) or Curr_QG(id,147) or Curr_QG(id,148) then
-				WAR.Person[p]["移动步数"] = WAR.Person[p]["移动步数"] + 1
-			end
-			--主运神行，瞬息，移动+2
-			if Curr_QG(id,146) or Curr_QG(id,150) then
-				WAR.Person[p]["移动步数"] = WAR.Person[p]["移动步数"] + 2
-			end
-			--主角学会迷踪步后，移动+1
-			if id == 0 and JY.Person[615]["论剑奖励"] == 1 then
-				WAR.Person[p]["移动步数"] = WAR.Person[p]["移动步数"] + 1
-			end
         end
 
-        --最大移动步数10
+        --[[最大移动步数10
         if WAR.Person[p]["移动步数"] > 10 then
 			WAR.Person[p]["移动步数"] = 10
-        end
+        end]]
 
         WAR.ShowHead = 0
         WarDrawMap(0)
