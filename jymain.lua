@@ -231,7 +231,8 @@ function NewMainCycle()
 		if mainOption == 1 then
 			--自动档
 			SaveRecord(10)
-			JY.SubScene = 28
+			WarLoad(battles[battlenum])
+			JY.SubScene = WAR.Data["地图"]
 			if WarMain(battles[battlenum], 0) == true then
 				JY.Base["天书数量"] = JY.Base["天书数量"] + 1
 				--这里还要做一个游戏结束确认 天书
