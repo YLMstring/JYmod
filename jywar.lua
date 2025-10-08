@@ -8480,8 +8480,8 @@ function WarMain(warid, isexp)
 
 	--轻功对移动格子的计算
 	--x为战场轻功，y为体力
-	local function getnewmove(x, y)
-		local mob = (x - 20) / 10
+	local function getnewmove(x)
+		local mob = x
 		return math.modf(mob)
 	end
 	local function getdelay(x, y)
@@ -8567,10 +8567,10 @@ function WarMain(warid, isexp)
 		end
 
 		--移动步数在此
-		WAR.Person[i]["移动步数"] = getnewmove(WAR.Person[i]["轻功"], 0)
-		if WAR.Person[i]["移动步数"] < 1 then
+		WAR.Person[i]["移动步数"] = getnewmove(JY.Person[WAR.Person[i]["人物编号"]]["暗器技巧"])
+		--[[if WAR.Person[i]["移动步数"] < 1 then
 			WAR.Person[i]["移动步数"] = 1
-		end
+		end]]
 	end
 
 	--携带物品的初始化
@@ -8783,7 +8783,7 @@ function WarMain(warid, isexp)
         	WAR.L_NOT_MOVE[WAR.Person[p]["人物编号"]] = nil
         else
         	--计算移动步数
-			WAR.Person[p]["移动步数"] = getnewmove(WAR.Person[p]["轻功"], 0)
+			WAR.Person[p]["移动步数"] = getnewmove(JY.Person[WAR.Person[p]["人物编号"]]["暗器技巧"])
 
 			--毒王中毒移动能力补偿
 			if id == 0 and JY.Base["标准"] == 9 then
