@@ -414,7 +414,7 @@ end
 
 function Generate12Battles()
 	local p = JY.Person[642]
-	p["武功等级1"] = 11;
+	p["武功等级1"] = 50;
 	p["武功等级2"] = 99;
 	p["武功等级3"] = 202;
 	p["武功等级4"] = 203;
