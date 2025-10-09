@@ -872,9 +872,7 @@ function War_WugongHurtLife(enemyid, wugong, level, ang, x, y)
 	end]]
 
 	--无酒不欢：伤害的结算到此为止，扣除被攻击方血量
-	if eid ~= 79 then
-		JY.Person[eid]["生命"] = JY.Person[eid]["生命"] - hurt
-	end
+	JY.Person[eid]["生命"] = JY.Person[eid]["生命"] - hurt
 	--人物死亡
 	if JY.Person[eid]["生命"] < 0 then
 		JY.Person[eid]["生命"] = 0
