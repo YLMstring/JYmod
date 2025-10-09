@@ -8272,20 +8272,19 @@ function WarNewLand0()
 	WarNewLand(baguax, baguay)
 end
 
---黄蓉：奇门遁甲
 function WarNewLand(x, y)
 	--1绿色，2红色，3蓝色，4紫色
 	CleanWarMap(6,-1);
 
 	--在周围绘制奇阵
-	SetWarMap(x + math.random(8), y + math.random(8), 6, math.random(2, 3));
-	SetWarMap(x + math.random(8), y + math.random(8), 6, math.random(2, 3));
-	SetWarMap(x + math.random(8), y + math.random(8), 6, math.random(2, 3));
-	SetWarMap(x + math.random(8), y + math.random(8), 6, math.random(2, 3));
-	SetWarMap(x + math.random(8), y + math.random(8), 6, math.random(2, 3));
-	SetWarMap(x + math.random(8), y + math.random(8), 6, math.random(2, 3));
-	SetWarMap(x + math.random(8), y + math.random(8), 6, math.random(2, 3));
-	SetWarMap(x + math.random(8), y + math.random(8), 6, math.random(2, 3));
+	SetWarMap(x + math.random(-4, 4), y + math.random(-4, 4), 6, math.random(2, 3));
+	SetWarMap(x + math.random(-4, 4), y + math.random(-4, 4), 6, math.random(2, 3));
+	SetWarMap(x + math.random(-4, 4), y + math.random(-4, 4), 6, math.random(2, 3));
+	SetWarMap(x + math.random(-4, 4), y + math.random(-4, 4), 6, math.random(2, 3));
+	SetWarMap(x + math.random(-4, 4), y + math.random(-4, 4), 6, math.random(2, 3));
+	SetWarMap(x + math.random(-4, 4), y + math.random(-4, 4), 6, math.random(2, 3));
+	SetWarMap(x + math.random(-4, 4), y + math.random(-4, 4), 6, math.random(2, 3));
+	SetWarMap(x + math.random(-4, 4), y + math.random(-4, 4), 6, math.random(2, 3));
 end
 
 --战斗主函数
