@@ -770,16 +770,16 @@ function GetWugongDescription(wugong)
 		health = "气血 "..JY.Wugong[wugong]["攻击力5"].." "
 	end
 	if JY.Wugong[wugong]["攻击力6"] ~= 0 then
-		health = "内力 "..JY.Wugong[wugong]["攻击力6"].." "
+		qi = "内力 "..JY.Wugong[wugong]["攻击力6"].." "
 	end
 	if JY.Wugong[wugong]["攻击力7"] ~= 0 then
-		health = "力道 "..JY.Wugong[wugong]["攻击力7"].." "
+		atk = "力道 "..JY.Wugong[wugong]["攻击力7"].." "
 	end
 	if JY.Wugong[wugong]["攻击力8"] ~= 0 then
-		health = "护体 "..JY.Wugong[wugong]["攻击力8"].." "
+		def = "护体 "..JY.Wugong[wugong]["攻击力8"].." "
 	end
 	if JY.Wugong[wugong]["攻击力9"] ~= 0 then
-		health = "迅捷 "..JY.Wugong[wugong]["攻击力9"].." "
+		dex = "迅捷 "..JY.Wugong[wugong]["攻击力9"].." "
 	end
 	local mechanic = "这是机制文本"
 	local flavor = "这是风味文本"

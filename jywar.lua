@@ -12589,13 +12589,14 @@ function WugongArea(wugong, level)
 		a1 = 0
 		a2 = 0
 	elseif fightscope == 1 then
-		m1 = 2
+		m1 = 0
 		m2 = 2
 		a1 = 0
 		a2 = 0
+		m3 = 1
 	elseif fightscope == 2 then
-		m1 = 0
-		m2 = 2
+		m1 = 2
+		m2 = 3
 		a1 = 0
 		a2 = 0
 		m3 = 1
