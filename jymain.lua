@@ -748,7 +748,43 @@ function CheckWugongProgress(p)
 end
 
 function GetWugongDescription(wugong)
-	return "这是武功描述"
+	local name = JY.Wugong[wugong]["名称"]
+	local type = JY.Wugong[wugong]["武功类型"]
+	local levels = {"黄阶", "玄阶", "地阶", "天阶"}
+	local typename = "杂学"
+	local move = ""
+	if type < 6 then
+		typename = levels[math.min(JY.Wugong[wugong]["攻击力10"], 4)]
+	elseif type == 6 then
+		typename = "心法"
+	elseif type == 7 then
+		typename = "轻功"
+		move = "轻灵 1"
+	end
+	local health = ""
+	local qi = ""
+	local atk = ""
+	local def = ""
+	local dex = ""
+	if JY.Wugong[wugong]["攻击力5"] ~= 0 then
+		health = "气血 "..JY.Wugong[wugong]["攻击力5"].." "
+	end
+	if JY.Wugong[wugong]["攻击力6"] ~= 0 then
+		health = "内力 "..JY.Wugong[wugong]["攻击力6"].." "
+	end
+	if JY.Wugong[wugong]["攻击力7"] ~= 0 then
+		health = "力道 "..JY.Wugong[wugong]["攻击力7"].." "
+	end
+	if JY.Wugong[wugong]["攻击力8"] ~= 0 then
+		health = "护体 "..JY.Wugong[wugong]["攻击力8"].." "
+	end
+	if JY.Wugong[wugong]["攻击力9"] ~= 0 then
+		health = "迅捷 "..JY.Wugong[wugong]["攻击力9"].." "
+	end
+	local mechanic = "这是机制文本"
+	local flavor = "这是风味文本"
+	local str = name.." "..typename.."*"..flavor.."*"..health..qi..atk..def..dex..move.."*"..mechanic
+	return str
 end
 
 --无酒不欢：机率判定函数
@@ -2520,6 +2556,8 @@ function ShowPersonStatus_sub(id, page, istart, tfid, max_row, case, AI_s1, AI_s
 					DrawString(x1 + size * 6 -6, y1 + h * (i), T[level], C_WHITE, size)
 				elseif JY.Wugong[wugong]["武功类型"] == 7 then
 					DrawString(x1 + size * 6 -6, y1 + h * (i), "轻", C_WHITE, size)
+				elseif JY.Wugong[wugong]["武功类型"] == 8 then
+					DrawString(x1 + size * 6 -6, y1 + h * (i), "学", C_WHITE, size)
 				else
 					DrawString(x1 + size * 6 -6, y1 + h * (i), "心", C_WHITE, size)
 				end
@@ -8619,6 +8657,12 @@ function get_skill_power(personid, wugongid, wugonglvl)
 	end
 	if power == 4 then
 		powerNew = 1.6
+	end
+	local p = personid
+	local abilitylist = {JY.Person[p]["拳掌功夫"],JY.Person[p]["指法技巧"],JY.Person[p]["御剑能力"],JY.Person[p]["耍刀技巧"],JY.Person[p]["特殊兵器"]}
+	local WGLX = JY.Wugong[wugongid]["武功类型"]
+	if WGLX < 6 and abilitylist[WGLX] < power then
+		powerNew = 1
 	end
 	return math.modf(powerNew * JY.Person[personid]["攻击力"])
 end
