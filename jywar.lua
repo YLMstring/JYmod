@@ -6924,12 +6924,6 @@ function War_KfMove(movefanwei, atkfanwei, wugong)
   if kind ~= nil then
     if kind == 0 then
       War_CalMoveStep(WAR.CurID, len, 1)
-	  if negativelen > 0 then
-		SetWarMap(x0 + 1, y0, 3, 255)
-		SetWarMap(x0 - 1, y0, 3, 255)
-		SetWarMap(x0, y0 + 1, 3, 255)
-		SetWarMap(x0, y0 - 1, 3, 255)
-	  end
 	elseif kind == 1 then
 	    War_CalMoveStep(WAR.CurID, len * 2, 1)
 	    for r = 1, len * 2 do
@@ -6953,12 +6947,6 @@ function War_KfMove(movefanwei, atkfanwei, wugong)
 	        SetWarMap(x0 - i, y0 - j, 3, 255)
 	      end
 	    end
-		if negativelen > 0 then
-		SetWarMap(x0 + 1, y0, 3, 255)
-		SetWarMap(x0 - 1, y0, 3, 255)
-		SetWarMap(x0, y0 + 1, 3, 255)
-		SetWarMap(x0, y0 - 1, 3, 255)
-	  	end
 	elseif kind == 3 then
 	    War_CalMoveStep(WAR.CurID, 2, 1)
 	    SetWarMap(x0 + 2, y0, 3, 255)
@@ -7108,9 +7096,6 @@ function War_KfMove(movefanwei, atkfanwei, wugong)
 
     local key, ktype, mx, my = WaitKey(1)
 	local movetime = 1
-	if negativelen > 0 and x == x0 and y == y0 then
-		movetime = 2
-	end
     if key == VK_UP then
       y2 = y - movetime
     elseif key == VK_DOWN then
@@ -7119,21 +7104,16 @@ function War_KfMove(movefanwei, atkfanwei, wugong)
       x2 = x - movetime
     elseif key == VK_RIGHT then
       x2 = x + movetime
-	elseif key == VK_Q then
-	  y2 = y - 1
-      x2 = x - 1
-	elseif key == VK_E then
-      y2 = y - 1
-      x2 = x + 1
-	elseif key == VK_Z then
-      y2 = y + 1
-      x2 = x - 1
-	elseif key == VK_C then
-      y2 = y + 1
-      x2 = x + 1
     elseif (key == VK_SPACE or key == VK_RETURN) then
 		if WAR.Person[GetWarMap(x, y, 2)] ~= nil and WAR.Person[GetWarMap(x, y, 2)]["我方"] == false then
-      		return x, y
+			local distance = math.abs(x-x0) + math.abs(y-y0)
+			if distance <= negativelen then
+				DrawStrBoxWaitKey("该武功最小距离为"..(negativelen + 1), C_WHITE, CC.DefaultFont)
+			else
+				return x, y
+			end
+		else
+			DrawStrBoxWaitKey("需指定敌人为目标", C_WHITE, CC.DefaultFont)
 		end
     elseif key == VK_ESCAPE or ktype == 4 then
       return nil
@@ -8276,15 +8256,36 @@ PNLBD[298] = function()
 end
 
 --黄蓉：奇门遁甲
+function WarNewLand0()
+	local baguax = 0
+	local baguay = 0
+	local lives = 0
+	for j = 0, WAR.PersonNum - 1 do
+		if not WAR.Person[j]["死亡"] then
+			baguax = baguax + WAR.Person[j]["坐标X"]
+			baguay = baguay + WAR.Person[j]["坐标Y"]
+			lives = lives + 1
+		end
+	end
+	baguax = math.modf(baguax / lives)
+	baguay = math.modf(baguay / lives)
+	WarNewLand(baguax, baguay)
+end
+
+--黄蓉：奇门遁甲
 function WarNewLand(x, y)
 	--1绿色，2红色，3蓝色，4紫色
 	CleanWarMap(6,-1);
 
-	--在自身周围绘制奇阵
-	SetWarMap(x + math.random(4), y + math.random(4), 6, math.random(2, 3));
-	SetWarMap(x + math.random(4), y + math.random(4), 6, math.random(2, 3));
-	SetWarMap(x + math.random(4), y + math.random(4), 6, math.random(2, 3));
-	SetWarMap(x + math.random(4), y + math.random(4), 6, math.random(2, 3));
+	--在周围绘制奇阵
+	SetWarMap(x + math.random(8), y + math.random(8), 6, math.random(2, 3));
+	SetWarMap(x + math.random(8), y + math.random(8), 6, math.random(2, 3));
+	SetWarMap(x + math.random(8), y + math.random(8), 6, math.random(2, 3));
+	SetWarMap(x + math.random(8), y + math.random(8), 6, math.random(2, 3));
+	SetWarMap(x + math.random(8), y + math.random(8), 6, math.random(2, 3));
+	SetWarMap(x + math.random(8), y + math.random(8), 6, math.random(2, 3));
+	SetWarMap(x + math.random(8), y + math.random(8), 6, math.random(2, 3));
+	SetWarMap(x + math.random(8), y + math.random(8), 6, math.random(2, 3));
 end
 
 --战斗主函数
@@ -8743,15 +8744,7 @@ function WarMain(warid, isexp)
 	--Pre_Yungong()	--无酒不欢：战前运功
 
 	--黄蓉奇门遁甲
-	local baguax = 0
-	local baguay = 0
-	for j = 0, WAR.PersonNum - 1 do
-		baguax = baguax + WAR.Person[j]["坐标X"]
-		baguay = baguay + WAR.Person[j]["坐标Y"]
-	end
-	baguax = math.modf(baguax / WAR.PersonNum)
-	baguay = math.modf(baguay / WAR.PersonNum)
-	WarNewLand(baguax, baguay)
+	WarNewLand0()
 
 	WAR.Delay = GetJiqi()
 	local startt, endt = lib.GetTime()
@@ -8827,7 +8820,7 @@ function WarMain(warid, isexp)
 
 		--重置黄蓉八卦位置
 		if GetWarMap(WAR.Person[WAR.CurID]["坐标X"], WAR.Person[WAR.CurID]["坐标Y"], 6) > 0 then
-			WarNewLand(WAR.Person[WAR.CurID]["坐标X"], WAR.Person[WAR.CurID]["坐标Y"])
+			WarNewLand0()
 		end
 
 		--阿青，行动前内伤中毒清0
