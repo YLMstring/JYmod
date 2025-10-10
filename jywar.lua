@@ -318,16 +318,18 @@ function GetAtkNum(x, y, warid, kungfuid)
 	target.x = 0
 	target.y = 0
 	target.p = 0
+	target.id = 9999
 	for i = 1, #enemys do
 		local mid = GetWarMap(enemys[i].x + x, enemys[i].y + y, 2)
 		local eid = WAR.Person[mid]["人物编号"]
-		local dmg = War_CalculateDamage(pid, eid, kungfuid)
+		local dmg = War_PredictDamage(pid, eid, kungfuid)
 		local ehp = JY.Person[eid]["生命"]
 		local rate = dmg * 1000 / ehp
 		if rate > target.p then
 			target.x = enemys[i].x + x
 			target.y = enemys[i].y + y
 			target.p = rate
+			target.id = mid
 		end
 	end
 	--奇门遁甲
@@ -335,6 +337,12 @@ function GetAtkNum(x, y, warid, kungfuid)
 		target.p = target.p * 1.1
 	elseif GetWarMap(x, y, 6) == 2 then
 		target.p = target.p * 1.01
+	end
+
+	if target.p > 0 and kungfuid == 27 then
+		if War_Direct(x, y, target.x, target.y) == WAR.Person[target.id]["人方向"] then
+			target.p = target.p * 1.3
+		end
 	end
 
  	return target.p, target.x, target.y
@@ -831,15 +839,12 @@ function War_WugongHurtLife(enemyid, wugong, level, ang, x, y)
 	--无酒不欢：记录人物血量
 	WAR.Person[enemyid]["Life_Before_Hit"] = JY.Person[eid]["生命"]
 
-	--是否为敌人
-	local function DWPD()
-		--逆转乾坤状态下默认为敌人
-		if WAR.Person[enemyid]["我方"] ~= WAR.Person[WAR.CurID]["我方"] or WAR.NZQK > 0 then
-			return true
-		else
-			return false
-		end
-	end
+	--松风剑法背刺效果
+    if wugong == 27 and IsBackstab(WAR.CurID, enemyid) then
+		JY.Person[eid]["受伤程度"] = JY.Person[eid]["受伤程度"] + 10
+		WAR.Person[enemyid]["特效动画"] = 93
+		Set_Eff_Text(enemyid, "特效文字2", "青城摧心掌")
+    end
 
 	local hurt = War_CalculateDamage(pid, eid, wugong)
 	JY.Person[pid]["主运内功"] = wugong
@@ -1845,20 +1850,29 @@ function WarShowHead(id)
 		y1 = y1 + 3*(CC.RowPixel + size) +12
 		DrawBox(x1-7, y1, x1 + width-7 , y1 + size*6, C_GOLD)
 		DrawString(x1+2, y1 + (size + CC.RowPixel) - 18, "进攻-" .. JY.Wugong[wugong]["名称"], C_WHITE, size)
-		DrawString(x1+2, y1 + 2 * (size + CC.RowPixel) - 18, "预计伤害：" .. (fightnum * War_CalculateDamage(WAR.PREVIEW, pid, wugong)), C_WHITE, size)
+		DrawString(x1+2, y1 + 2 * (size + CC.RowPixel) - 18, "预计伤害：" .. (fightnum * War_PredictDamage(WAR.PREVIEW, pid, wugong)), C_WHITE, size)
 		local wugong2 = JY.Person[pid]["主运内功"]
 		if wugong2 > 0 then
-			local fanjinum = War_CalculateDamage(pid, WAR.PREVIEW, wugong2) * fightnum2
+			local fanjinum = War_PredictDamage(pid, WAR.PREVIEW, wugong2) * fightnum2
 			DrawString(x1+2, y1 + 3 * (size + CC.RowPixel) - 18, "若被反击：" .. fanjinum, C_WHITE, size)
 			DrawString(x1+2, y1 + 4 * (size + CC.RowPixel) - 18, "剩余气血：" .. (JY.Person[WAR.PREVIEW]["生命"] - fanjinum), C_WHITE, size)
 		end
 	end
 end
 
+function War_PredictDamage(pid, eid, wugong)
+	local def = JY.Person[eid]["防御力"]
+	local true_WL = get_skill_power(pid, wugong)
+	local dmg = math.max(true_WL - def, 1)
+	return dmg
+end
+
 function War_CalculateDamage(pid, eid, wugong)
 	local def = JY.Person[eid]["防御力"]
 	local true_WL = get_skill_power(pid, wugong)
-	return math.max(true_WL - def, 1)
+	local dmg = math.max(true_WL - def, 1)
+	dmg = dmg + JY.Person[eid]["受伤程度"]
+	return dmg
 end
 
 --自动选择合适的武功
@@ -8583,6 +8597,14 @@ function WarMain(warid, isexp)
 
 		--移动步数在此
 		WAR.Person[i]["移动步数"] = getnewmove(JY.Person[WAR.Person[i]["人物编号"]]["暗器技巧"])
+		--余沧海青城掌门
+		if WAR.Person[i]["人物编号"] == 24 then
+			for j = 0, WAR.PersonNum - 1 do
+				if i ~= j and WAR.Person[j]["我方"] == true and JY.Person[WAR.Person[j]["人物编号"]]["生命"] > 0 then
+					WAR.Person[i]["移动步数"] = WAR.Person[i]["移动步数"] + 1
+				end
+			end
+		end
 		--[[if WAR.Person[i]["移动步数"] < 1 then
 			WAR.Person[i]["移动步数"] = 1
 		end]]
@@ -8974,6 +8996,11 @@ function WarMain(warid, isexp)
 				War_Show_Count(WAR.CurID, "八卦逆位气血回复");
 			end
 
+			local NS = 5
+			WAR.Person[WAR.CurID]["内伤点数"] = (WAR.Person[WAR.CurID]["内伤点数"] or 0) + AddPersonAttrib(id, "受伤程度", -NS)
+			Cls();
+			War_Show_Count(WAR.CurID, "内伤恢复");
+
 	        --紫霞神功行动后，回复内力
 			if PersonKF(id, 89) then
 				local HN;
@@ -8985,15 +9012,6 @@ function WarMain(warid, isexp)
 				WAR.Person[WAR.CurID]["内力点数"] = AddPersonAttrib(id, "内力", HN);
 				Cls();
 				War_Show_Count(WAR.CurID, "紫霞神功回复内力");
-			end
-
-	        --混元功行动后，减少内伤
-			if PersonKF(id, 90) then
-				local NS;
-				NS = 5 + math.modf(JY.Person[id]["受伤程度"]/10)
-				WAR.Person[WAR.CurID]["内伤点数"] = (WAR.Person[WAR.CurID]["内伤点数"] or 0) + AddPersonAttrib(id, "受伤程度", -NS)
-				Cls();
-				War_Show_Count(WAR.CurID, "混元功回复内伤");
 			end
 
 	        --鳄皮护甲 每回合解毒
@@ -10156,6 +10174,11 @@ function War_DecPoisonMenu()
 	WAR.ShowHead = 1
 	Cls()
 	return r
+end
+
+--是否背刺
+function IsBackstab(warpid, wareid)
+	return WAR.Person[warpid]["人方向"] == WAR.Person[wareid]["人方向"]
 end
 
 --判断攻击后面对的方向
