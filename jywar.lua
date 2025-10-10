@@ -71,10 +71,10 @@ function AIThink(kfid)
 		for i = 1, num do
 			if WAR.Person[WAR.CurID]["我方"] == true then
 				--flag: approach enemies.
-				atkarray[i].p = atkarray[i].p + GetMovePoint(atkarray[i].x, atkarray[i].y)
+				atkarray[i].p = atkarray[i].p + GetMovePoint(atkarray[i].x, atkarray[i].y) / 10000
 			else
 				--flag: aviod enemies. avoiding as many enemies as possible while retaining targeting the spot with higher threat
-				atkarray[i].p = atkarray[i].p + GetMovePoint(atkarray[i].x, atkarray[i].y, 1)
+				atkarray[i].p = atkarray[i].p + GetMovePoint(atkarray[i].x, atkarray[i].y, 1) / 10000
 			end
 		end
 		for i = 1, num - 1 do
@@ -10464,8 +10464,8 @@ function War_MovePerson(x, y, flag)
 			end
 		end
 	end
-	--主运轻功的话遇到ZOC移动不清0，反之清0，余沧海也不
-	if JY.Person[WAR.Person[WAR.CurID]["人物编号"]]["主运轻功"] == 0 or WAR.Person[WAR.CurID]["人物编号"] == 27 then
+	--主运轻功的话遇到ZOC移动不清0，反之清0
+	if JY.Person[WAR.Person[WAR.CurID]["人物编号"]]["主运轻功"] == 0 then
 		local fujinnum = function(tx, ty)
 			local tnum = 0
 			local wofang = WAR.Person[WAR.CurID]["我方"]
