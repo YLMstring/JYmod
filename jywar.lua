@@ -8196,8 +8196,11 @@ end
 function WarFixBack()
 	for j = 0, WAR.PersonNum - 1 do
 		local i = War_AutoSelectEnemy_near(j)
-		WAR.Person[j]["人方向"] = War_Direct(WAR.Person[j]["坐标X"], WAR.Person[j]["坐标Y"],
-			WAR.Person[i]["坐标X"], WAR.Person[i]["坐标Y"])
+		lib.Debug(j.."start"..i)
+		if j >= 0 then
+			WAR.Person[j]["人方向"] = War_Direct(WAR.Person[i]["坐标X"], WAR.Person[i]["坐标Y"],
+				WAR.Person[j]["坐标X"], WAR.Person[j]["坐标Y"])
+		end
 	end
 end
 
@@ -8451,7 +8454,7 @@ function WarMain(warid, isexp)
 				end
 			end
 		end
-		return 
+		return mov
 	end
 	local function getdelay(x, y)
 		return math.modf(1.5 * (x / y + y - 3))
