@@ -8192,6 +8192,15 @@ PNLBD[298] = function()
 	JY.Person[19]["武功等级3"] = 900
 end
 
+--战斗开始修正朝向问题
+function WarFixBack()
+	for j = 0, WAR.PersonNum - 1 do
+		local i = War_AutoSelectEnemy_near(j)
+		WAR.Person[j]["人方向"] = War_Direct(WAR.Person[j]["坐标X"], WAR.Person[j]["坐标Y"],
+			WAR.Person[i]["坐标X"], WAR.Person[i]["坐标Y"])
+	end
+end
+
 --黄蓉：奇门遁甲
 function WarNewLand0()
 	local baguax = 0
@@ -8687,8 +8696,9 @@ function WarMain(warid, isexp)
 	buzhen()
 	--Pre_Yungong()	--无酒不欢：战前运功
 
-	--黄蓉奇门遁甲
+	--黄蓉奇门遁甲在此
 	WarNewLand0()
+	WarFixBack()
 
 	WAR.Delay = GetJiqi()
 	local startt, endt = lib.GetTime()
@@ -12517,12 +12527,15 @@ function War_AutoSelectEnemy()
 end
 
 --选择最近敌人
-function War_AutoSelectEnemy_near()
-	War_CalMoveStep(WAR.CurID, 100, 1)			--标记每个位置的步数
+function War_AutoSelectEnemy_near(id)
+	if id == nil then
+		id = WAR.CurID
+	end
+	War_CalMoveStep(id, 100, 1)			--标记每个位置的步数
 	local maxDest = math.huge
 	local nearid = -1
 	for i = 0, WAR.PersonNum - 1 do		--查找最近步数的敌人
-		if WAR.Person[WAR.CurID]["我方"] ~= WAR.Person[i]["我方"] and WAR.Person[i]["死亡"] == false then
+		if WAR.Person[id]["我方"] ~= WAR.Person[i]["我方"] and WAR.Person[i]["死亡"] == false then
 			local step = GetWarMap(WAR.Person[i]["坐标X"], WAR.Person[i]["坐标Y"], 3)
 			if step < maxDest then
 				nearid = i
