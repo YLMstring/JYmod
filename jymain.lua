@@ -783,6 +783,10 @@ function GetWugongDescription(wugong)
 	end
 	local mechanic = "这是机制文本"
 	local flavor = "这是风味文本"
+	if wugong == 27 then
+		mechanic = "背刺：灼烧10"
+		flavor = "青城派剑法，刚劲轻灵，兼而有之，*如松之劲，如风之轻"
+	end
 	local str = name.." "..typename.."*"..flavor.."*"..health..qi..atk..def..dex..move.."*"..mechanic
 	return str
 end
