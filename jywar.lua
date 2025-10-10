@@ -10641,9 +10641,6 @@ function War_ThinkDoctor()
   if JY.Person[pid]["体力"] < 50 or JY.Person[pid]["医疗能力"] < 20 then
     return -1
   end
-  if JY.Person[pid]["医疗能力"] + 20 < JY.Person[pid]["受伤程度"] then
-    return -1
-  end
   local rate = -1
   local v = JY.Person[pid]["生命最大值"] - JY.Person[pid]["生命"]
   if JY.Person[pid]["医疗能力"] < v / 4 then
@@ -12110,7 +12107,7 @@ function DrawTimeBar()
 					end
 				end
 
-				--葵花尊者，恢复
+				--[[葵花尊者，恢复
 				if WAR.ZDDH == 54 and JY.Person[27]["品德"] == 20 and WAR.MCRS == 1 and jqid == 27 then
 					JY.Person[jqid]["生命"] = JY.Person[jqid]["生命"] + 5
 					JY.Person[jqid]["内力"] = JY.Person[jqid]["内力"] + 10
@@ -12143,7 +12140,7 @@ function DrawTimeBar()
 					if JY.Person[jqid]["中毒程度"] > 100 then
 						JY.Person[jqid]["中毒程度"] = 100
 					end
-				end
+				end]]
 
 				--轻云蔽月时序计数
 				if WAR.QYBY[jqid] ~= nil then
