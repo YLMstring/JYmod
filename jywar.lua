@@ -8441,9 +8441,17 @@ function WarMain(warid, isexp)
 
 	--轻功对移动格子的计算
 	--x为战场轻功，y为体力
-	local function getnewmove(x)
-		local mob = x
-		return math.modf(mob)
+	local function getnewmove(id)
+		local mov = JY.Person[WAR.Person[id]["人物编号"]]["暗器技巧"]
+		--余沧海青城掌门
+		if WAR.Person[id]["人物编号"] == 24 then
+			for j = 0, WAR.PersonNum - 1 do
+				if id ~= j and WAR.Person[j]["我方"] == true and JY.Person[WAR.Person[j]["人物编号"]]["生命"] > 0 then
+					mov = mov + 1
+				end
+			end
+		end
+		return 
 	end
 	local function getdelay(x, y)
 		return math.modf(1.5 * (x / y + y - 3))
@@ -8528,15 +8536,8 @@ function WarMain(warid, isexp)
 		end
 
 		--移动步数在此
-		WAR.Person[i]["移动步数"] = getnewmove(JY.Person[WAR.Person[i]["人物编号"]]["暗器技巧"])
-		--余沧海青城掌门
-		if WAR.Person[i]["人物编号"] == 24 then
-			for j = 0, WAR.PersonNum - 1 do
-				if i ~= j and WAR.Person[j]["我方"] == true and JY.Person[WAR.Person[j]["人物编号"]]["生命"] > 0 then
-					WAR.Person[i]["移动步数"] = WAR.Person[i]["移动步数"] + 1
-				end
-			end
-		end
+		WAR.Person[i]["移动步数"] = getnewmove(i)
+		
 		--[[if WAR.Person[i]["移动步数"] < 1 then
 			WAR.Person[i]["移动步数"] = 1
 		end]]
@@ -8745,7 +8746,7 @@ function WarMain(warid, isexp)
         	WAR.L_NOT_MOVE[WAR.Person[p]["人物编号"]] = nil
         else
         	--计算移动步数
-			WAR.Person[p]["移动步数"] = getnewmove(JY.Person[WAR.Person[p]["人物编号"]]["暗器技巧"])
+			WAR.Person[p]["移动步数"] = getnewmove(p)
         end
 
         --[[最大移动步数10
