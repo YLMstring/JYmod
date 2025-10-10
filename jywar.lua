@@ -8197,9 +8197,10 @@ function WarFixBack()
 	for j = 0, WAR.PersonNum - 1 do
 		local i = War_AutoSelectEnemy_near(j)
 		lib.Debug(j.."start"..i)
-		if j >= 0 then
-			WAR.Person[j]["人方向"] = War_Direct(WAR.Person[i]["坐标X"], WAR.Person[i]["坐标Y"],
-				WAR.Person[j]["坐标X"], WAR.Person[j]["坐标Y"])
+		if i >= 0 then
+			WAR.Person[j]["人方向"] = War_Direct(WAR.Person[j]["坐标X"], WAR.Person[j]["坐标Y"],
+				WAR.Person[i]["坐标X"], WAR.Person[i]["坐标Y"])
+			WAR.Person[j]["贴图"] = WarCalPersonPic(j)
 		end
 	end
 end
@@ -8443,7 +8444,6 @@ function WarMain(warid, isexp)
 	end
 
 	--轻功对移动格子的计算
-	--x为战场轻功，y为体力
 	local function getnewmove(id)
 		local mov = JY.Person[WAR.Person[id]["人物编号"]]["暗器技巧"]
 		--余沧海青城掌门
@@ -10122,6 +10122,7 @@ end
 function War_Direct(x1, y1, x2, y2)
 	local x = x2 - x1
 	local y = y2 - y1
+	lib.Debug("x "..x.."  y "..y)
 	if x == 0 and y == 0 then
 		return WAR.Person[WAR.CurID]["人方向"]
 	end
@@ -10463,8 +10464,8 @@ function War_MovePerson(x, y, flag)
 			end
 		end
 	end
-	--主运轻功的话遇到ZOC移动不清0，反之清0
-	if JY.Person[WAR.Person[WAR.CurID]["人物编号"]]["主运轻功"] == 0 then
+	--主运轻功的话遇到ZOC移动不清0，反之清0，余沧海也不
+	if JY.Person[WAR.Person[WAR.CurID]["人物编号"]]["主运轻功"] == 0 or WAR.Person[WAR.CurID]["人物编号"] == 27 then
 		local fujinnum = function(tx, ty)
 			local tnum = 0
 			local wofang = WAR.Person[WAR.CurID]["我方"]
