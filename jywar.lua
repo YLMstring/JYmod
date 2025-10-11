@@ -844,6 +844,8 @@ function War_WugongHurtLife(enemyid, wugong, level, ang, x, y)
 	if WAR.DZXY ~= 1 and WAR.Person[WAR.CurID]["我方"] ~= WAR.Person[enemyid]["我方"] and JY.Person[eid]["主运内功"] > 0 then
 		WAR.Person[enemyid]["反击武功"] = JY.Person[eid]["主运内功"]
 	end
+	--接下来的效果不影响友军
+	if WAR.Person[WAR.CurID]["我方"] ~= WAR.Person[enemyid]["我方"] then
 	--松风剑法背刺效果
     if wugong == 27 and IsBackstab(WAR.CurID, enemyid) then
 		JY.Person[eid]["受伤程度"] = JY.Person[eid]["受伤程度"] + 15
@@ -863,6 +865,7 @@ function War_WugongHurtLife(enemyid, wugong, level, ang, x, y)
 		WAR.Person[enemyid]["特效动画"] = 89
 		Set_Eff_Text(enemyid, "特效文字2", "飞沙走石十三式")
     end
+	end
 	--误伤打到自己人
 	--[[if WAR.Person[WAR.CurID]["我方"] == WAR.Person[enemyid]["我方"] then
 		--我方
