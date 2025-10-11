@@ -839,18 +839,30 @@ function War_WugongHurtLife(enemyid, wugong, level, ang, x, y)
 	--无酒不欢：记录人物血量
 	WAR.Person[enemyid]["Life_Before_Hit"] = JY.Person[eid]["生命"]
 
-	--松风剑法背刺效果
-    if wugong == 27 and IsBackstab(WAR.CurID, enemyid) then
-		JY.Person[eid]["受伤程度"] = JY.Person[eid]["受伤程度"] + 10
-		WAR.Person[enemyid]["特效动画"] = 93
-		Set_Eff_Text(enemyid, "特效文字2", "青城摧心掌")
-    end
-
 	local hurt = War_CalculateDamage(pid, eid, wugong)
 	JY.Person[pid]["主运内功"] = wugong
 	if WAR.DZXY ~= 1 and WAR.Person[WAR.CurID]["我方"] ~= WAR.Person[enemyid]["我方"] and JY.Person[eid]["主运内功"] > 0 then
 		WAR.Person[enemyid]["反击武功"] = JY.Person[eid]["主运内功"]
 	end
+	--松风剑法背刺效果
+    if wugong == 27 and IsBackstab(WAR.CurID, enemyid) then
+		JY.Person[eid]["受伤程度"] = JY.Person[eid]["受伤程度"] + 15
+		WAR.Person[enemyid]["特效动画"] = 93
+		Set_Eff_Text(enemyid, "特效文字2", "青城摧心掌")
+    end
+	--狂风刀法效果
+    if wugong == 55 and JY.Person[eid]["主运内功"] == 0 then
+		local blood55 = 10
+		local ally55 = GetAllyNum(enemyid)
+		if ally55 == 0 then
+			blood55 = 30
+		elseif ally55 == 1 then
+			blood55 = 20
+		end
+		AddBlood(eid, blood55)
+		WAR.Person[enemyid]["特效动画"] = 89
+		Set_Eff_Text(enemyid, "特效文字2", "飞沙走石十三式")
+    end
 	--误伤打到自己人
 	--[[if WAR.Person[WAR.CurID]["我方"] == WAR.Person[enemyid]["我方"] then
 		--我方
@@ -898,6 +910,25 @@ function War_WugongHurtLife(enemyid, wugong, level, ang, x, y)
 	end]]
 
 	return limitX(hurt, 0, hurt);
+end
+
+function AddBlood(eid, num)
+	if WAR.LXZT[eid] == nil then
+		WAR.LXZT[eid] = num
+	else
+		WAR.LXZT[eid] = WAR.LXZT[eid] + num
+	end
+	WAR.LXXS[eid] = 1
+end
+
+function GetAllyNum(warid)
+	local num = 0
+	for j = 0, WAR.PersonNum - 1 do
+		if warid ~= j and WAR.Person[j]["我方"] == true and JY.Person[WAR.Person[j]["人物编号"]]["生命"] > 0 then
+			num = num + 1
+		end
+	end
+	return num
 end
 
 -- 绘制战斗地图
@@ -1861,10 +1892,7 @@ function WarShowHead(id)
 end
 
 function War_PredictDamage(pid, eid, wugong)
-	local def = JY.Person[eid]["防御力"]
-	local true_WL = get_skill_power(pid, wugong)
-	local dmg = math.max(true_WL - def, 1)
-	return dmg
+	War_CalculateDamage(pid, eid, wugong)
 end
 
 function War_CalculateDamage(pid, eid, wugong)
@@ -8474,11 +8502,11 @@ function WarMain(warid, isexp)
 		local mov = JY.Person[WAR.Person[id]["人物编号"]]["暗器技巧"]
 		--余沧海青城掌门
 		if WAR.Person[id]["人物编号"] == 24 then
-			for j = 0, WAR.PersonNum - 1 do
-				if id ~= j and WAR.Person[j]["我方"] == true and JY.Person[WAR.Person[j]["人物编号"]]["生命"] > 0 then
-					mov = mov + 2
-				end
-			end
+			mov = mov + GetAllyNum(id) * 2
+		end
+		--田伯光万里独行
+		if WAR.Person[id]["人物编号"] == 29 then
+			mov = mov + 4
 		end
 		return mov
 	end
