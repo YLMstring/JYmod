@@ -8958,10 +8958,32 @@ function WarMain(warid, isexp)
 	        if WAR.ZYHB == 2 then
 				WAR.ZYHB = 0
 	        end
+			
+			local function EndTurnReal()
+				--回合结束消耗体力内力
+				if inteam(id) then
+					JY.Person[id]["体力"] = math.max(JY.Person[id]["体力"] - 1, 0)
+				end
+				NeiLiDamage(id, 100 - JY.Person[id]["体力"])
+
+				if GetWarMap(WAR.Person[WAR.CurID]["坐标X"], WAR.Person[WAR.CurID]["坐标Y"], 6) == 3 then
+					local heal_amount = math.modf((JY.Person[id]["生命最大值"] - JY.Person[id]["生命"]) * 0.16)
+					WAR.Person[WAR.CurID]["生命点数"] = AddPersonAttrib(id, "生命", heal_amount);
+					Cls();
+					War_Show_Count(WAR.CurID, "八卦逆位气血回复");
+				end
+
+				local NS = 5
+				WAR.Person[WAR.CurID]["内伤点数"] = (WAR.Person[WAR.CurID]["内伤点数"] or 0) + AddPersonAttrib(id, "受伤程度", -NS)
+				Cls();
+				War_Show_Count(WAR.CurID, "内伤恢复");
+			end
+
 			if WAR.Wait[id] == 1 then
 				WAR.Wait[id] = 0
 			else
-	        	WAR.Person[p].Time = WAR.Person[p].Time - 1000
+	        	EndTurnReal()
+				WAR.Person[p].Time = WAR.Person[p].Time - 1000
 	        	if WAR.Person[p].Time < -500 then
 	         		WAR.Person[p].Time = -500
 	        	end
@@ -8980,24 +9002,7 @@ function WarMain(warid, isexp)
 				Cls();
 				War_Show_Count(WAR.CurID, "罗汉伏魔功恢复生命");
 			end
-			--回合结束消耗体力内力
-			if inteam(id) then
-				JY.Person[id]["体力"] = math.max(JY.Person[id]["体力"] - 1, 0)
-			end
-			NeiLiDamage(id, 100 - JY.Person[id]["体力"])
-
-			if GetWarMap(WAR.Person[WAR.CurID]["坐标X"], WAR.Person[WAR.CurID]["坐标Y"], 6) == 3 then
-				local heal_amount = math.modf((JY.Person[id]["生命最大值"] - JY.Person[id]["生命"]) * 0.16)
-				WAR.Person[WAR.CurID]["生命点数"] = AddPersonAttrib(id, "生命", heal_amount);
-				Cls();
-				War_Show_Count(WAR.CurID, "八卦逆位气血回复");
-			end
-
-			local NS = 5
-			WAR.Person[WAR.CurID]["内伤点数"] = (WAR.Person[WAR.CurID]["内伤点数"] or 0) + AddPersonAttrib(id, "受伤程度", -NS)
-			Cls();
-			War_Show_Count(WAR.CurID, "内伤恢复");
-
+			
 	        --紫霞神功行动后，回复内力
 			if PersonKF(id, 89) then
 				local HN;
