@@ -12954,11 +12954,7 @@ function WarSelectTeam_Enhance()
 		WAR.MCRS = WAR.MCRS + 4
 	end]]
 
-	p[0]={name="全部选择"};
-
-	if T_Num>6 then
-		p[0]={name="自动选择"}
-	end
+	p[0]={name="随机选择"};
 
 	p[T_Num+1]={name="开始战斗"};
 	local leader=-1;
@@ -13032,19 +13028,17 @@ function WarSelectTeam_Enhance()
 			select=select+1;
 		elseif k==VK_SPACE or k==VK_RETURN then
 			if select==0 then
-				if p[0].name=="全部选择" or p[0].name=="自动选择" then
-					local zrs=T_Num
-					if zrs>6 then
-						zrs=6
-					end
-					for i=1,zrs do
-						if p[i].picked == 0 then
-							p[i].picked=2;
-							WAR.MCRS=WAR.MCRS+1
+				if p[0].name== "随机选择" then
+					while WAR.MCRS < 6 do
+						local zrs = T_Num
+						local lucky = math.random(zrs)
+						if p[lucky].picked == 0 then
+							p[lucky].picked = 2;
+							WAR.MCRS= WAR.MCRS + 1
 						end
 					end
-					if leader<0 then
-						leader=1;
+					if leader < 0 then
+						leader = 1;
 					end
 					p[0].name="全部取消";
 				elseif p[0].name=="全部取消" then
@@ -13062,11 +13056,7 @@ function WarSelectTeam_Enhance()
 							break
 						end
 					end
-					p[0].name="全部选择"
-
-					if T_Num>6 then
-						p[0].name="自动选择"
-					end
+					p[0].name="随机选择"
 				end
 			elseif select==T_Num+1 then
 				if leader<0 then
