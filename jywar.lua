@@ -5767,6 +5767,32 @@ function War_TacticsMenu()
 	end
 end
 
+function PushBack(warid, time)
+	if time == 0 then
+		return
+	end
+	local ownTime = WAR.Person[warid].Time
+	local target = -1
+	local targetTime = -9999
+	for j = 0, WAR.PersonNum - 1 do
+		if WAR.Person[j]["死亡"] == false and targetTime < WAR.Person[j].Time and WAR.Person[j].Time < ownTime then
+			target = j
+			targetTime = WAR.Person[j].Time
+		end
+	end
+	if target == -1 then
+		--已经是倒数第一
+		return
+	end
+	local diff = ownTime - targetTime
+	WAR.Person[warid].TimeAdd = WAR.Person[warid].TimeAdd - diff
+	WAR.Person[target].TimeAdd = WAR.Person[target].TimeAdd - diff
+	if WAR.Person[warid]["我方"] ~= WAR.Person[target]["我方"] then
+		PushBack(warid, time - 1)
+	else
+		PushBack(warid, time)
+	end
+end
 --修炼武功
 function War_PersonTrainBook(pid)
   local p = JY.Person[pid]
@@ -8196,11 +8222,11 @@ end
 function WarFixBack()
 	for j = 0, WAR.PersonNum - 1 do
 		local i = War_AutoSelectEnemy_near(j)
-		lib.Debug(j.."start"..i)
+		--lib.Debug(j.."start"..i)
 		if i >= 0 then
 			WAR.Person[j]["人方向"] = War_Direct(WAR.Person[j]["坐标X"], WAR.Person[j]["坐标Y"],
 				WAR.Person[i]["坐标X"], WAR.Person[i]["坐标Y"])
-			WAR.Person[j]["贴图"] = WarCalPersonPic(j)
+			--WAR.Person[j]["贴图"] = WarCalPersonPic(j)
 		end
 	end
 end
@@ -8459,7 +8485,7 @@ function WarMain(warid, isexp)
 	local function getdelay(x, y)
 		return math.modf(1.5 * (x / y + y - 3))
 	end
-
+	WarFixBack()
 	for i = 0, WAR.PersonNum - 1 do
 		WAR.Person[i]["贴图"] = WarCalPersonPic(i)
 	end
@@ -10122,7 +10148,7 @@ end
 function War_Direct(x1, y1, x2, y2)
 	local x = x2 - x1
 	local y = y2 - y1
-	lib.Debug("x "..x.."  y "..y)
+	--lib.Debug("x "..x.."  y "..y)
 	if x == 0 and y == 0 then
 		return WAR.Person[WAR.CurID]["人方向"]
 	end
@@ -12623,14 +12649,15 @@ end
 
 --无酒不欢：等待指令
 function War_Wait()
-	local id = WAR.Person[WAR.CurID]["人物编号"]
-	WAR.Wait[id] = 1
+	--local id = WAR.Person[WAR.CurID]["人物编号"]
+	--WAR.Wait[id] = 1
 	Cls()
-  	CurIDTXDH(WAR.CurID, 72, 1, "伺机待发", LightGreen, 15);
-	--穆人清等待时蓄力
+  	CurIDTXDH(WAR.CurID, 72, 1, "伺机待发", LightGreen, 15)
+	PushBack(WAR.CurID, 1)
+	--[[穆人清等待时蓄力
 	if match_ID(id, 185) then
 		WAR.Actup[id] = 2
-	end
+	end]]
   	return 1;
 end
 
@@ -13111,8 +13138,6 @@ function WarSelectTeam_Enhance()
 							WAR.PersonNum=WAR.PersonNum+1
 						end
 					end
-					WarFixBack()
-
 					break;
 				end
 			else
