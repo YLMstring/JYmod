@@ -5768,6 +5768,7 @@ function War_TacticsMenu()
 end
 
 function PushBack(warid, time)
+	--lib.Debug("push"..time)
 	if time == 0 then
 		return
 	end
@@ -5784,9 +5785,8 @@ function PushBack(warid, time)
 		--已经是倒数第一
 		return
 	end
-	local diff = ownTime - targetTime
-	WAR.Person[warid].TimeAdd = WAR.Person[warid].TimeAdd - diff
-	WAR.Person[target].TimeAdd = WAR.Person[target].TimeAdd - diff
+	--lib.Debug(WAR.Person[target]["人物编号"])
+	WAR.Person[warid].Time, WAR.Person[target].Time = WAR.Person[target].Time, WAR.Person[warid].Time
 	if WAR.Person[warid]["我方"] ~= WAR.Person[target]["我方"] then
 		PushBack(warid, time - 1)
 	else
@@ -8927,11 +8927,14 @@ function WarMain(warid, isexp)
 	        if WAR.ZYHB == 2 then
 				WAR.ZYHB = 0
 	        end
-
-	        WAR.Person[p].Time = WAR.Person[p].Time - 1000
-	        if WAR.Person[p].Time < -500 then
-	          WAR.Person[p].Time = -500
-	        end
+			if WAR.Wait[id] == 1 then
+				WAR.Wait[id] = 0
+			else
+	        	WAR.Person[p].Time = WAR.Person[p].Time - 1000
+	        	if WAR.Person[p].Time < -500 then
+	         		WAR.Person[p].Time = -500
+	        	end
+			end
 
 			--罗汉伏魔功 每回合回复生命
 			if PersonKF(id, 96) and JY.Person[id]["生命"] > 0 then
@@ -8986,12 +8989,6 @@ function WarMain(warid, isexp)
 				WAR.Person[WAR.CurID]["解毒点数"] = -AddPersonAttrib(id, "中毒程度", -JD)
 				Cls();
 				War_Show_Count(WAR.CurID, "鳄皮护甲生化解毒");
-			end
-
-			--无酒不欢：等待
-			if WAR.Wait[id] == 1 then
-				WAR.Wait[id] = 0
-				WAR.Person[p].Time = WAR.Person[p].Time + 400
 			end
 
 			--蛤蟆蓄力
@@ -9292,10 +9289,10 @@ function WarMain(warid, isexp)
 				WAR.TKJQ[id] = nil
 			end
 
-			--行动后回气的效果上限600点
+			--[[行动后回气的效果上限600点
 	        if 600 < WAR.Person[p].Time then
 				WAR.Person[p].Time = 600
-	        end
+	        end]]
 
 			--无酒不欢：袁承志，碧血长风，杀人后再动
 	        if match_ID(id, 54) and WAR.BXCF == 1 and War_isEnd() == 0 then
@@ -12649,15 +12646,11 @@ end
 
 --无酒不欢：等待指令
 function War_Wait()
-	--local id = WAR.Person[WAR.CurID]["人物编号"]
-	--WAR.Wait[id] = 1
 	Cls()
   	CurIDTXDH(WAR.CurID, 72, 1, "伺机待发", LightGreen, 15)
 	PushBack(WAR.CurID, 1)
-	--[[穆人清等待时蓄力
-	if match_ID(id, 185) then
-		WAR.Actup[id] = 2
-	end]]
+	local id = WAR.Person[WAR.CurID]["人物编号"]
+	WAR.Wait[id] = 1
   	return 1;
 end
 
