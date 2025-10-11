@@ -429,8 +429,8 @@ function Generate12Battles()
 end
 
 function GetBattleDescription(num)
-	if num == 11 then
-		return "这是第一场战斗,哈哈哈"
+	if num == 50 then
+		return "福威青旗映春烟，少主骑来猎未还。*酒肆忽空人尽灭，归时血雨满庭前。*迎战余沧海及五名青城恶徒，拯救福威镖局！"
 	end
 	if num == 99 then
 		return "这是第二场战斗,哈哈哈"

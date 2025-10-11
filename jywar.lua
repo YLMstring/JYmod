@@ -8702,7 +8702,7 @@ function WarMain(warid, isexp)
 
 	--»ÆÈØÆæÃÅ¶Ý¼×ÔÚ´Ë
 	WarNewLand0()
-	WarFixBack()
+	--WarFixBack()
 
 	WAR.Delay = GetJiqi()
 	local startt, endt = lib.GetTime()
@@ -13111,6 +13111,8 @@ function WarSelectTeam_Enhance()
 							WAR.PersonNum=WAR.PersonNum+1
 						end
 					end
+					WarFixBack()
+
 					break;
 				end
 			else
