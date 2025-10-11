@@ -8966,7 +8966,7 @@ function WarMain(warid, isexp)
 				end
 				NeiLiDamage(id, 100 - JY.Person[id]["体力"])
 
-				if GetWarMap(WAR.Person[WAR.CurID]["坐标X"], WAR.Person[WAR.CurID]["坐标Y"], 6) == 3 then
+				if GetWarMap(WAR.Person[WAR.CurID]["坐标X"], WAR.Person[WAR.CurID]["坐标Y"], 6) == 3 and JY.Person[id]["生命"] > 0 then
 					local heal_amount = math.modf((JY.Person[id]["生命最大值"] - JY.Person[id]["生命"]) * 0.16)
 					WAR.Person[WAR.CurID]["生命点数"] = AddPersonAttrib(id, "生命", heal_amount);
 					Cls();
