@@ -924,10 +924,11 @@ end
 function GetAllyNum(warid)
 	local num = 0
 	for j = 0, WAR.PersonNum - 1 do
-		if warid ~= j and WAR.Person[j]["我方"] == true and JY.Person[WAR.Person[j]["人物编号"]]["生命"] > 0 then
+		if warid ~= j and WAR.Person[j]["我方"] == WAR.Person[warid]["我方"] and JY.Person[WAR.Person[j]["人物编号"]]["生命"] > 0 then
 			num = num + 1
 		end
 	end
+	lib.Debug(warid.." "..num)
 	return num
 end
 
