@@ -832,8 +832,7 @@ function War_WugongHurtLife(enemyid, wugong, level, ang, x, y)
 
 	local pid = WAR.Person[WAR.CurID]["人物编号"]
 	local eid = WAR.Person[enemyid]["人物编号"]
-	--气防
-	local dng = 0
+
 	local WGLX = JY.Wugong[wugong]["武功类型"]
 
 	--无酒不欢：记录人物血量
@@ -841,9 +840,7 @@ function War_WugongHurtLife(enemyid, wugong, level, ang, x, y)
 
 	local hurt = War_CalculateDamage(pid, eid, wugong)
 	JY.Person[pid]["主运内功"] = wugong
-	if WAR.DZXY ~= 1 and WAR.Person[WAR.CurID]["我方"] ~= WAR.Person[enemyid]["我方"] and JY.Person[eid]["主运内功"] > 0 then
-		WAR.Person[enemyid]["反击武功"] = JY.Person[eid]["主运内功"]
-	end
+	
 	--接下来的效果不影响友军
 	if WAR.Person[WAR.CurID]["我方"] ~= WAR.Person[enemyid]["我方"] then
 	--松风剑法背刺效果
@@ -894,13 +891,15 @@ function War_WugongHurtLife(enemyid, wugong, level, ang, x, y)
 	--无酒不欢：伤害的结算到此为止，扣除被攻击方血量
 	JY.Person[eid]["生命"] = JY.Person[eid]["生命"] - hurt
 	--人物死亡
-	if JY.Person[eid]["生命"] < 0 then
+	if JY.Person[eid]["生命"] <= 0 then
 		JY.Person[eid]["生命"] = 0
 		WAR.Person[WAR.CurID]["经验"] = WAR.Person[WAR.CurID]["经验"] + JY.Person[eid]["等级"] * 5
 		WAR.Person[enemyid]["反击武功"] = -1		--如果被打死则不会触发反击
 		if WAR.SZSD == eid then						--取消死战标记
 			WAR.SZSD = -1
 		end
+	elseif WAR.DZXY ~= 1 and WAR.Person[WAR.CurID]["我方"] ~= WAR.Person[enemyid]["我方"] and JY.Person[eid]["主运内功"] > 0 then
+		WAR.Person[enemyid]["反击武功"] = JY.Person[eid]["主运内功"]
 	end
 	--[[误伤不显示动画
 	if DWPD() == false then
