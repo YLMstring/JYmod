@@ -8450,7 +8450,7 @@ function WarMain(warid, isexp)
 		if WAR.Person[id]["人物编号"] == 24 then
 			for j = 0, WAR.PersonNum - 1 do
 				if id ~= j and WAR.Person[j]["我方"] == true and JY.Person[WAR.Person[j]["人物编号"]]["生命"] > 0 then
-					mov = mov + 1
+					mov = mov + 2
 				end
 			end
 		end
