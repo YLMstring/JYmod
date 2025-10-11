@@ -2204,9 +2204,9 @@ function ShowPersonStatus_sub(id, page, istart, tfid, max_row, case, AI_s1, AI_s
 		i = i + 1
 
 		--体能
-		DrawString(x1, y1 + h * i, "体能 【 ※※ 】", Violet, size)
-		i = i + 1
-		DrawString(x1, y1 + h * (i), "天赋：", LimeGreen, size)
+		--DrawString(x1, y1 + h * i, "体能 【 ※※ 】", Violet, size)
+		--i = i + 1
+		DrawString(x1, y1 + h * (i), "特技：", LimeGreen, size)
 
 		--主角天赋
 		if id == 0 then
@@ -2231,80 +2231,6 @@ function ShowPersonStatus_sub(id, page, istart, tfid, max_row, case, AI_s1, AI_s
 		--普通角色天赋
 		if id ~= 0 and RWTFLB[id] ~= nil then
 			DrawString(x1 + size * 3, y1 + h * (i), RWTFLB[id], LimeGreen, size)
-		end
-
-		--称号
-		i = i + 1
-		DrawString(x1, y1 + h * (i), "称号：", LimeGreen, size)
-
-		--主角称号
-		if id == 0 then
-			local main_ch;
-			--标主
-			if JY.Base["标准"] > 0 then
-				if p["六如觉醒"] == 0 then
-					main_ch = "江湖小虾米"
-				else
-					main_ch = "觉醒之苍龙"
-				end
-			--特殊
-			elseif JY.Base["特殊"] > 0 then
-				main_ch = " "
-			--畅想
-			elseif JY.Base["畅想"] > 0 then
-				if RWWH[JY.Base["畅想"]] ~= nil and JY.Base["畅想"] ~= 35 and JY.Base["畅想"] ~= 38 and JY.Base["畅想"] ~= 49 then
-					main_ch = RWWH[JY.Base["畅想"]]
-				elseif JY.Base["畅想"] == 35 then
-					if JY.Person[id]["个人觉醒"] >= 2 then
-						DrawString(x1 + size * 3, y1 + h * (i), RWWH["35"], LimeGreen, size)
-					elseif JY.Person[id]["个人觉醒"] >= 1 then
-						DrawString(x1 + size * 3, y1 + h * (i), RWWH[35], LimeGreen, size)
-					end
-				elseif JY.Base["畅想"] == 38 then
-					if JY.Person[id]["个人觉醒"] >= 1 then
-						DrawString(x1 + size * 3, y1 + h * (i), RWWH["38"], LimeGreen, size)
-					end
-				elseif JY.Base["畅想"] == 49 then
-					if JY.Person[id]["个人觉醒"] >= 1 then
-						DrawString(x1 + size * 3, y1 + h * (i), RWWH["49"], LimeGreen, size)
-					else
-						DrawString(x1 + size * 3, y1 + h * (i), RWWH[49], LimeGreen, size)
-					end
-				end
-			end
-			if main_ch ~= nil then
-				DrawString(x1 + size * 3, y1 + h * (i), main_ch, LimeGreen, size)
-			end
-		end
-
-		--其他人称号
-		if RWWH[id] ~= nil and id ~= 35 and id ~= 38 and id ~= 49 then
-			DrawString(x1 + size * 3, y1 + h * (i), RWWH[id], LimeGreen, size)
-		end
-
-		--令狐冲
-		if id == 35 then
-			if JY.Person[id]["个人觉醒"] >= 2 then
-				DrawString(x1 + size * 3, y1 + h * (i), RWWH["35"], LimeGreen, size)
-			elseif JY.Person[id]["个人觉醒"] >= 1 then
-				DrawString(x1 + size * 3, y1 + h * (i), RWWH[35], LimeGreen, size)
-			end
-		end
-
-		--虚竹
-		if id == 49 then
-			if JY.Person[id]["个人觉醒"] >= 1 then
-				DrawString(x1 + size * 3, y1 + h * (i), RWWH["49"], LimeGreen, size)
-			else
-				DrawString(x1 + size * 3, y1 + h * (i), RWWH[49], LimeGreen, size)
-			end
-		end
-
-		--石破天
-		if id == 38 then
-			if JY.Person[id]["个人觉醒"] >= 1 then
-				DrawString(x1 + size * 3, y1 + h * (i), RWWH["38"], LimeGreen, size)
-			end
 		end
 
 		local color = nil
