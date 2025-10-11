@@ -1893,7 +1893,7 @@ function WarShowHead(id)
 end
 
 function War_PredictDamage(pid, eid, wugong)
-	War_CalculateDamage(pid, eid, wugong)
+	return War_CalculateDamage(pid, eid, wugong)
 end
 
 function War_CalculateDamage(pid, eid, wugong)
@@ -10559,30 +10559,8 @@ end
 function War_RestMenu()
 	if WAR.CurID and WAR.CurID >= 0  then
 		local pid = WAR.Person[WAR.CurID]["人物编号"]
-		--[[走火不能休息
-		if WAR.tmp[1000 + pid] == 1 then
-			return 1
-		end
-		local vv = math.modf(JY.Person[pid]["体力"] / 100 - JY.Person[pid]["受伤程度"] / 50 - JY.Person[pid]["中毒程度"] / 50) + 2
-		if WAR.Person[WAR.CurID]["移动步数"] > 0 then
-			vv = vv + 2
-		end
-		if inteam(pid) then
-			vv = vv + math.random(3)
-		else
-			vv = vv + 6
-		end
-		vv = (vv) / 120
-		local v = 3 + Rnd(3)
-		WAR.Person[WAR.CurID]["体力点数"] = AddPersonAttrib(pid, "体力", v)
-		if JY.Person[pid]["体力"] > 0 then
-			v = 3 + math.modf(JY.Person[pid]["生命最大值"] / JY.Person[pid]["血量翻倍"] * (vv))
-			WAR.Person[WAR.CurID]["生命点数"] = AddPersonAttrib(pid, "生命", v)
-			v = 3 + math.modf(JY.Person[pid]["内力最大值"] * (vv))
-			WAR.Person[WAR.CurID]["内力点数"] = AddPersonAttrib(pid, "内力", v)
-		end
-
-		War_Show_Count(WAR.CurID);		--显示当前控制人的点数]]
+		--退出架势
+		JY.Person[pid]["主运内功"] = 0
 
 		--阿凡提休息带蓄力+防御
 		if match_ID(pid, 606) then
