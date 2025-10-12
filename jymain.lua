@@ -432,8 +432,8 @@ function GetBattleDescription(num)
 	if num == 50 then
 		return "福威青旗映春烟，少主骑来猎未还。*酒肆忽空人尽灭，归时血雨满庭前。*迎战余沧海及五名青城恶徒，拯救福威镖局！"
 	end
-	if num == 99 then
-		return "这是第二场战斗,哈哈哈"
+	if num == 53 then
+		return "快刀劈月盗香风，孽海浮沉自诩雄。*偶为狂朋抛热血，千金散尽向胭丛。*迎战淫贼田伯光，守护少女清白！"
 	end
     return "哈哈哈哈哈哈哈哈哈"
 end

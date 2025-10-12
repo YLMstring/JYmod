@@ -843,6 +843,8 @@ function War_WugongHurtLife(enemyid, wugong, level, ang, x, y)
 	
 	if WAR.LXZT[eid] ~= nil and WAR.LXZT[eid] > 0 then
 		WAR.Person[WAR.CurID]["生命点数"] = (WAR.Person[WAR.CurID]["生命点数"] or 0) + AddPersonAttrib(pid, "生命", WAR.LXZT[eid]);
+		Cls();
+		War_Show_Count(WAR.CurID, "吸取气血");
 	end
 
 	--接下来的效果不影响友军
@@ -856,7 +858,7 @@ function War_WugongHurtLife(enemyid, wugong, level, ang, x, y)
 	--狂风刀法效果
     if wugong == 55 and JY.Person[eid]["主运内功"] == 0 then
 		local blood55 = 10
-		local ally55 = GetAllyNum(enemyid)
+		local ally55 = GetAllyNum(WAR.CurID)
 		if ally55 == 0 then
 			blood55 = 30
 		elseif ally55 == 1 then
@@ -8515,7 +8517,7 @@ function WarMain(warid, isexp)
 		end
 		--田伯光万里独行
 		if WAR.Person[id]["人物编号"] == 29 then
-			mov = mov + 4
+			mov = mov * 2
 		end
 		return mov
 	end
@@ -8837,6 +8839,8 @@ function WarMain(warid, isexp)
 				JY.Person[id]["生命"] = JY.Person[id]["生命"] - loss
 				WAR.Person[WAR.CurID]["生命点数"] = (WAR.Person[WAR.CurID]["生命点数"] or 0) - loss
 				WAR.LXZT[id] = 0
+				Cls();
+				War_Show_Count(WAR.CurID, "流失气血");
 			end
 			--重置黄蓉八卦位置
 			if GetWarMap(WAR.Person[WAR.CurID]["坐标X"], WAR.Person[WAR.CurID]["坐标Y"], 6) > 0 then
@@ -10547,7 +10551,7 @@ function War_MovePerson(x, y, flag)
 		end
 	end
 	--主运轻功的话遇到ZOC移动不清0，反之清0
-	if JY.Person[WAR.Person[WAR.CurID]["人物编号"]]["主运轻功"] == 0 then
+	if JY.Person[WAR.Person[WAR.CurID]["人物编号"]]["主运轻功"] == 0 and WAR.Person[WAR.CurID]["人物编号"] ~= 29 then
 		local fujinnum = function(tx, ty)
 			local tnum = 0
 			local wofang = WAR.Person[WAR.CurID]["我方"]
