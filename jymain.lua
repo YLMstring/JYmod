@@ -691,6 +691,7 @@ function IsSpecialized(pid, wugong)
 end
 
 function CanLearn(pid, wugong)
+	--do return true end
 	if JY.Person[pid]["生命最大值"] == 0 then
 		return false
 	end

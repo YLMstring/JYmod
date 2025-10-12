@@ -332,6 +332,11 @@ function GetAtkNum(x, y, warid, kungfuid)
 			target.id = mid
 		end
 	end
+
+	if target.p <= 0 then --打不到人就不用管后面的了
+		return target.p, target.x, target.y
+	end
+
 	--距离越远越好，并且喜欢斜线，这是为了减少可能被反击的情况，但是又不用太聪明
 	local jlx = math.abs(target.x - x)
 	local jly = math.abs(target.y - y)
@@ -2377,6 +2382,10 @@ end
 --自动战斗
 function War_Auto()
 	local pid = WAR.Person[WAR.CurID]["人物编号"]
+	if JY.Person[pid]["生命"] < 0 then
+		JY.Person[pid]["生命"] = 0
+		return
+	end
 	WAR.ShowHead = 1
 	WarDrawMap(0)
 	ShowScreen()
@@ -5422,6 +5431,11 @@ end
 
 --无酒不欢：手动战斗菜单上级
 function War_Manual()
+	local id = WAR.Person[WAR.CurID]["人物编号"]
+	if JY.Person[id]["生命"] < 0 then
+		JY.Person[id]["生命"] = 0
+		return
+	end
 	local r = nil
 	local x, y, move, pic, face_dir = WAR.Person[WAR.CurID]["坐标X"], WAR.Person[WAR.CurID]["坐标Y"], WAR.Person[WAR.CurID]["移动步数"], WAR.Person[WAR.CurID]["贴图"], WAR.Person[WAR.CurID]["人方向"]
 	while true do
