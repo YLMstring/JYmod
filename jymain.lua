@@ -4874,18 +4874,13 @@ function ShowMenu(menuItem, numItem, numShow, x1, y1, x2, y2, isBox, isEsc, size
 			end
 		--µÈ´ý
 		elseif (In_Battle == true or In_Tactics == true) and keyPress == VK_W then
-			local r=War_Wait();
+			local r = War_Wait();
 			if In_Battle == true then
 				returnValue = -4;
 			else
 				returnValue = 4;
 			end
 			break;
-			ClsN();
-			lib.LoadSur(surid,0,0);
-			if isBox==1 then
-				DrawBox(x1,y1,x1+w,y1+h,C_WHITE);
-			end
 		else
 			local mk = false;
 			if ktype == 2 or ktype == 3 then			--Ñ¡ÖÐ

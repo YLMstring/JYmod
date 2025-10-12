@@ -5423,6 +5423,8 @@ function War_Manual()
 			SetWarMap(WAR.Person[WAR.CurID]["坐标X"], WAR.Person[WAR.CurID]["坐标Y"], 5, pic)
 			--无酒不欢：人物面相也要还原
 			WAR.Person[WAR.CurID]["人方向"] = face_dir
+			--还原之后又可以等待
+			WAR.Wait[WAR.Person[WAR.CurID]["人物编号"]] = 0
 		elseif r == 20 then
 
 		else
@@ -8823,6 +8825,16 @@ function WarMain(warid, isexp)
         local pid = WAR.Person[WAR.CurID]["人物编号"]
         WAR.Defup[pid] = nil
 
+		local function TurnStartReal()
+
+		end
+
+		if WAR.Wait[id] == 0 then
+			TurnStartReal()
+		else
+			WAR.Wait[id] = 0
+		end
+
 		--段誉的指令，行动前恢复
         if match_ID(pid, 53) then
 			WAR.TZ_DY = 0
@@ -8979,9 +8991,7 @@ function WarMain(warid, isexp)
 				War_Show_Count(WAR.CurID, "内伤恢复");
 			end
 
-			if WAR.Wait[id] == 1 then
-				WAR.Wait[id] = 0
-			else
+			if WAR.Wait[id] < 1 then
 	        	EndTurnReal()
 				WAR.Person[p].Time = WAR.Person[p].Time - 1000
 	        	if WAR.Person[p].Time < -500 then
@@ -10385,6 +10395,9 @@ function War_MoveMenu()
     local x, y = War_SelectMove()
     if x ~= nil then
       War_MovePerson(x, y, 1)
+	  --不许等待
+	  local id = WAR.Person[WAR.CurID]["人物编号"]
+	  WAR.Wait[id] = -1
       r = 1
     else
       r = 0
@@ -12660,10 +12673,18 @@ end
 
 --无酒不欢：等待指令
 function War_Wait()
+	local id = WAR.Person[WAR.CurID]["人物编号"]
+	--移动过之后不许用
+	if WAR.Wait[id] == -1 then
+		--休息
+		War_RestMenu()
+		return 1;
+	end
+
 	Cls()
   	CurIDTXDH(WAR.CurID, 72, 1, "伺机待发", LightGreen, 15)
 	PushBack(WAR.CurID, 1)
-	local id = WAR.Person[WAR.CurID]["人物编号"]
+	
 	WAR.Wait[id] = 1
   	return 1;
 end
