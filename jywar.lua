@@ -8844,7 +8844,7 @@ function WarMain(warid, isexp)
 			end
 		end
 
-		if WAR.Wait[id] < 1 then
+		if WAR.Wait[id] == nil or WAR.Wait[id] < 1 then
 			TurnStartReal(pid)
 		end
 		WAR.Wait[id] = 0
