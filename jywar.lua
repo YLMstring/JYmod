@@ -332,15 +332,28 @@ function GetAtkNum(x, y, warid, kungfuid)
 			target.id = mid
 		end
 	end
+	--距离越远越好，并且喜欢斜线，这是为了减少可能被反击的情况，但是又不用太聪明
+	local jlx = math.abs(target.x - x)
+	local jly = math.abs(target.y - y)
+	if jlx == 0 or jly == 0 then
+		target.p = target.p * 0.99
+	end
+	target.p = target.p + (jlx + jly) * target.p / 1000
 	--奇门遁甲
 	if GetWarMap(x, y, 6) == 3 then
 		target.p = target.p * 1.1
 	elseif GetWarMap(x, y, 6) == 2 then
 		target.p = target.p * 1.01
 	end
-
-	if target.p > 0 and kungfuid == 27 then
+	--优先打背刺
+	if kungfuid == 27 then
 		if War_Direct(x, y, target.x, target.y) == WAR.Person[target.id]["人方向"] then
+			target.p = target.p * 1.3
+		end
+	end
+	--优先打先制
+	if kungfuid == 55 then
+		if JY.Person[WAR.Person[target.id]["人物编号"]]["主运内功"] == 0 then
 			target.p = target.p * 1.3
 		end
 	end
@@ -10296,6 +10309,16 @@ function War_FightSelectType(movefanwei, atkfanwei, x, y, wugong)
 	return x, y
 end
 
+function IsIgnoreZOC(warid)
+	local pid = WAR.Person[warid]["人物编号"]
+	if JY.Person[pid]["主运轻功"] ~= 0 and WAR.Person[WAR.CurID]["人物编号"] ~= 29 then
+		return true
+	end
+	if pid == 29 then --田伯光
+		return true
+	end
+	return false
+end
 --设置下一步可移动的坐标
 function War_FindNextStep(steparray, step, flag, id)
 	local num = 0
@@ -10303,7 +10326,7 @@ function War_FindNextStep(steparray, step, flag, id)
 
 	--ZOC判定
 	local fujinnum = function(tx, ty)
-		if flag ~= 0 or id == nil then
+		if flag ~= 0 or id == nil or IsIgnoreZOC(id) then
 			return 0
 		end
 		local tnum = 0
@@ -10551,7 +10574,7 @@ function War_MovePerson(x, y, flag)
 		end
 	end
 	--主运轻功的话遇到ZOC移动不清0，反之清0
-	if JY.Person[WAR.Person[WAR.CurID]["人物编号"]]["主运轻功"] == 0 and WAR.Person[WAR.CurID]["人物编号"] ~= 29 then
+	if IsIgnoreZOC(WAR.CurID) == false then
 		local fujinnum = function(tx, ty)
 			local tnum = 0
 			local wofang = WAR.Person[WAR.CurID]["我方"]
