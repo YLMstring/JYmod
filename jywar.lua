@@ -841,6 +841,10 @@ function War_WugongHurtLife(enemyid, wugong, level, ang, x, y)
 	local hurt = War_CalculateDamage(pid, eid, wugong)
 	JY.Person[pid]["主运内功"] = wugong
 	
+	if WAR.LXZT[eid] ~= nil and WAR.LXZT[eid] > 0 then
+		WAR.Person[WAR.CurID]["生命点数"] = (WAR.Person[WAR.CurID]["生命点数"] or 0) + AddPersonAttrib(pid, "生命", WAR.LXZT[eid]);
+	end
+
 	--接下来的效果不影响友军
 	if WAR.Person[WAR.CurID]["我方"] ~= WAR.Person[enemyid]["我方"] then
 	--松风剑法背刺效果
@@ -8825,12 +8829,23 @@ function WarMain(warid, isexp)
         local pid = WAR.Person[WAR.CurID]["人物编号"]
         WAR.Defup[pid] = nil
 
-		local function TurnStartReal()
-
+		local function TurnStartReal(id)
+			if WAR.LXZT[id] ~= nil and WAR.LXZT[id] > 0 then
+				local loss = WAR.LXZT[id]
+				--无酒不欢：记录人物血量
+				WAR.Person[WAR.CurID]["Life_Before_Hit"] = JY.Person[id]["生命"]
+				JY.Person[id]["生命"] = JY.Person[id]["生命"] - loss
+				WAR.Person[WAR.CurID]["生命点数"] = (WAR.Person[WAR.CurID]["生命点数"] or 0) - loss
+				WAR.LXZT[id] = 0
+			end
+			--重置黄蓉八卦位置
+			if GetWarMap(WAR.Person[WAR.CurID]["坐标X"], WAR.Person[WAR.CurID]["坐标Y"], 6) > 0 then
+				WarNewLand0()
+			end
 		end
 
 		if WAR.Wait[id] == 0 then
-			TurnStartReal()
+			TurnStartReal(pid)
 		else
 			WAR.Wait[id] = 0
 		end
@@ -8844,11 +8859,6 @@ function WarMain(warid, isexp)
         if match_ID(pid, 51) then
 			WAR.TZ_MRF = 0
         end
-
-		--重置黄蓉八卦位置
-		if GetWarMap(WAR.Person[WAR.CurID]["坐标X"], WAR.Person[WAR.CurID]["坐标Y"], 6) > 0 then
-			WarNewLand0()
-		end
 
 		--阿青，行动前内伤中毒清0
 	    if match_ID(pid, 604) then
