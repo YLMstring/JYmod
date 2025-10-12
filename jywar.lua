@@ -8844,12 +8844,10 @@ function WarMain(warid, isexp)
 			end
 		end
 
-		if WAR.Wait[id] == 0 then
+		if WAR.Wait[id] < 1 then
 			TurnStartReal(pid)
-		else
-			WAR.Wait[id] = 0
 		end
-
+		WAR.Wait[id] = 0
 		--段誉的指令，行动前恢复
         if match_ID(pid, 53) then
 			WAR.TZ_DY = 0
@@ -10404,10 +10402,12 @@ function War_MoveMenu()
     local r = nil
     local x, y = War_SelectMove()
     if x ~= nil then
-      War_MovePerson(x, y, 1)
 	  --不许等待
-	  local id = WAR.Person[WAR.CurID]["人物编号"]
-	  WAR.Wait[id] = -1
+	  if x ~= WAR.Person[WAR.CurID]["坐标X"] or y ~= WAR.Person[WAR.CurID]["坐标Y"] then
+	  	local id = WAR.Person[WAR.CurID]["人物编号"]
+	  	WAR.Wait[id] = -1
+	  end
+      War_MovePerson(x, y, 1)
       r = 1
     else
       r = 0
