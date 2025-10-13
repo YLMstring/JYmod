@@ -417,7 +417,7 @@ end
 
 function Generate12Battles()
 	local p = JY.Person[642]
-	p["武功等级1"] = 53--50;
+	p["武功等级1"] = 50--53;
 	p["武功等级2"] = 99;
 	p["武功等级3"] = 202;
 	p["武功等级4"] = 203;
@@ -1600,17 +1600,16 @@ function Menu_Exit()      --离开菜单
 	end
 	lib.GetKey()
 	local menu = {
-	{"离开游戏", nil, 1},
-	{"返回标题", nil, 1},
-	{"继续游戏", nil, 2}}
-	local r = ShowMenu(menu, 3, 0, CC.ScreenW/2-105, CC.ScreenH/2-89, 0, 0, 0, 0, 50, C_GOLD, C_WHITE)
+	{"  离开游戏  ", nil, 1},
+	{"Q群916313208", nil, 1},
+	{"  继续游戏  ", nil, 2}}
+	local r = ShowMenu(menu, 3, 0, CC.ScreenW/2-155, CC.ScreenH/2-89, 0, 0, 0, 0, 50, C_GOLD, C_WHITE)
 	if r == 1 then
-        JY.Status =GAME_END;
+        JY.Status = GAME_END;
         return 1;
 	elseif r == 2 then
-		JY.Restart = 1
-        JY.Status =GAME_START;
-        return 0;
+		JY.Status = GAME_END;
+        return 1;
 	end
 	lib.LoadSur(surid, 0, 0)
 	ShowScreen();
