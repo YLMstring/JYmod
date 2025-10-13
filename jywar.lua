@@ -5814,8 +5814,8 @@ end
 --无酒不欢：战术菜单
 function War_TacticsMenu()
 	local menu={};
-	menu[1]={"蓄力",nil,1};
-	menu[2]={"防御",nil,1};
+	menu[1]={"秒杀",nil,1};
+	menu[2]={"换位",nil,1};
 	menu[3]={"等待",nil,1};
     local r = ShowMenu(menu,#menu,0,CC.MainSubMenuX+15,CC.MainSubMenuY,0,0,1,1,CC.DefaultFont,C_ORANGE, C_WHITE);
 	--蓄力
@@ -6942,25 +6942,17 @@ end
 function War_DefupMenu()
 	local p = WAR.CurID
 	local id = WAR.Person[p]["人物编号"]
-	local x0, y0 = WAR.Person[p]["坐标X"], WAR.Person[p]["坐标Y"]
 	WAR.Defup[id] = 1
 	Cls()
-	local hb = GetS(JY.SubScene, x0, y0, 4)
-
-	--太玄防御带蓄力
-	if PersonKF(id, 102) then
-		WAR.Actup[id] = 2;
-		CurIDTXDH(WAR.CurID, 86,1);
-		DrawStrBox(-1, -1, "防御开始·太玄蓄力", C_RED, CC.DefaultFont, C_GOLD)
-		ShowScreen()
-		lib.Delay(400)
-		return 1;
-	end
-
-	CurIDTXDH(WAR.CurID, 86,1);
-	DrawStrBox(-1, -1, "防御开始", LimeGreen, CC.DefaultFont, C_GOLD)
-	ShowScreen()
-	lib.Delay(400)
+	War_CalMoveStep(WAR.CurID, 1, 1)
+	local x,y = War_SelectMove()
+	local tdID = lib.GetWarMap(x, y, 2)
+	if tdID > 0 and p ~= tdID and WAR.Person[tdID]["我方"] == WAR.Person[p]["我方"] then
+		WAR.Person[p]["坐标X"], WAR.Person[p]["坐标Y"], WAR.Person[tdID]["坐标X"], WAR.Person[tdID]["坐标Y"]
+		= WAR.Person[tdID]["坐标X"], WAR.Person[tdID]["坐标Y"], WAR.Person[p]["坐标X"], WAR.Person[p]["坐标Y"]
+		return 1
+	end			
+	WAR.Wait[id] = 1
 	return 1
 end
 

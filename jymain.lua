@@ -248,7 +248,7 @@ function NewMainCycle()
 			end
 		end
 		if mainOption == 4 then
-			local Option4 = myJYMsgBox("南柯一梦", "选择接下来的操作", {"存档","读档","排序","退出"}, 3, 19)
+			local Option4 = myJYMsgBox("南柯一梦", "选择接下来的操作", {"存档","读档","排序","退出"}, 4, 19)
 			if Option4 == 1 then
 				Menu_SaveRecord()
 			end
@@ -256,7 +256,7 @@ function NewMainCycle()
 				Menu_ReadRecord()
 			end
 			if Option4 == 3 then
-				--队友
+				Menu_TZDY()
 			end
 			if Option4 == 4 then
 				Init_SMap(0)
@@ -284,26 +284,6 @@ function NewMenu_Status()
 		end
 	else
         Cls(xcor,CC.MainSubMenuY,CC.ScreenW,CC.ScreenH);
-	end
-end
-
---调整队友排序
-function OrderShift()
-	--无酒不欢：各状态下对应X轴
-	local xcor = CC.MainSubMenuX
-    DrawStrBox(xcor,CC.MainSubMenuY,"选择一名门派成员",LimeGreen,CC.DefaultFont,C_GOLD);
-	DrawStrBox(xcor,CC.MainSubMenuY+CC.SingleLineHeight,"其在队伍中的排名将上升一位",LimeGreen,CC.DefaultFont,C_GOLD);
-	local nexty=CC.MainSubMenuY+CC.SingleLineHeight+CC.SingleLineHeight;
-	while true do
-    	local r = SelectTeamMenu(xcor,nexty);
-    	if r > 0 then
-			if r > 1 then
-				--队友
-			end
-		else
-        	Cls(xcor,CC.MainSubMenuY,CC.ScreenW,CC.ScreenH)
-			return
-		end
 	end
 end
 
@@ -4675,9 +4655,9 @@ function ShowMenu(menuItem, numItem, numShow, x1, y1, x2, y2, isBox, isEsc, size
 			end
 		end
 		if In_Tactics == true then
-			if newMenu[i][1] == "蓄力" then
+			if newMenu[i][1] == "秒杀" then
 				DrawString(x1 + CC.MenuBorderPixel + size*2, y1 + CC.MenuBorderPixel + (i - start) * (size + CC.RowPixel) +2, "P", LimeGreen, CC.FontSmall)
-			elseif newMenu[i][1] == "防御" then
+			elseif newMenu[i][1] == "换位" then
 				DrawString(x1 + CC.MenuBorderPixel + size*2, y1 + CC.MenuBorderPixel + (i - start) * (size + CC.RowPixel) +2, "D", LimeGreen, CC.FontSmall)
 			elseif newMenu[i][1] == "等待" then
 				DrawString(x1 + CC.MenuBorderPixel + size*2, y1 + CC.MenuBorderPixel + (i - start) * (size + CC.RowPixel) +2, "W", LimeGreen, CC.FontSmall)
@@ -9237,7 +9217,6 @@ function Menu_TZDY()
    --队友超过2人才会生效
    if JY.Base["队伍" .. 3]>0 then
 		Cls()
-		DrawStrBox(CC.MainMenuX,CC.MainSubMenuY,"需要调整谁的位置",LimeGreen,CC.DefaultFont,C_GOLD);
 		local nexty=CC.MainSubMenuY+CC.SingleLineHeight;
 		for i=1,CC.TeamNum do
 			menu[i]={"",nil,0};
@@ -9252,13 +9231,21 @@ function Menu_TZDY()
 		end
 
 		local r = -1;
+		local flag = false
 		while true do
+			if flag == false then
+				ClsN();
+				lib.LoadPNG(1, 1000 * 2 , 0 , 0, 1)
+				DrawStrBox(CC.MainMenuX,CC.MainSubMenuY,"需要调整谁的位置",LimeGreen,CC.DefaultFont,C_GOLD);
+			end
 			r = ShowMenu(menu,#menu,0,CC.MainMenuX,CC.MainSubMenuY+CC.SingleLineHeight,0,0,1,1,CC.DefaultFont,C_ORANGE, C_WHITE)
 			if px["交换人"]==nil and r>1 then
 				px["交换人"]=r
 				menu[r]={"",nil,0}
-				Cls()
+				ClsN();
+				lib.LoadPNG(1, 1000 * 2 , 0 , 0, 1)
 				DrawStrBox(CC.MainMenuX,CC.MainSubMenuY,JY.Person[JY.Base["队伍" .. r]]["姓名"].."和谁交换位置",LimeGreen,CC.DefaultFont,C_GOLD);
+				flag = true
 			elseif r>1 and px["交换人"]~=nil and r ~=px["交换人"] then
 				local m1=JY.Base["队伍" .. r]
 				local m2=JY.Base["队伍" .. px["交换人"]]
