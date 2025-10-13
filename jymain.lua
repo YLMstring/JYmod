@@ -324,7 +324,7 @@ function BookShelf(pid)
 			end
 			ClsN()
 			lib.LoadPNG(1, 1000 * 2 , 0 , 0, 1)
-			local type2 = myJYMsgBox(JY.Wugong[shelf[r2]]["名称"], GetWugongDescription(shelf[r2]),
+			local type2 = myJYMsgBox(JY.Wugong[shelf[r2]]["名称"], GetWugongDescriptionFull(shelf[r2]),
 				{"确定","返回"}, 2, pid)
 			if type2 == 1 then
 				if CanLearn(pid, shelf[r2]) then
@@ -563,7 +563,7 @@ function InitMC()
 		if type == 4 then
 			return
 		end
-		local type2 = myJYMsgBox(JY.Wugong[wugonglist[type]]["名称"], GetWugongDescription(wugonglist[type]),
+		local type2 = myJYMsgBox(JY.Wugong[wugonglist[type]]["名称"], GetWugongDescriptionFull(wugonglist[type]),
 			{"确定","返回"}, 2, 5)
 		if type2 == 1 then
 			LearnWugong(0, wugonglist[type])
@@ -582,8 +582,7 @@ function WarReward(pid, combatid)
 		wg0 = WAR.Data["音乐"]
 	end
 	if CanLearn(pid, wg0) then
-		local type = myJYMsgBox(JY.Person[pid]["姓名"].."福源际遇", "你获得了"..JY.Wugong[wg0]["名称"].."！*".."若未学习，可另寻其他机缘*"
-		..GetWugongDescription(wg0), {"学习","不必"}, 2, 5)
+		local type = myJYMsgBox(JY.Person[pid]["姓名"].."福源际遇", GetWugongDescriptionExtra(wg0), {"学习","不必"}, 2, 5)
 		if type == 1 then
 			LearnWugong(pid, wg0)
 			return
@@ -600,7 +599,7 @@ function WarReward(pid, combatid)
 		if type == 4 then
 			return
 		end
-		local type2 = myJYMsgBox(JY.Wugong[wugonglist[type]]["名称"], GetWugongDescription(wugonglist[type]),
+		local type2 = myJYMsgBox(JY.Wugong[wugonglist[type]]["名称"], GetWugongDescriptionFull(wugonglist[type]),
 			{"确定","返回"}, 2, 5)
 		if type2 == 1 then
 			LearnWugong(pid, wugonglist[type])
@@ -648,7 +647,7 @@ function InitTeammate(pid)
 	if pid == 79 then --令狐冲
 		wugong = 42
 	end
-	local type = myJYMsgBox(JY.Person[pid]["姓名"].. "初始武功", GetWugongDescription(wugong), {"学习","不必"}, 2, pid)
+	local type = myJYMsgBox(JY.Person[pid]["姓名"].. "初始武功", GetWugongDescriptionFull(wugong), {"学习","不必"}, 2, pid)
 	if type == 1 then
 		LearnWugong(pid, wugong)
 	end
@@ -794,10 +793,23 @@ function GetWugongDescription(wugong)
 		mechanic = "先制：流血10，若只有一名同伴，改为流血20，*若单独行动，改为流血30"
 		flavor = "万里独行田伯光的飞沙走石十三式刀法，*快似闪电，是世间少有的快刀"
 	end
-	local str = name.." "..typename.."*"..flavor.."*"..health..qi..atk..def..dex..move.."*"..mechanic
+	local strs = {name.." "..typename, flavor, health..qi..atk..def..dex..move, mechanic}
+	--local str = name.." "..typename.."*"..flavor.."*"..health..qi..atk..def..dex..move.."*"..mechanic
+	return strs
+end
+
+function GetWugongDescriptionFull(wugong)
+	local strs = GetWugongDescription(wugong)
+	local str = strs[1].."*"..strs[2].."*"..strs[3].."*"..strs[4]
 	return str
 end
 
+function GetWugongDescriptionExtra(wugong)
+	local strs = GetWugongDescription(wugong)
+	local extra = "你获得了"..strs[1].."*".."若未学习，可另寻其他机缘"
+	local str = extra.."*"..strs[2].."*"..strs[3].."*"..strs[4]
+	return str
+end
 --无酒不欢：机率判定函数
 function JLSD(s1, s2, dw)
 	local s = math.random(100)
