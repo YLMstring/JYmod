@@ -1781,31 +1781,8 @@ function ShowPersonStatus(teamid, realid)
 
 		local sp = JY.Person[id]
 		--天赋ID
-		local tfid;
-		--主角
-		if id == 0 then
-			--标主
-			if JY.Base["标准"] > 0 then
-				tfid = 280 + JY.Base["标准"]
-			--特殊
-			elseif JY.Base["特殊"] > 0 then
-				tfid = 290
-			--畅想
-			else
-				tfid = JY.Base["畅想"]
-				--畅想袁承志
-				if JY.Base["畅想"] == 54 and JY.Person[id]["个人觉醒"] >= 1 then
-					tfid = "54-1"
-				end
-			end
-		--队友
-		else
-			tfid = id
-			--畅想袁承志
-			if id == 54 and JY.Person[id]["个人觉醒"] >= 1 then
-				tfid = "54-1"
-			end
-		end
+		local tfid = id;
+
 		--无酒不欢：第二页的翻页上限判定需要因人而异，但我觉得不需要，先改成99试试看
 		local max_row = 99;
 		--[[if TFJS[tfid] ~= nil then
@@ -2228,22 +2205,7 @@ function ShowPersonStatus_sub(id, page, istart, tfid, max_row, case, AI_s1, AI_s
 
 		--主角天赋
 		if id == 0 then
-			local main_tf;
-			--标主
-			if JY.Base["标准"] > 0 then
-				main_tf = ZJTF[JY.Base["标准"]]
-			--特殊
-			elseif JY.Base["特殊"] > 0 then
-				main_tf = " "
-			--畅想
-			elseif JY.Base["畅想"] > 0 then
-				if RWTFLB[p["代号"]] ~= nil then
-					main_tf = RWTFLB[p["代号"]]
-				end
-			end
-			if main_tf ~= nil then
-				DrawString(x1 + size * 3, y1 + h * (i), main_tf, LimeGreen, size)
-			end
+			DrawString(x1 + size * 3, y1 + h * (i), "前世记忆", LimeGreen, size)
 		end
 
 		--普通角色天赋
