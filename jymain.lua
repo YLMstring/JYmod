@@ -1807,14 +1807,14 @@ function ShowPersonStatus(teamid, realid)
 				tfid = "54-1"
 			end
 		end
-		--无酒不欢：第二页的翻页上限判定需要因人而异
-		local max_row = -17;
-		if TFJS[tfid] ~= nil then
+		--无酒不欢：第二页的翻页上限判定需要因人而异，但我觉得不需要，先改成99试试看
+		local max_row = 99;
+		--[[if TFJS[tfid] ~= nil then
 			max_row = max_row + #TFJS[tfid]
 		end
 		if id == 0 then
 			max_row = max_row + #ZJZSJS
-		end
+		end]]
 		--AI的子选项默认值获取
 		local AI_s2 = {sp["行为模式"],sp["优先使用"],sp["主运内功"],sp["主运轻功"],sp["是否吃药"],sp["生命阈值"],sp["内力阈值"],sp["体力阈值"],sp["禁用自动"]}
 		local yxsy = {}
@@ -2589,7 +2589,7 @@ function ShowPersonStatus_sub(id, page, istart, tfid, max_row, case, AI_s1, AI_s
 			DrawString(x1-size*2-7, y1+18*h+12, "↓", C_GOLD, size)
 		end
 		local function strcolor_switch(s)
-			local Color_Switch={{"Ｒ",PinkRed},{"Ｇ",C_GOLD},{"Ｂ",C_BLACK},{"Ｗ",C_WHITE},{"Ｏ",C_ORANGE},{"Ｌ",LimeGreen},{"Ｄ",M_DeepSkyBlue},{"Ｚ",Violet}}
+			local Color_Switch={{"Ｒ",PinkRed},{"Ｇ",C_GOLD},{"Ｂ",C_BLACK},{"Ｗ",C_WHITE},{"Ｏ",C_ORANGE},{"Ｌ",M_DeepSkyBlue},{"Ｄ",M_DeepSkyBlue},{"Ｚ",Violet}}
 			for i = 1, 8 do
 				if Color_Switch[i][1] == s then
 					return Color_Switch[i][2]
@@ -2599,7 +2599,7 @@ function ShowPersonStatus_sub(id, page, istart, tfid, max_row, case, AI_s1, AI_s
 		x1 = x1 - size
 		DrawString(x1, y1, p["姓名"], C_ORANGE, size)
 		local row = 1
-		if TFJS[tfid] ~= nil then
+		if TFJS[tfid] ~= nil and istart <= #TFJS[tfid] then
 			y2 = y2 + 13
 			for i = istart, #TFJS[tfid] do
 				local tfstr = TFJS[tfid][i]
@@ -2618,27 +2618,38 @@ function ShowPersonStatus_sub(id, page, istart, tfid, max_row, case, AI_s1, AI_s
 			end
 			row = row + 1
 		end
-		--主角额外显示
-		if id == 0 then
-			if TFJS[tfid] == nil then
-				y2 = y2 + 13
+		--武功额外显示
+		local wugonglist = {}
+		local wugongindex = 0
+		for j = 1, CC.Kungfunum do
+			local wugong = p["武功" .. j]
+			if wugong == 0 then
+				break
 			end
-			for i = 1, #ZJZSJS do
-				local zjstr = ZJZSJS[i]
-				--控制显示行数
-				if row < 20 then
-					if string.sub(zjstr,1,2) == "Ｎ" then
+			local des = GetWugongDescription(wugong)
+			wugongindex = wugongindex + 1
+			wugonglist[wugongindex] = string.gsub(des[1], "*", "")
+			wugongindex = wugongindex + 1
+			wugonglist[wugongindex] = string.gsub(des[2], "*", "")
+			wugongindex = wugongindex + 1
+			wugonglist[wugongindex] = string.gsub(des[4], "*", "")
+		end
+		if istart <= #wugonglist then
+			for j = istart, #wugonglist do
+				local wugongcolor = C_WHITE
+				if j % 3 == 1 then
+					wugongcolor = LimeGreen
+					if j > 1 then
 						row = row + 1
 					else
-						local color;
-						color = strcolor_switch(string.sub(zjstr,1,2))
-						zjstr = string.sub(zjstr,3,-1)
-						DrawString(x1, y2 + (h-2) * (row), zjstr, color, size*0.9)
-						row = row + 1
+						row = math.max(1, row - 1)
 					end
 				end
+				row = row + 1
+				DrawString(x1, y2 + (h-2) * (row), wugonglist[j], wugongcolor, size*0.9)
 			end
 		end
+
 		x1 = dx - size *3 -10
 		y1 = size*2
 		i = 19
