@@ -248,7 +248,7 @@ function NewMainCycle()
 			end
 		end
 		if mainOption == 4 then
-			local Option4 = myJYMsgBox("南柯一梦", "选择接下来的操作", {"存档","读档","退出"}, 3, 19)
+			local Option4 = myJYMsgBox("南柯一梦", "选择接下来的操作", {"存档","读档","排序","退出"}, 3, 19)
 			if Option4 == 1 then
 				Menu_SaveRecord()
 			end
@@ -256,6 +256,9 @@ function NewMainCycle()
 				Menu_ReadRecord()
 			end
 			if Option4 == 3 then
+				--队友
+			end
+			if Option4 == 4 then
 				Init_SMap(0)
 			end
 		end
@@ -281,6 +284,26 @@ function NewMenu_Status()
 		end
 	else
         Cls(xcor,CC.MainSubMenuY,CC.ScreenW,CC.ScreenH);
+	end
+end
+
+--调整队友排序
+function OrderShift()
+	--无酒不欢：各状态下对应X轴
+	local xcor = CC.MainSubMenuX
+    DrawStrBox(xcor,CC.MainSubMenuY,"选择一名门派成员",LimeGreen,CC.DefaultFont,C_GOLD);
+	DrawStrBox(xcor,CC.MainSubMenuY+CC.SingleLineHeight,"其在队伍中的排名将上升一位",LimeGreen,CC.DefaultFont,C_GOLD);
+	local nexty=CC.MainSubMenuY+CC.SingleLineHeight+CC.SingleLineHeight;
+	while true do
+    	local r = SelectTeamMenu(xcor,nexty);
+    	if r > 0 then
+			if r > 1 then
+				--队友
+			end
+		else
+        	Cls(xcor,CC.MainSubMenuY,CC.ScreenW,CC.ScreenH)
+			return
+		end
 	end
 end
 
