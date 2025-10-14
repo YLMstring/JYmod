@@ -873,6 +873,34 @@ function War_WugongHurtLife(enemyid, wugong, level, ang, x, y)
 		WAR.Person[enemyid]["特效动画"] = 93
 		Set_Eff_Text(enemyid, "特效文字2", "青城摧心掌")
     end
+	--玄天指效果
+    if Match_wugong(wugong) == 130 then
+		AddFreeze(eid, 5)
+    end
+	--分筋错骨手效果
+    if Match_wugong(wugong) == 117 then
+		AddBurn(eid, 5, enemyid)
+    end
+	--呼延枪法效果
+    if Match_wugong(wugong) == 165 then
+		AddBurn(pid, 5, WAR.CurID)
+    end
+	--呼延十八鞭效果
+    if Match_wugong(wugong) == 78 then
+		AddBlood(pid, 5)
+    end
+	--杨家枪法效果
+    if Match_wugong(wugong) == 68 then
+		AddFreeze(pid, 5)
+    end
+	--金龙鞭法效果
+    if Match_wugong(wugong) == 69 then
+		AddInternalDamage(pid, 5)
+    end
+	--铁指诀效果
+    if Match_wugong(wugong) == 121 then
+		AddInternalDamage(eid, 5)
+    end
 	--狂风刀法效果
     if Match_wugong(wugong) == 55 and GetStyle(eid) == 0 then
 		local blood55 = 10
@@ -963,7 +991,15 @@ function AddFreeze(eid, num)
 	JY.Person[eid]["冰封程度"] = JY.Person[eid]["冰封程度"] + num
 end
 
-function AddBurn(eid, num)
+function AddBurn(eid, num, enemyid)
+	if PushBackBurn(enemyid, 1) == false then
+		local loss = JY.Person[eid]["灼烧程度"]
+		WAR.Person[enemyid]["Life_Before_Hit"] = JY.Person[eid]["生命"]
+		JY.Person[eid]["生命"] = JY.Person[eid]["生命"] - loss
+		WAR.Person[WAR.CurID]["生命点数"] = (WAR.Person[enemyid]["生命点数"] or 0) - loss
+		Cls();
+		War_Show_Count(WAR.CurID, "走火入魔");
+	end
 	JY.Person[eid]["灼烧程度"] = JY.Person[eid]["灼烧程度"] + num
 end
 
@@ -5854,7 +5890,6 @@ function War_TacticsMenu()
 end
 
 function PushBack(warid, time)
-	--lib.Debug("push"..time)
 	if time == 0 then
 		return true
 	end
@@ -5878,6 +5913,28 @@ function PushBack(warid, time)
 	else
 		PushBack(warid, time)
 	end
+end
+
+function PushBackBurn(warid, time)
+	if time == 0 then
+		return true
+	end
+	local ownTime = WAR.Person[warid].Time
+	local target = -1
+	local targetTime = -9999
+	for j = 0, WAR.PersonNum - 1 do
+		if WAR.Person[j]["死亡"] == false and targetTime < WAR.Person[j].Time and WAR.Person[j].Time < ownTime then
+			target = j
+			targetTime = WAR.Person[j].Time
+		end
+	end
+	if target == -1 then
+		--已经是倒数第一
+		return false
+	end
+	--lib.Debug(WAR.Person[target]["人物编号"])
+	WAR.Person[warid].Time, WAR.Person[target].Time = WAR.Person[target].Time, WAR.Person[warid].Time
+	PushBackBurn(warid, time - 1)
 end
 --修炼武功
 function War_PersonTrainBook(pid)
@@ -9027,7 +9084,6 @@ function WarMain(warid, isexp)
 				if inteam(id) then
 					JY.Person[id]["体力"] = math.max(JY.Person[id]["体力"] - 1, 0)
 				end
-				JY.Person[id]["体力"] = math.max(JY.Person[id]["体力"] - JY.Person[id]["灼烧程度"], 0)
 				if GetWarMap(WAR.Person[WAR.CurID]["坐标X"], WAR.Person[WAR.CurID]["坐标Y"], 6) == 3 and JY.Person[id]["生命"] > 0 then
 					local heal_amount = math.modf((JY.Person[id]["生命最大值"] - JY.Person[id]["生命"]) * 0.16)
 					WAR.Person[WAR.CurID]["生命点数"] = AddPersonAttrib(id, "生命", heal_amount);

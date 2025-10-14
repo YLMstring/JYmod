@@ -792,6 +792,30 @@ function GetWugongDescription(wugong)
 	elseif wugong == 55 then
 		mechanic = "先制：流血10，若只有一名同伴，改为流血20，*若单独行动，改为流血30"
 		flavor = "万里独行田伯光的飞沙走石十三式刀法，*快似闪电，是世间少有的快刀"
+	elseif wugong == 130 then
+		mechanic = "进招：冰封5"
+		flavor = "梅庄二庄主黑白子的玄天指神功，*内劲凌厉，可化水为冰"
+	elseif wugong == 117 then
+		mechanic = "进招：灼烧5"
+		flavor = "江湖上流传甚广的擒拿手法，*长于脱人关节，断人筋骨"
+	elseif wugong == 165 then
+		mechanic = "进招：自身灼烧5"
+		flavor = "北宋名将呼延赞传下的枪法，在军中流传甚广"
+	elseif wugong == 121 then
+		mechanic = "进招：内伤5"
+		flavor = "华山派指法绝技，附有内劲，浑厚精奇"
+	elseif wugong == 78 then
+		mechanic = "进招：自身流血5"
+		flavor = "北宋名将呼延赞传下的鞭法，*其人曾以一根钢鞭震断敌人十条长枪"
+	elseif wugong == 69 then
+		mechanic = "进招：自身内伤5"
+		flavor = "丁不四的九节鞭法门，既威猛，又华丽"
+	elseif wugong == 68 then
+		mechanic = "进招：自身冰封5"
+		flavor = "北宋名将杨再兴传下的枪法，*招数灵动，变幻巧妙"
+	elseif wugong == 70 then
+		mechanic = "进招：自身封穴5"
+		flavor = "中平枪，枪中王，远近高低都不妨，*乃是六合枪中最精妙的家数"
 	end
 	local strs = {name.." "..typename, flavor, health..qi..atk..def..dex..move, mechanic}
 	--local str = name.." "..typename.."*"..flavor.."*"..health..qi..atk..def..dex..move.."*"..mechanic
