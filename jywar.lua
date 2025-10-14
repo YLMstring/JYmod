@@ -868,13 +868,13 @@ function War_WugongHurtLife(enemyid, wugong, level, ang, x, y)
 	--接下来的效果不影响友军
 	if WAR.Person[WAR.CurID]["我方"] ~= WAR.Person[enemyid]["我方"] then
 	--松风剑法背刺效果
-    if wugong == 27 and IsBackstab(WAR.CurID, enemyid) then
-		JY.Person[eid]["受伤程度"] = JY.Person[eid]["受伤程度"] + 15
+    if Match_wugong(wugong) == 27 and IsBackstab(WAR.CurID, enemyid) then
+		AddInternalDamage(eid, 15)
 		WAR.Person[enemyid]["特效动画"] = 93
 		Set_Eff_Text(enemyid, "特效文字2", "青城摧心掌")
     end
 	--狂风刀法效果
-    if wugong == 55 and JY.Person[eid]["主运内功"] == 0 then
+    if Match_wugong(wugong) == 55 and GetStyle(eid) == 0 then
 		local blood55 = 10
 		local ally55 = GetAllyNum(WAR.CurID)
 		if ally55 == 0 then
@@ -938,6 +938,14 @@ function War_WugongHurtLife(enemyid, wugong, level, ang, x, y)
 	return limitX(hurt, 0, hurt);
 end
 
+function Match_wugong(wugong)
+	return wugong
+end
+
+function GetStyle(id)
+	return JY.Person[id]["主运内功"]
+end
+
 function AddBlood(eid, num)
 	if WAR.LXZT[eid] == nil then
 		WAR.LXZT[eid] = num
@@ -945,6 +953,10 @@ function AddBlood(eid, num)
 		WAR.LXZT[eid] = WAR.LXZT[eid] + num
 	end
 	WAR.LXXS[eid] = 1
+end
+
+function AddInternalDamage(eid, num)
+	JY.Person[eid]["受伤程度"] = JY.Person[eid]["受伤程度"] + num
 end
 
 function GetAllyNum(warid)
