@@ -959,6 +959,14 @@ function AddInternalDamage(eid, num)
 	JY.Person[eid]["受伤程度"] = JY.Person[eid]["受伤程度"] + num
 end
 
+function AddFreeze(eid, num)
+	JY.Person[eid]["冰封程度"] = JY.Person[eid]["冰封程度"] + num
+end
+
+function AddBurn(eid, num)
+	JY.Person[eid]["灼烧程度"] = JY.Person[eid]["灼烧程度"] + num
+end
+
 function GetAllyNum(warid)
 	local num = 0
 	for j = 0, WAR.PersonNum - 1 do
@@ -1937,8 +1945,8 @@ end
 function War_CalculateDamage(pid, eid, wugong)
 	local def = JY.Person[eid]["防御力"]
 	local true_WL = get_skill_power(pid, wugong)
-	local dmg = math.max(true_WL - def, 1)
-	dmg = dmg + JY.Person[eid]["受伤程度"]
+	local dmg = true_WL - def + JY.Person[eid]["受伤程度"] - JY.Person[pid]["冰封程度"]
+	dmg = math.max(true_WL - def, 1)
 	return dmg
 end
 
@@ -5848,7 +5856,7 @@ end
 function PushBack(warid, time)
 	--lib.Debug("push"..time)
 	if time == 0 then
-		return
+		return true
 	end
 	local ownTime = WAR.Person[warid].Time
 	local target = -1
@@ -5861,7 +5869,7 @@ function PushBack(warid, time)
 	end
 	if target == -1 then
 		--已经是倒数第一
-		return
+		return false
 	end
 	--lib.Debug(WAR.Person[target]["人物编号"])
 	WAR.Person[warid].Time, WAR.Person[target].Time = WAR.Person[target].Time, WAR.Person[warid].Time
@@ -8863,6 +8871,10 @@ function WarMain(warid, isexp)
         WAR.Defup[pid] = nil
 
 		local function TurnStartReal(id)
+			--重置黄蓉八卦位置
+			if GetWarMap(WAR.Person[WAR.CurID]["坐标X"], WAR.Person[WAR.CurID]["坐标Y"], 6) > 0 then
+				WarNewLand0()
+			end
 			if WAR.LXZT[id] ~= nil and WAR.LXZT[id] > 0 then
 				local loss = WAR.LXZT[id]
 				--无酒不欢：记录人物血量
@@ -8872,10 +8884,6 @@ function WarMain(warid, isexp)
 				WAR.LXZT[id] = 0
 				Cls();
 				War_Show_Count(WAR.CurID, "流失气血");
-			end
-			--重置黄蓉八卦位置
-			if GetWarMap(WAR.Person[WAR.CurID]["坐标X"], WAR.Person[WAR.CurID]["坐标Y"], 6) > 0 then
-				WarNewLand0()
 			end
 		end
 
@@ -9014,13 +9022,12 @@ function WarMain(warid, isexp)
 				WAR.ZYHB = 0
 	        end
 			
-			local function EndTurnReal()
+			local function TurnEndReal()
 				--回合结束消耗体力内力
 				if inteam(id) then
 					JY.Person[id]["体力"] = math.max(JY.Person[id]["体力"] - 1, 0)
 				end
-				NeiLiDamage(id, 100 - JY.Person[id]["体力"])
-
+				JY.Person[id]["体力"] = math.max(JY.Person[id]["体力"] - JY.Person[id]["灼烧程度"], 0)
 				if GetWarMap(WAR.Person[WAR.CurID]["坐标X"], WAR.Person[WAR.CurID]["坐标Y"], 6) == 3 and JY.Person[id]["生命"] > 0 then
 					local heal_amount = math.modf((JY.Person[id]["生命最大值"] - JY.Person[id]["生命"]) * 0.16)
 					WAR.Person[WAR.CurID]["生命点数"] = AddPersonAttrib(id, "生命", heal_amount);
@@ -9028,14 +9035,15 @@ function WarMain(warid, isexp)
 					War_Show_Count(WAR.CurID, "八卦逆位气血回复");
 				end
 
-				local NS = 5
-				WAR.Person[WAR.CurID]["内伤点数"] = (WAR.Person[WAR.CurID]["内伤点数"] or 0) + AddPersonAttrib(id, "受伤程度", -NS)
+				WAR.Person[WAR.CurID]["内伤点数"] = (WAR.Person[WAR.CurID]["内伤点数"] or 0) + AddPersonAttrib(id, "受伤程度", -5)
+				AddPersonAttrib(id, "冰封程度", -5)
+				AddPersonAttrib(id, "灼烧程度", -5)
 				Cls();
-				War_Show_Count(WAR.CurID, "内伤恢复");
+				War_Show_Count(WAR.CurID, "状态恢复");
 			end
 
 			if WAR.Wait[id] < 1 then
-	        	EndTurnReal()
+	        	TurnEndReal()
 				WAR.Person[p].Time = WAR.Person[p].Time - 1000
 	        	if WAR.Person[p].Time < -500 then
 	         		WAR.Person[p].Time = -500
@@ -11851,110 +11859,10 @@ function DrawTimeBar()
 			if WAR.Person[i]["死亡"] == false then
 				local jqid = WAR.Person[i]["人物编号"]
 				local jq = WAR.Person[i].TimeAdd	--人物集气速度
-				--无酒不欢：每25点内伤-1集气，每25点中毒-1集气，玩家与NPC一样
-				local ns_factor = math.modf(JY.Person[jqid]["受伤程度"] / 25)
-				local zd_factor = math.modf(JY.Person[jqid]["中毒程度"] / 25)
-				--毒王中毒反而增加集气
-				if jqid == 0 and JY.Base["标准"] == 9 then
-					zd_factor = -(zd_factor*2)
-				end
-				--冰封也减少
-				local bf_factor = 0;
-				if JY.Person[jqid]["冰封程度"] >= 50 then
-					bf_factor = 6
-				elseif JY.Person[jqid]["冰封程度"] > 0 then
-					bf_factor = 3
-				end
-				--何太冲的铁琴减少集气，一层减少1%
-				local HTC_tq = 0
-				if WAR.QYZT[jqid] ~= nil then
-					HTC_tq = jq * 0.01 * WAR.QYZT[jqid]
-				end
-				--李秋水集气不受状态影响
-				if match_ID(jqid, 118) == false then
-					jq = jq - ns_factor - zd_factor - bf_factor - HTC_tq
-				end
 				if jq < 0 then
 					jq = 0
 				end
-				if WAR.LQZ[jqid] == 100 then
-					if Curr_QG(jqid,150) then	--运功瞬息千里，暴怒4倍集气
-						jq = jq * 4
-					else
-						jq = jq * 3				--暴怒3倍集气
-					end
-				end
-				--沉睡的敌人，无法集气
-				if WAR.CSZT[jqid] == 1 then
-					jq = 0
-				--被无招胜有招击中的人，无法集气
-				elseif WAR.WZSYZ[jqid] ~= nil then
-					jq = 0
-					WAR.WZSYZ[jqid] = WAR.WZSYZ[jqid] - 1
-					if WAR.WZSYZ[jqid] < 1 then
-						WAR.WZSYZ[jqid] = nil
-					end
-				--冻结的敌人，无法集气				
-				elseif WAR.LRHF[jqid] ~= nil then
-					jq = 0
-					WAR.LRHF[jqid] = WAR.LRHF[jqid] - 1
-					if WAR.LRHF[jqid] < 1 then
-						WAR.LRHF[jqid] = nil
-					end
-				--没有封穴的情况下，可以集气
-				elseif WAR.FXDS[jqid] == nil then
-					--欧阳锋会跳气
-					if match_ID(jqid, 60) and (math.random(10) == 8 or math.random(10) == 8) then
-						jq = jq + math.random(10, 30);
-					end
-					if WAR.LSQ[jqid] ~= nil then	--被灵蛇拳击中，集气波动20时序
-						if math.random(3) == 1 then
-							WAR.Person[i].Time = WAR.Person[i].Time - jq
-						else
-							WAR.Person[i].Time = WAR.Person[i].Time + jq
-						end
-						WAR.LSQ[jqid] = WAR.LSQ[jqid] - 1
-						if WAR.LSQ[jqid] == 0 then
-							WAR.LSQ[jqid] = nil
-						end
-					else
-						WAR.Person[i].Time = WAR.Person[i].Time + jq
-					end
-				--被封穴的话，不会集气，时序减少封穴
-				else
-					WAR.FXDS[jqid] = WAR.FXDS[jqid] - 1
-
-					--易筋经 封穴回复+1
-					if PersonKF(jqid, 108) then
-						WAR.FXDS[jqid] = WAR.FXDS[jqid] - 1
-					end
-
-					--先天+玉女，封穴回复+1
-					if PersonKF(jqid, 100) and PersonKF(jqid, 154) then
-						WAR.FXDS[jqid] = WAR.FXDS[jqid] - 1
-					end
-
-					--九阳7时序解除封穴
-					--阳内主运或者阳罡学会九阳后
-					if Curr_NG(jqid, 106) and (JY.Person[jqid]["内力性质"] == 1 or (jqid == 0 and JY.Base["标准"] == 6)) then
-						if WAR.JYFX[jqid] == nil then
-							WAR.JYFX[jqid] = 1;
-						elseif WAR.JYFX[jqid] < 7 then
-							WAR.JYFX[jqid] = WAR.JYFX[jqid] + 1;
-						else
-							WAR.JYFX[jqid] = nil;
-							WAR.FXDS[jqid] = 0;
-						end
-					end
-
-					--暴怒时解穴速度加倍
-					if WAR.LQZ[jqid] == 100 then
-						WAR.FXDS[jqid] = WAR.FXDS[jqid] - 1
-					end
-					if WAR.FXDS[WAR.Person[i]["人物编号"]] < 1 then
-						WAR.FXDS[WAR.Person[i]["人物编号"]] = nil
-					end
-				end
+				WAR.Person[i].Time = WAR.Person[i].Time + jq
 
 				--九阳神功回内
 				--学会九阳并且是阳内或者天罡
@@ -12131,82 +12039,6 @@ function DrawTimeBar()
 						end
 					end
 				end
-
-				--天山童姥：转瞬红颜
-				if match_ID(jqid, 117) then
-					if WAR.ZSHY[jqid] == nil then
-						WAR.ZSHY[jqid] = 1
-					else
-						WAR.ZSHY[jqid] = WAR.ZSHY[jqid] + 1
-					end
-					if WAR.ZSHY[jqid] == 100 then
-						WAR.ZSHY[jqid] = nil
-						local s = WAR.CurID
-						WAR.CurID = i
-						Cls()
-						lib.SetClip(0, CC.ScreenH/4 + 20, CC.ScreenW, CC.ScreenH)
-						CurIDTXDH(WAR.CurID, 104, 1, "红颜弹指老·刹那芳华", PinkRed)
-						WAR.CurID = s
-						--恢复之前的画面
-						DrawBox_1(x1 - 3, y, x2 + 3, y + 3, C_ORANGE)
-						DrawBox_1(x1 - (x2 - x1) / 2, y, x1 - 3, y + 3, C_RED)
-						DrawString(x2 + 10, y - 20, "时序", C_WHITE, CC.FontSMALL)
-						lib.FillColor(x1+1, y+1, x1+90, y+3,C_ORANGE)
-						lib.FillColor(x1-94, y+1, x1-6, y+3,C_RED)
-						lib.SetClip(x1 - (x2-x1)/2-100, 0, CC.ScreenW, CC.ScreenH/4 + 50)
-						surid = lib.SaveSur( x1 - (x2-x1)/2-100, 0, CC.ScreenW, CC.ScreenH/4 + 50)
-						JY.Person[jqid]["生命"] = JY.Person[jqid]["生命最大值"]
-						JY.Person[jqid]["内力"] = JY.Person[jqid]["内力最大值"]
-						JY.Person[jqid]["体力"] = 100
-						JY.Person[jqid]["中毒程度"] = 0
-						JY.Person[jqid]["受伤程度"] = 0
-						JY.Person[jqid]["冰封程度"] = 0
-						JY.Person[jqid]["灼烧程度"] = 0
-						--流血
-						if WAR.LXZT[jqid] ~= nil then
-							WAR.LXZT[jqid] = nil
-						end
-						--封穴
-						if WAR.FXDS[jqid] ~= nil then
-							WAR.FXDS[jqid] = nil
-						end
-					end
-				end
-
-				--[[葵花尊者，恢复
-				if WAR.ZDDH == 54 and JY.Person[27]["品德"] == 20 and WAR.MCRS == 1 and jqid == 27 then
-					JY.Person[jqid]["生命"] = JY.Person[jqid]["生命"] + 5
-					JY.Person[jqid]["内力"] = JY.Person[jqid]["内力"] + 10
-					JY.Person[jqid]["体力"] = JY.Person[jqid]["体力"] + 1
-					JY.Person[jqid]["中毒程度"] = JY.Person[jqid]["中毒程度"] - 1
-					JY.Person[jqid]["受伤程度"] = JY.Person[jqid]["受伤程度"] - 1
-					JY.Person[jqid]["冰封程度"] = JY.Person[jqid]["冰封程度"] - 1
-					JY.Person[jqid]["灼烧程度"] = JY.Person[jqid]["灼烧程度"] - 1
-					--流血
-					if WAR.LXZT[jqid] ~= nil then
-						WAR.LXZT[jqid] = WAR.LXZT[jqid] - 1
-					end
-					--封穴
-					if WAR.FXDS[jqid] ~= nil then
-						WAR.FXDS[jqid] = WAR.FXDS[jqid] - 1
-					end
-				end
-
-				--主角医生回血内，减内伤，减中毒
-				if jqid == 0 and JY.Base["标准"] == 8 then
-					JY.Person[jqid]["生命"] = JY.Person[jqid]["生命"] + math.random(5);
-					JY.Person[jqid]["内力"] = JY.Person[jqid]["内力"] + math.random(5);
-					JY.Person[jqid]["中毒程度"] = JY.Person[jqid]["中毒程度"] - math.random(5);
-					JY.Person[jqid]["受伤程度"] = JY.Person[jqid]["受伤程度"] - math.random(5);
-				end
-
-				--毒王时序增加中毒
-				if jqid == 0 and JY.Base["标准"] == 9 then
-					JY.Person[jqid]["中毒程度"] = JY.Person[jqid]["中毒程度"] + math.random(5)
-					if JY.Person[jqid]["中毒程度"] > 100 then
-						JY.Person[jqid]["中毒程度"] = 100
-					end
-				end]]
 
 				--轻云蔽月时序计数
 				if WAR.QYBY[jqid] ~= nil then
@@ -12390,7 +12222,7 @@ function DrawTimeBar_sub(x1, x2, y, flag)
 			if WAR.Person[i]["我方"] then
 				drawname(cx, 1, id, CC.FontSmall)
 				lib.LoadPNG(99, headid*2, cx - w / 2, y - h - 4, 1, 0)
-				DrawString(cx-21, y-10-9, string.format("%3d",WAR.JQSDXS[id]), jq_color, CC.FontSMALL)	--集气速度
+				--DrawString(cx-21, y-10-9, string.format("%3d",WAR.JQSDXS[id]), jq_color, CC.FontSMALL)	--集气速度
 				if JY.Person[id]["灼烧程度"] ~= 0 then
 					DrawString(cx, y-10-33, string.format("%3d",JY.Person[id]["灼烧程度"]), C_ORANGE, CC.FontSMALL)	--灼烧数值
 				end
@@ -12400,7 +12232,7 @@ function DrawTimeBar_sub(x1, x2, y, flag)
 			else
 				drawname(cx, y+h, id, CC.FontSmall)
 				lib.LoadPNG(99, headid*2, cx - w / 2, y + 6, 1, 0)
-				DrawString(cx-21, y+h-9, string.format("%3d",WAR.JQSDXS[id]), jq_color, CC.FontSMALL)	--集气速度
+				--DrawString(cx-21, y+h-9, string.format("%3d",WAR.JQSDXS[id]), jq_color, CC.FontSMALL)	--集气速度
 				if JY.Person[id]["灼烧程度"] ~= 0 then
 					DrawString(cx, y+h-33, string.format("%3d",JY.Person[id]["灼烧程度"]), C_ORANGE, CC.FontSMALL)	--灼烧数值
 				end
