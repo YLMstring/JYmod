@@ -4,6 +4,7 @@
         "lib",
         "match_ID",
         "CONFIG",
-        "Byte"
+        "Byte",
+        "War"
     ]
 }

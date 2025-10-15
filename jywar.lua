@@ -865,6 +865,10 @@ function War_WugongHurtLife(enemyid, wugong, level, ang, x, y)
 		War_Show_Count(WAR.CurID, "吸取气血");
 	end
 
+	local function IsStrike()
+		return War.ACT == 1 and War.DZXY == 0
+	end
+
 	--接下来的效果不影响友军
 	if WAR.Person[WAR.CurID]["我方"] ~= WAR.Person[enemyid]["我方"] then
 	--松风剑法背刺效果
@@ -874,31 +878,31 @@ function War_WugongHurtLife(enemyid, wugong, level, ang, x, y)
 		Set_Eff_Text(enemyid, "特效文字2", "青城摧心掌")
     end
 	--玄天指效果
-    if Match_wugong(wugong) == 130 then
+    if Match_wugong(wugong) == 130 and IsStrike() then
 		AddFreeze(eid, 5)
     end
 	--分筋错骨手效果
-    if Match_wugong(wugong) == 117 then
+    if Match_wugong(wugong) == 117 and IsStrike() then
 		AddBurn(eid, 5, enemyid)
     end
 	--呼延枪法效果
-    if Match_wugong(wugong) == 165 then
+    if Match_wugong(wugong) == 165 and IsStrike() then
 		AddBurn(pid, 5, WAR.CurID)
     end
 	--呼延十八鞭效果
-    if Match_wugong(wugong) == 78 then
+    if Match_wugong(wugong) == 78 and IsStrike() then
 		AddBlood(pid, 5)
     end
 	--杨家枪法效果
-    if Match_wugong(wugong) == 68 then
+    if Match_wugong(wugong) == 68 and IsStrike() then
 		AddFreeze(pid, 5)
     end
 	--金龙鞭法效果
-    if Match_wugong(wugong) == 69 then
+    if Match_wugong(wugong) == 69 and IsStrike() then
 		AddInternalDamage(pid, 5)
     end
 	--铁指诀效果
-    if Match_wugong(wugong) == 121 then
+    if Match_wugong(wugong) == 121 and IsStrike() then
 		AddInternalDamage(eid, 5)
     end
 	--狂风刀法效果
@@ -981,6 +985,15 @@ function AddBlood(eid, num)
 		WAR.LXZT[eid] = WAR.LXZT[eid] + num
 	end
 	WAR.LXXS[eid] = 1
+end
+
+function AddStun(eid, num)
+	if WAR.FXDS[eid] == nil then
+		WAR.FXDS[eid] = num
+	else
+		WAR.FXDS[eid] = WAR.FXDS[eid] + num
+	end
+	WAR.FXXS[eid] = 1
 end
 
 function AddInternalDamage(eid, num)
@@ -1462,6 +1475,16 @@ function WarSetGlobal()
 	CleanWarMap(7, 0)
 end
 
+function GetFightNum(pid, eid)
+	local pidq = JY.Person[pid]["轻功"]
+	local eidq = JY.Person[eid]["轻功"]
+	if War.FXDS[eid] ~= nil then
+		eidq = eidq - War.FXDS[eid]
+	end
+	eidq = math.max(0, eidq)
+	local fightnum = 1 + math.modf((pidq - eidq) / 20)
+	return math.max(1, fightnum)
+end
 
 --显示人物的战斗信息，包括头像，生命，内力等
 function WarShowHead(id)
@@ -1902,14 +1925,10 @@ function WarShowHead(id)
 		lqzxs = "极"
 	end
 	DrawString(x1 + myx1 + size*2 + 10, y1 + myy1, lqzxs, C_RED, size)
-	--如林
+	--卸力
 	myx1 = myx1 + size * 4;
-	DrawString(x1 + myx1, y1 + myy1, "如林", M_DeepSkyBlue, size)
-	if pid == 0 then
-		DrawString(x1 + size*5/2 + myx1, y1 + myy1, WAR.FLHS2, M_DeepSkyBlue, size)
-	else
-		DrawString(x1 + size*5/2 + myx1, y1 + myy1, "※", M_DeepSkyBlue, size)
-	end
+	DrawString(x1 + myx1, y1 + myy1, "卸力", M_DeepSkyBlue, size)
+	DrawString(x1 + size*5/2 + myx1, y1 + myy1, WAR.FLHS2, M_DeepSkyBlue, size)
 	--冰封
 	myx1 = 3;
 	myy1 = myy1 + size + 2;
@@ -1951,13 +1970,9 @@ function WarShowHead(id)
   	DrawString(x1 + size*5/2 + myx1, y1 + myy1, zdxs, LimeGreen, size)
 	if WAR.PREVIEW < 0 then return end
 
-	local pidq = JY.Person[WAR.PREVIEW]["轻功"]
-	local eidq = JY.Person[pid]["轻功"]
-	local fightnum = 1 + math.modf((pidq - eidq) / 20)
-	fightnum = math.max(1, fightnum)
+	local fightnum = GetFightNum(WAR.PREVIEW, pid)
 
-	local fightnum2 = 1 + math.modf((eidq - pidq) / 20)
-	fightnum2 = math.max(1, fightnum2)
+	local fightnum2 = GetFightNum(pid, WAR.PREVIEW)
 
 	local wugong = JY.Person[WAR.PREVIEW]["论剑奖励"]
 	if WAR.Person[id]["我方"] == false and wugong > 0 then
@@ -2882,11 +2897,8 @@ function War_Fight_Sub(id, wugongnum, x, y)
 
 	local emeny = GetWarMap(x, y, 2)
 	if emeny >= 0 and emeny ~= WAR.CurID then
-		local pidq = JY.Person[pid]["轻功"]
 		local ljid = WAR.Person[emeny]["人物编号"]
-		local eidq = JY.Person[ljid]["轻功"]
-		fightnum = 1 + math.modf((pidq - eidq) / 20)
-		fightnum = math.max(1, fightnum)
+		fightnum = GetFightNum(pid, ljid)
 	end
 	--判定左右
 	if JY.Person[pid]["左右互搏"] == 1 and WAR.ZYHB == 0 then
@@ -9094,6 +9106,7 @@ function WarMain(warid, isexp)
 				WAR.Person[WAR.CurID]["内伤点数"] = (WAR.Person[WAR.CurID]["内伤点数"] or 0) + AddPersonAttrib(id, "受伤程度", -5)
 				AddPersonAttrib(id, "冰封程度", -5)
 				AddPersonAttrib(id, "灼烧程度", -5)
+				WAR.FXDS[id] = math.max(0, WAR.FXDS[id] - 5)
 				Cls();
 				War_Show_Count(WAR.CurID, "状态恢复");
 			end
