@@ -697,7 +697,7 @@ function CanLearn(pid, wugong)
 	if JY.Person[pid]["生命最大值"] == 0 then
 		return false
 	end
-	if IsSpecialized(pid, wugong) then
+	if pid == 0 or IsSpecialized(pid, wugong) then
 		return true	
 	end
 	local kind = JY.Wugong[wugong]["武功类型"]

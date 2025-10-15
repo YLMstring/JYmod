@@ -795,6 +795,10 @@ function War_Show_Count(id, str)
 	lib.FreeSur(surid)
 end
 
+function IsStrike()
+	return WAR.ACT == 1 and WAR.DZXY == 0
+end
+
 --计算医疗量
 --id1 医疗id2, 返回id2生命增加点数
 function ExecDoctor(id1, id2)
@@ -856,17 +860,21 @@ function War_WugongHurtLife(enemyid, wugong, level, ang, x, y)
 	--无酒不欢：记录人物血量
 	WAR.Person[enemyid]["Life_Before_Hit"] = JY.Person[eid]["生命"]
 
-	local hurt = War_CalculateDamage(pid, eid, wugong)
+	local hurt, raged, absorbed = War_CalculateDamage(pid, eid, wugong)
+
+	if WAR.LQZ[pid] ~= nil then
+		WAR.LQZ[pid] = WAR.LQZ[pid] - raged
+	end
+	if WAR.Shield[eid] ~= nil then
+		WAR.Shield[eid] = WAR.Shield[eid] - absorbed
+	end
+
 	JY.Person[pid]["主运内功"] = wugong
 	
 	if WAR.LXZT[eid] ~= nil and WAR.LXZT[eid] > 0 then
 		WAR.Person[WAR.CurID]["生命点数"] = (WAR.Person[WAR.CurID]["生命点数"] or 0) + AddPersonAttrib(pid, "生命", WAR.LXZT[eid]);
 		Cls();
 		War_Show_Count(WAR.CurID, "吸取气血");
-	end
-
-	local function IsStrike()
-		return War.ACT == 1 and War.DZXY == 0
 	end
 
 	--接下来的效果不影响友军
@@ -978,6 +986,24 @@ function GetStyle(id)
 	return JY.Person[id]["主运内功"]
 end
 
+function AddRage(eid, num)
+	if WAR.LQZ[eid] == nil then
+		WAR.LQZ[eid] = num
+	else
+		WAR.LQZ[eid] = WAR.LQZ[eid] + num
+	end
+	WAR.ShowRage[eid] = 1
+end
+
+function AddShield(eid, num)
+	if WAR.Shield[eid] == nil then
+		WAR.Shield[eid] = num
+	else
+		WAR.Shield[eid] = WAR.Shield[eid] + num
+	end
+	WAR.ShowShield[eid] = 1
+end
+
 function AddBlood(eid, num)
 	if WAR.LXZT[eid] == nil then
 		WAR.LXZT[eid] = num
@@ -998,6 +1024,7 @@ end
 
 function AddInternalDamage(eid, num)
 	JY.Person[eid]["受伤程度"] = JY.Person[eid]["受伤程度"] + num
+	WAR.ShowInternalDamage[eid] = 1
 end
 
 function AddFreeze(eid, num)
@@ -1359,12 +1386,17 @@ function WarSetGlobal()
 	WAR.KHBX = 0		--葵花刺目
 	WAR.KHCM = {}		--被刺目的人记录
 	WAR.LQZ = {}		--怒气值
+	WAR.ShowRage = {}		--怒气显示
+	WAR.Shield = {}		--卸力
+	WAR.ShowShield = {}		--卸力显示
+	WAR.ShowRage = {}		--怒气显示
 	WAR.FXDS = {}		--封穴点数
 	WAR.FXXS = {}		--封穴显示
 	WAR.LXZT = {}		--流血点数
 	WAR.LXXS = {}		--流血显示
 	WAR.BFXS = {}		--冰封显示
 	WAR.ZSXS = {}		--灼烧显示
+	WAR.ShowInternalDamage = {}		--内伤显示
 	WAR.SZJPYX = {}		--已经提供过实战的人记录（被打死的）
 	WAR.TZ_MRF = 0		--慕容复指令
 	WAR.TZ_DY = 0		--段誉指令
@@ -1478,8 +1510,8 @@ end
 function GetFightNum(pid, eid)
 	local pidq = JY.Person[pid]["轻功"]
 	local eidq = JY.Person[eid]["轻功"]
-	if War.FXDS[eid] ~= nil then
-		eidq = eidq - War.FXDS[eid]
+	if WAR.FXDS[eid] ~= nil then
+		eidq = eidq - WAR.FXDS[eid]
 	end
 	eidq = math.max(0, eidq)
 	local fightnum = 1 + math.modf((pidq - eidq) / 20)
@@ -1921,9 +1953,6 @@ function WarShowHead(id)
   	local myy1 = 0;
 	--怒气
 	DrawString(x1 + myx1, y1 + myy1, "怒气", C_RED, size)
-	if lqzxs == 100 then
-		lqzxs = "极"
-	end
 	DrawString(x1 + myx1 + size*2 + 10, y1 + myy1, lqzxs, C_RED, size)
 	--卸力
 	myx1 = myx1 + size * 4;
@@ -1942,31 +1971,19 @@ function WarShowHead(id)
 	myx1 = 3;
 	myy1 = myy1 + size + 2;
 	DrawString(x1 + myx1, y1 + myy1, "封穴", C_GOLD, size)
-	if fxxs == 50 then
-		fxxs = "极"
-	end
 	DrawString(x1 + myx1 + size*2 + 10, y1 + myy1, fxxs, C_GOLD, size)
 	--流血
 	myx1 = myx1 + size * 4;
 	DrawString(x1 + myx1, y1 + myy1, "流血", M_DarkRed, size)
-	if lxxs == 100 then
-		lxxs = "极"
-	end
   	DrawString(x1 + size*5/2 + myx1, y1 + myy1, lxxs, M_DarkRed, size)
 	--内伤
 	myx1 = 3;
 	myy1 = myy1 + size + 2;
 	DrawString(x1 + myx1, y1 + myy1, "内伤", PinkRed, size)
-	if nsxs == 100 then
-		nsxs = "极"
-	end
 	DrawString(x1 + myx1 + size*2 + 10, y1 + myy1, nsxs, PinkRed, size)
 	--中毒
 	myx1 = myx1 + size * 4;
 	DrawString(x1 + myx1, y1 + myy1, "中毒", LimeGreen, size)
-	if zdxs == 100 then
-		zdxs = "极"
-	end
   	DrawString(x1 + size*5/2 + myx1, y1 + myy1, zdxs, LimeGreen, size)
 	if WAR.PREVIEW < 0 then return end
 
@@ -1997,8 +2014,18 @@ function War_CalculateDamage(pid, eid, wugong)
 	local def = JY.Person[eid]["防御力"]
 	local true_WL = get_skill_power(pid, wugong)
 	local dmg = true_WL - def + JY.Person[eid]["受伤程度"] - JY.Person[pid]["冰封程度"]
-	dmg = math.max(true_WL - def, 1)
-	return dmg
+	local raged = 0
+	if IsStrike() and WAR.LQZ[pid] ~= nil then
+		raged = WAR.LQZ[pid]
+		dmg = dmg + WAR.LQZ[pid]
+	end
+	local absorbed = 0
+	if WAR.Shield[eid] ~= nil then
+		absorbed = math.min(WAR.Shield[eid], dmg - 1)
+		dmg = dmg - absorbed
+	end
+	dmg = math.max(dmg, 1)
+	return dmg, raged, absorbed
 end
 
 --自动选择合适的武功
@@ -2076,26 +2103,6 @@ function War_AutoSelectWugong()
 
 				--二十大欧阳锋不用逆运蛤蟆
 				if (wugongid == 95 or wugongid == 104) and pid == 60 and WAR.ZDDH == 289 then
-					probability[i] = 0
-				end
-
-				--七夕任盈盈不用棋书画
-				if (wugongid == 72 or wugongid == 84 or wugongid == 142) and pid == 611 then
-					probability[i] = 0
-				end
-
-				--七夕郭靖不用打狗
-				if wugongid == 80 and pid == 612 then
-					probability[i] = 0
-				end
-
-				--七夕黄蓉不用降龙
-				if wugongid == 26 and pid == 613 then
-					probability[i] = 0
-				end
-
-				--七夕杨过暴怒不用玄铁
-				if wugongid == 45 and pid == 614 and WAR.LQZ[pid] == 100 then
 					probability[i] = 0
 				end
 
@@ -3644,16 +3651,6 @@ function War_Fight_Sub(id, wugongnum, x, y)
 		ng = ng + 500
 	end
 
-	--五岳剑法组合，50%几率额外气攻+1000，暴怒必发动
-	if wugong >= 30 and wugong <= 34 and WuyueJF(pid) and (WAR.LQZ[pid] == 100 or JLSD(20, 70, pid))then
-		ng = ng + 1000
-		if WAR.Person[id]["特效文字3"] ~= nil then
-			WAR.Person[id]["特效文字3"] = "气贯五岳·"..WAR.Person[id]["特效文字3"]
-		else
-			WAR.Person[id]["特效文字3"] = "气贯五岳"
-		end
-	end
-
 	--琴棋书画：棋盘招式，额外杀气
 	if wugong == 72 and QinqiSH(pid) then
 		ng = ng + 1200
@@ -3706,7 +3703,7 @@ function War_Fight_Sub(id, wugongnum, x, y)
 		end
 	end
 
-	--七伤拳，机率造成内伤17点
+	--[[七伤拳，机率造成内伤17点
 	--谢逊必出
 	if wugong == 23 and (match_ID(pid, 13) or WAR.LQZ[pid] == 100 or JLSD(30, 60, pid))then
 		WAR.YZQS = 1
@@ -3715,7 +3712,7 @@ function War_Fight_Sub(id, wugongnum, x, y)
 		else
 			WAR.Person[id]["特效文字1"] = "一震七伤"
 		end
-	end
+	end]]
 
     --钟灵 使用闪电貂，可偷窃，朱聪妙手空空也可
     if (match_ID(pid, 90) and wugong == 113) or (match_ID(pid, 131) and wugong == 116) then
@@ -4197,7 +4194,7 @@ function War_Fight_Sub(id, wugongnum, x, y)
 		end
     end
 
-    --蓝烟清：胡家刀法，极意
+    --[[蓝烟清：胡家刀法，极意
     --刀系主角40%，胡斐50%，暴怒必出
     if wugong == 67 and level == 11 and ((pid == 0 and JY.Base["标准"] == 4 and (WAR.LQZ[pid] == 100 or JLSD(30,70,pid))) or (match_ID(pid, 1) and (WAR.LQZ[pid] == 100 or JLSD(20,70,pid)))) then
 		local HDJY = {"极意·伏虎式","极意·拜佛听经","极意·穿手藏刀","极意·沙鸥掠波","极意·参拜北斗","极意·闭门铁扇刀","极意·缠身摘心刀","极意·进步连环刀","极意·八方藏刀式"};
@@ -4230,7 +4227,7 @@ function War_Fight_Sub(id, wugongnum, x, y)
 				SetWarMap(x - i + 1, y - j + 1, 4, 1)
 			end
 		end
-    end
+    end]]
 
     --霍都攻击，中毒+13~16
     if match_ID(pid, 84) and math.random(10) < 7 then
@@ -4572,7 +4569,7 @@ function War_Fight_Sub(id, wugongnum, x, y)
 		end
 	end
 
-	--无酒不欢：举火燎原，金乌+燃木+火焰刀，暴怒造成引燃效果
+	--[[无酒不欢：举火燎原，金乌+燃木+火焰刀，暴怒造成引燃效果
 	if (wugong == 61 or wugong == 65 or wugong == 66) and JuHuoLY(pid) and WAR.LQZ[pid] == 100 then
 		Set_Eff_Text(id,"特效文字2","举火燎原")
 	end
@@ -4580,7 +4577,7 @@ function War_Fight_Sub(id, wugongnum, x, y)
 	--无酒不欢：利刃寒锋，修罗+阴风+沧溟，暴怒造成冻结效果
 	if (wugong == 58 or wugong == 174 or wugong == 153) and LiRenHF(pid) and WAR.LQZ[pid] == 100 then
 		Set_Eff_Text(id,"特效文字2","利刃寒锋")
-	end
+	end]]
 
 	--主运太玄，太玄之重，不加怒
 	if Curr_NG(pid, 102) and JLSD(20, 70 + JY.Base["天书数量"] + math.modf(JY.Person[pid]["实战"]/50), pid) then
@@ -9106,7 +9103,9 @@ function WarMain(warid, isexp)
 				WAR.Person[WAR.CurID]["内伤点数"] = (WAR.Person[WAR.CurID]["内伤点数"] or 0) + AddPersonAttrib(id, "受伤程度", -5)
 				AddPersonAttrib(id, "冰封程度", -5)
 				AddPersonAttrib(id, "灼烧程度", -5)
-				WAR.FXDS[id] = math.max(0, WAR.FXDS[id] - 5)
+				if WAR.FXDS[id] ~= nil then
+					WAR.FXDS[id] = math.max(0, WAR.FXDS[id] - 5)
+				end
 				Cls();
 				War_Show_Count(WAR.CurID, "状态恢复");
 			end
@@ -9313,7 +9312,7 @@ function WarMain(warid, isexp)
 				end
 			end
 
-			--暴怒恢复
+			--[[暴怒恢复
 	        if WAR.LQZ[id] == 100 then
 				--王重阳北斗七闪状态行动后暴怒不减
 				if not (match_ID(id, 129) and WAR.CYZX[id] ~= nil and WAR.BDQS > 0) then
@@ -9328,7 +9327,7 @@ function WarMain(warid, isexp)
 				if WAR.LQZ[id] ~= nil and WAR.LQZ[id] == 100 then
 					CurIDTXDH(WAR.CurID, 6, 1, "怒气爆发")
 				end
-			end
+			end]]
 
 	        --杨过 吼  龙儿~~
 	        if WAR.XK == 1 then
@@ -11423,6 +11422,18 @@ function War_ShowFight(pid, wugong, wugongtype, level, x, y, eft, ZHEN_ID)
       	end
       end
 
+		if WAR.ShowInternalDamage[WAR.Person[i]["人物编号"]] == 1 then		--显示是否被内伤
+			HitXY[HitXYNum][10] = "内伤 "..JY.Person[WAR.Person[i]["人物编号"]]["受伤程度"];
+			WAR.ShowInternalDamage[WAR.Person[i]["人物编号"]] = 0
+		end
+		if WAR.ShowRage[WAR.Person[i]["人物编号"]] == 1 and WAR.LQZ[WAR.Person[i]["人物编号"]] ~= nil then		--显示是否怒气
+			HitXY[HitXYNum][12] = "怒气 "..WAR.LQZ[WAR.Person[i]["人物编号"]];
+			WAR.ShowRage[WAR.Person[i]["人物编号"]] = 0
+		end
+		if WAR.ShowShield[WAR.Person[i]["人物编号"]] == 1 and WAR.Shield[WAR.Person[i]["人物编号"]] ~= nil then		--显示是否怒气
+			HitXY[HitXYNum][11] = "卸力 "..WAR.LQZ[WAR.Person[i]["人物编号"]];
+			WAR.ShowShield[WAR.Person[i]["人物编号"]] = 0
+		end
 		if WAR.BFXS[WAR.Person[i]["人物编号"]] == 1 then		--显示是否被冰封
 			HitXY[HitXYNum][11] = "冰封 "..JY.Person[WAR.Person[i]["人物编号"]]["冰封程度"];
 			WAR.BFXS[WAR.Person[i]["人物编号"]] = 0
@@ -12285,9 +12296,9 @@ function DrawTimeBar_sub(x1, x2, y, flag)
 			elseif JY.Person[id]["中毒程度"] >= 50 then
 				jq_color = RGB(120, 208, 88)
 			end
-			if WAR.LQZ[id] == 100 then
+			--[[if WAR.LQZ[id] == 100 then
 				jq_color = C_RED
-			end
+			end]]
 			if WAR.Person[i]["我方"] then
 				drawname(cx, 1, id, CC.FontSmall)
 				lib.LoadPNG(99, headid*2, cx - w / 2, y - h - 4, 1, 0)
