@@ -821,7 +821,7 @@ function GetWugongDescription(wugong)
 		flavor = "赤练仙子李莫愁带有剧毒的掌法，*威猛悍恶，武林人士尽皆忌惮"
 	elseif wugong == 50 then
 		mechanic = "进招：流血5"
-		flavor = "广西黎山洞黎老汉的刀法，人被劈到，就会流血"
+		flavor = "广西黎山洞黎老汉的刀法，人被刀劈，就会流血"
 	elseif wugong == 86 then
 		mechanic = "进招：卸力10"
 		flavor = "绝情谷樊一翁的九九八十一路泼水杖法，*严谨紧密，水泼不进"
@@ -845,7 +845,7 @@ function GetWugongDescription(wugong)
 		flavor = "梅庄三庄主秃笔翁的二十八招石鼓打穴笔法，*可将名家书法融入其中"
 	elseif wugong == 75 then
 		mechanic = "神兵，反击：流血10"
-		flavor = "一把短柄长口的奇形剪刀，剪口尽是锯齿，*小心剪你的脑袋瓜子"
+		flavor = "一把短柄长口的奇形剪刀，剪口尽是锯齿，*小心剪你的脑袋瓜子！"
 	elseif wugong == 53 then
 		mechanic = "反击：卸力10，不动：改为卸力20"
 		flavor = "南山樵子南希仁的外家刀法，*劈刺截扫，斩削砍剁，信手而应"
