@@ -799,6 +799,18 @@ function IsStrike()
 	return WAR.ACT == 1 and WAR.DZXY == 0
 end
 
+function IsStandStill(pid)
+	return WAR.Wait[pid] == 0
+end
+
+function IsCounter(pid)
+	return WAR.ACT == 1 and WAR.DZXY == 1
+end
+
+function IsCombo(pid)
+	return WAR.ACT == 2
+end
+
 --计算医疗量
 --id1 医疗id2, 返回id2生命增加点数
 function ExecDoctor(id1, id2)
