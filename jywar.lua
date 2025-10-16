@@ -874,13 +874,6 @@ function War_WugongHurtLife(enemyid, wugong, level, ang, x, y)
 
 	local hurt, raged, absorbed = War_CalculateDamage(pid, eid, wugong)
 
-	if WAR.LQZ[pid] ~= nil then
-		WAR.LQZ[pid] = WAR.LQZ[pid] - raged
-	end
-	if WAR.Shield[eid] ~= nil then
-		WAR.Shield[eid] = WAR.Shield[eid] - absorbed
-	end
-
 	JY.Person[pid]["主运内功"] = wugong
 	
 	if WAR.LXZT[eid] ~= nil and WAR.LXZT[eid] > 0 then
@@ -905,9 +898,22 @@ function War_WugongHurtLife(enemyid, wugong, level, ang, x, y)
     if Match_wugong(pid, wugong) == 50 and IsStrike() then
 		AddBlood(eid, 5)
     end
+	--大剪刀效果
+	--这里还要补一个神兵效果
+    if Match_wugong(pid, wugong) == 75 and IsCounter(pid) then
+		AddBlood(eid, 10)
+    end
+	--石鼓打穴笔效果
+    if Match_wugong(pid, wugong) == 71 and IsStrike() then
+		AddStun(eid, 5)
+    end
 	--分筋错骨手效果
     if Match_wugong(pid, wugong) == 117 and IsStrike() then
 		AddBurn(eid, 5, enemyid)
+    end
+	--云雾十三式效果
+    if Match_wugong(pid, wugong) == 32 and (IsBackstab(WAR.CurID, enemyid) or IsCombo(pid)) then
+		AddBurn(eid, 10, enemyid)
     end
 	--呼延枪法效果
     if Match_wugong(pid, wugong) == 165 and IsStrike() then
@@ -920,6 +926,54 @@ function War_WugongHurtLife(enemyid, wugong, level, ang, x, y)
 	--五虎断门刀效果
     if Match_wugong(pid, wugong) == 59 and IsStrike() then
 		AddRage(pid, 5)
+    end
+	--鹰爪功效果
+    if Match_wugong(pid, wugong) == 4 and IsStrike() then
+		if (WAR.LQZ[pid] or 0) > 0 then
+			AddBlood(eid, 5)
+		end
+		if (WAR.LXZT[eid] or 0) > 0 then
+			AddRage(pid, 5)
+		end
+    end
+	--透骨打穴法效果
+    if Match_wugong(pid, wugong) == 127 and IsStrike() then
+		if JY.Person[eid]["受伤程度"] > 0 then
+			AddStun(eid, 5)
+		end
+		if (WAR.FXDS[eid] or 0) > 0 then
+			AddInternalDamage(eid, 5)
+		end
+    end
+	--寒冰绵掌效果
+    if Match_wugong(pid, wugong) == 5 and IsStrike() then
+		if (WAR.Shield[pid] or 0) > 0 then
+			AddFreeze(eid, 5)
+		end
+		if JY.Person[eid]["冰封程度"] > 0 then
+			AddShield(pid, 5)
+		end
+    end
+	if Match_wugong(pid, wugong) == 5 and IsCounter(pid) then
+		AddShield(pid, 5)
+    end
+	--南山刀法效果
+	if Match_wugong(pid, wugong) == 53 and IsCounter(pid) then
+		if IsStandStill(pid) then
+			AddShield(pid, 10)
+		else
+			AddShield(pid, 20)
+		end
+    end
+	--绵掌效果
+    if Match_wugong(pid, wugong) == 7 and IsStrike() then
+		AddShield(pid, 5)
+    end
+	if Match_wugong(pid, wugong) == 7 and IsCounter(pid) then
+		AddShield(pid, 5)
+    end
+	if Match_wugong(pid, wugong) == 7 and IsCombo(pid) then
+		AddShield(pid, 5)
     end
 	--呼延十八鞭效果
     if Match_wugong(pid, wugong) == 78 and IsStrike() then
@@ -983,6 +1037,13 @@ function War_WugongHurtLife(enemyid, wugong, level, ang, x, y)
 			end
 		end
 	end]]
+
+	if WAR.LQZ[pid] ~= nil then
+		WAR.LQZ[pid] = WAR.LQZ[pid] - raged
+	end
+	if WAR.Shield[eid] ~= nil then
+		WAR.Shield[eid] = WAR.Shield[eid] - absorbed
+	end
 
 	--无酒不欢：伤害的结算到此为止，扣除被攻击方血量
 	JY.Person[eid]["生命"] = JY.Person[eid]["生命"] - hurt

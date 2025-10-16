@@ -812,7 +812,7 @@ function GetWugongDescription(wugong)
 		flavor = "丁不四的九节鞭法门，既威猛，又华丽"
 	elseif wugong == 68 then
 		mechanic = "进招：自身冰封5"
-		flavor = "北宋名将杨再兴传下的枪法，*招数灵动，变幻巧妙"
+		flavor = "北宋名将杨再兴传下的枪法，招数灵动，变幻巧妙"
 	elseif wugong == 70 then
 		mechanic = "进招：自身封穴5"
 		flavor = "中平枪，枪中王，远近高低都不妨，*乃是六合枪中最精妙的家数"
@@ -828,6 +828,30 @@ function GetWugongDescription(wugong)
 	elseif wugong == 59 then
 		mechanic = "进招：怒气5"
 		flavor = "传自云州秦家寨的刚猛刀法，在江湖上赫赫有名"
+	elseif wugong == 4 then
+		mechanic = "进招：若自身有怒气，流血5，若对手有流血，怒气5"
+		flavor = "招数凌厉的指功，擒拿扭勾，十指如钩如锥"
+	elseif wugong == 5 then
+		mechanic = "进招：若自身有卸力，冰封5，若对手有冰封，卸力5；*反击：卸力5"
+		flavor = "青翼蝠王韦一笑的独门奇功，寒气入体，透骨冰冷"
+	elseif wugong == 7 then
+		mechanic = "进招：卸力5；反击：卸力5；连击：卸力5"
+		flavor = "绵掌劲力若有若无，有若絮飘雪扬，软绵绵不着力气"
+	elseif wugong == 127 then
+		mechanic = "进招：若对手有内伤，封穴5，若对手有封穴，内伤5"
+		flavor = "西毒欧阳锋的阴毒点穴手段，极难破解"
+	elseif wugong == 71 then
+		mechanic = "进招：封穴5"
+		flavor = "梅庄三庄主秃笔翁的二十八招石鼓打穴笔法，*可将名家书法融入其中"
+	elseif wugong == 75 then
+		mechanic = "神兵，反击：流血10"
+		flavor = "一把短柄长口的奇形剪刀，剪口尽是锯齿，*小心剪你的脑袋瓜子"
+	elseif wugong == 53 then
+		mechanic = "反击：卸力10，不动：改为卸力20"
+		flavor = "南山樵子南希仁的外家刀法，*劈刺截扫，斩削砍剁，信手而应"
+	elseif wugong == 32 then
+		mechanic = "背刺或连击：灼烧10"
+		flavor = "衡山派绝技百变千幻云雾十三式，*声东击西，虚虚实实，后招绵绵而至，变幻犹如鬼魅"
 	end
 	local strs = {name.." "..typename, flavor, health..qi..atk..def..dex..move, mechanic}
 	--local str = name.." "..typename.."*"..flavor.."*"..health..qi..atk..def..dex..move.."*"..mechanic
