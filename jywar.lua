@@ -323,7 +323,7 @@ function GetAtkNum(x, y, warid, kungfuid)
 		local mid = GetWarMap(enemys[i].x + x, enemys[i].y + y, 2)
 		local eid = WAR.Person[mid]["人物编号"]
 		local dmg = War_PredictDamage(pid, eid, kungfuid)
-		local ehp = JY.Person[eid]["生命"]
+		local ehp = JY.Person[eid]["生命"] + (WAR.Shield[eid] or 0)
 		local rate = dmg * 1000 / ehp
 		if rate > target.p then
 			target.x = enemys[i].x + x
@@ -7310,6 +7310,16 @@ function War_KfMove(movefanwei, atkfanwei, wugong)
     elseif key == VK_RIGHT then
       x2 = x + movetime
     elseif (key == VK_SPACE or key == VK_RETURN) then
+		local pid = WAR.Person[WAR.CurID]["人物编号"]
+		local stance = JY.Person[pid]["主运内功"]
+		local stanceType = JY.Wugong[stance]["武功类型"]
+		local wugongType = JY.Wugong[wugong]["武功类型"]
+		local function isBluff(stance)
+			return false
+		end
+		if stanceType < 6 and wugongType < 6 and not isBluff(stance) and stanceType ~= wugongType then
+			DrawStrBoxWaitKey("不能连续使用不同类型的外功", C_WHITE, CC.DefaultFont)
+		end
 		if WAR.Person[GetWarMap(x, y, 2)] ~= nil and WAR.Person[GetWarMap(x, y, 2)]["我方"] == false then
 			local distance = math.abs(x-x0) + math.abs(y-y0)
 			if distance <= negativelen then
