@@ -816,6 +816,18 @@ function GetWugongDescription(wugong)
 	elseif wugong == 70 then
 		mechanic = "进招：自身封穴5"
 		flavor = "中平枪，枪中王，远近高低都不妨，*乃是六合枪中最精妙的家数"
+	elseif wugong == 3 then
+		mechanic = "进招：中毒7"
+		flavor = "赤练仙子李莫愁带有剧毒的掌法，*威猛悍恶，武林人士尽皆忌惮"
+	elseif wugong == 50 then
+		mechanic = "进招：流血5"
+		flavor = "广西黎山洞黎老汉的刀法，人被劈到，就会流血"
+	elseif wugong == 86 then
+		mechanic = "进招：卸力10"
+		flavor = "绝情谷樊一翁的九九八十一路泼水杖法，*严谨紧密，水泼不进"
+	elseif wugong == 59 then
+		mechanic = "进招：怒气5"
+		flavor = "传自云州秦家寨的刚猛刀法，在江湖上赫赫有名"
 	end
 	local strs = {name.." "..typename, flavor, health..qi..atk..def..dex..move, mechanic}
 	--local str = name.." "..typename.."*"..flavor.."*"..health..qi..atk..def..dex..move.."*"..mechanic

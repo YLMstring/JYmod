@@ -880,41 +880,61 @@ function War_WugongHurtLife(enemyid, wugong, level, ang, x, y)
 	--接下来的效果不影响友军
 	if WAR.Person[WAR.CurID]["我方"] ~= WAR.Person[enemyid]["我方"] then
 	--松风剑法背刺效果
-    if Match_wugong(wugong) == 27 and IsBackstab(WAR.CurID, enemyid) then
+    if Match_wugong(pid, wugong) == 27 and IsBackstab(WAR.CurID, enemyid) then
 		AddInternalDamage(eid, 15)
 		WAR.Person[enemyid]["特效动画"] = 93
 		Set_Eff_Text(enemyid, "特效文字2", "青城摧心掌")
     end
 	--玄天指效果
-    if Match_wugong(wugong) == 130 and IsStrike() then
+    if Match_wugong(pid, wugong) == 130 and IsStrike() then
 		AddFreeze(eid, 5)
     end
+	--柴刀十八路效果
+    if Match_wugong(pid, wugong) == 50 and IsStrike() then
+		AddBlood(eid, 5)
+    end
 	--分筋错骨手效果
-    if Match_wugong(wugong) == 117 and IsStrike() then
+    if Match_wugong(pid, wugong) == 117 and IsStrike() then
 		AddBurn(eid, 5, enemyid)
     end
 	--呼延枪法效果
-    if Match_wugong(wugong) == 165 and IsStrike() then
+    if Match_wugong(pid, wugong) == 165 and IsStrike() then
 		AddBurn(pid, 5, WAR.CurID)
     end
+	--泼水杖法效果
+    if Match_wugong(pid, wugong) == 86 and IsStrike() then
+		AddShield(pid, 10)
+    end
+	--五虎断门刀效果
+    if Match_wugong(pid, wugong) == 59 and IsStrike() then
+		AddRage(pid, 5)
+    end
 	--呼延十八鞭效果
-    if Match_wugong(wugong) == 78 and IsStrike() then
+    if Match_wugong(pid, wugong) == 78 and IsStrike() then
 		AddBlood(pid, 5)
     end
 	--杨家枪法效果
-    if Match_wugong(wugong) == 68 and IsStrike() then
+    if Match_wugong(pid, wugong) == 68 and IsStrike() then
 		AddFreeze(pid, 5)
     end
 	--金龙鞭法效果
-    if Match_wugong(wugong) == 69 and IsStrike() then
+    if Match_wugong(pid, wugong) == 69 and IsStrike() then
 		AddInternalDamage(pid, 5)
     end
 	--铁指诀效果
-    if Match_wugong(wugong) == 121 and IsStrike() then
+    if Match_wugong(pid, wugong) == 121 and IsStrike() then
 		AddInternalDamage(eid, 5)
     end
+	--五毒神掌效果
+    if Match_wugong(pid, wugong) == 3 and IsStrike() then
+		AddPoison(eid, 7, enemyid)
+    end
+	--中平枪法效果
+    if Match_wugong(pid, wugong) == 70 and IsStrike() then
+		AddStun(pid, 5)
+    end
 	--狂风刀法效果
-    if Match_wugong(wugong) == 55 and GetStyle(eid) == 0 then
+    if Match_wugong(pid, wugong) == 55 and GetStyle(eid) == 0 then
 		local blood55 = 10
 		local ally55 = GetAllyNum(WAR.CurID)
 		if ally55 == 0 then
@@ -978,7 +998,7 @@ function War_WugongHurtLife(enemyid, wugong, level, ang, x, y)
 	return limitX(hurt, 0, hurt);
 end
 
-function Match_wugong(wugong)
+function Match_wugong(pid, wugong)
 	return wugong
 end
 
@@ -1025,6 +1045,11 @@ end
 function AddInternalDamage(eid, num)
 	JY.Person[eid]["受伤程度"] = JY.Person[eid]["受伤程度"] + num
 	WAR.ShowInternalDamage[eid] = 1
+end
+
+function AddPoison(eid, num, enemyid)
+	JY.Person[eid]["中毒程度"] = JY.Person[eid]["中毒程度"] + num
+	WAR.Person[enemyid]["中毒点数"] = (WAR.Person[enemyid]["中毒点数"] or 0) + JY.Person[eid]["中毒程度"]
 end
 
 function AddFreeze(eid, num)
@@ -8941,13 +8966,21 @@ function WarMain(warid, isexp)
 			if GetWarMap(WAR.Person[WAR.CurID]["坐标X"], WAR.Person[WAR.CurID]["坐标Y"], 6) > 0 then
 				WarNewLand0()
 			end
+			local lifeb4 = JY.Person[id]["生命"]
 			if WAR.LXZT[id] ~= nil and WAR.LXZT[id] > 0 then
 				local loss = WAR.LXZT[id]
-				--无酒不欢：记录人物血量
-				WAR.Person[WAR.CurID]["Life_Before_Hit"] = JY.Person[id]["生命"]
 				JY.Person[id]["生命"] = JY.Person[id]["生命"] - loss
 				WAR.Person[WAR.CurID]["生命点数"] = (WAR.Person[WAR.CurID]["生命点数"] or 0) - loss
 				WAR.LXZT[id] = 0
+			end
+			if JY.Person[id]["中毒程度"] > 0 then
+				local loss = JY.Person[id]["中毒程度"]
+				JY.Person[id]["生命"] = JY.Person[id]["生命"] - loss
+				WAR.Person[WAR.CurID]["生命点数"] = (WAR.Person[WAR.CurID]["生命点数"] or 0) - loss
+				WAR.LXZT[id] = 0
+			end
+			if (WAR.Person[WAR.CurID]["生命点数"] or 0) < 0 then
+				WAR.Person[WAR.CurID]["Life_Before_Hit"] = lifeb4
 				Cls();
 				War_Show_Count(WAR.CurID, "流失气血");
 			end
@@ -9099,15 +9132,16 @@ function WarMain(warid, isexp)
 					Cls();
 					War_Show_Count(WAR.CurID, "八卦逆位气血回复");
 				end
-
-				WAR.Person[WAR.CurID]["内伤点数"] = (WAR.Person[WAR.CurID]["内伤点数"] or 0) + AddPersonAttrib(id, "受伤程度", -5)
+				if WAR.Shield[WAR.CurID] ~= nil then
+					WAR.Shield[WAR.CurID] = WAR.Shield[WAR.CurID] / 2
+				end
+				AddPersonAttrib(id, "受伤程度", -5)
+				AddPersonAttrib(id, "中毒程度", -5)
 				AddPersonAttrib(id, "冰封程度", -5)
 				AddPersonAttrib(id, "灼烧程度", -5)
 				if WAR.FXDS[id] ~= nil then
 					WAR.FXDS[id] = math.max(0, WAR.FXDS[id] - 5)
 				end
-				Cls();
-				War_Show_Count(WAR.CurID, "状态恢复");
 			end
 
 			if WAR.Wait[id] < 1 then
