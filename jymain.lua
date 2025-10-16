@@ -823,7 +823,7 @@ function GetWugongDescription(wugong)
 		mechanic = "进招：流血5"
 		flavor = "广西黎山洞黎老汉的刀法，人被刀劈，就会流血"
 	elseif wugong == 86 then
-		mechanic = "进招：卸力10"
+		mechanic = "进招：卸力8"
 		flavor = "绝情谷樊一翁的九九八十一路泼水杖法，*严谨紧密，水泼不进"
 	elseif wugong == 59 then
 		mechanic = "进招：怒气5"
@@ -832,10 +832,10 @@ function GetWugongDescription(wugong)
 		mechanic = "进招：若自身有怒气，流血5，若对手有流血，怒气5"
 		flavor = "招数凌厉的指功，擒拿扭勾，十指如钩如锥"
 	elseif wugong == 5 then
-		mechanic = "进招：若自身有卸力，冰封5，若对手有冰封，卸力5；*反击：卸力5"
+		mechanic = "进招：若自身有卸力，冰封4，若对手有冰封，卸力4；*反击：卸力4"
 		flavor = "青翼蝠王韦一笑的独门奇功，寒气入体，透骨冰冷"
 	elseif wugong == 7 then
-		mechanic = "进招：卸力5；反击：卸力5；连击：卸力5"
+		mechanic = "进招：卸力4；反击：卸力4；连击：卸力4"
 		flavor = "绵掌劲力若有若无，有若絮飘雪扬，软绵绵不着力气"
 	elseif wugong == 127 then
 		mechanic = "进招：若对手有内伤，封穴5，若对手有封穴，内伤5"
@@ -847,7 +847,7 @@ function GetWugongDescription(wugong)
 		mechanic = "神兵，反击：流血10"
 		flavor = "一把短柄长口的奇形剪刀，剪口尽是锯齿，*小心剪你的脑袋瓜子！"
 	elseif wugong == 53 then
-		mechanic = "反击：卸力10，不动：改为卸力20"
+		mechanic = "反击：卸力8，不动：改为卸力16"
 		flavor = "南山樵子南希仁的外家刀法，*劈刺截扫，斩削砍剁，信手而应"
 	elseif wugong == 32 then
 		mechanic = "背刺或连击：灼烧10"

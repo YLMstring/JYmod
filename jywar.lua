@@ -921,7 +921,7 @@ function War_WugongHurtLife(enemyid, wugong, level, ang, x, y)
     end
 	--泼水杖法效果
     if Match_wugong(pid, wugong) == 86 and IsStrike() then
-		AddShield(pid, 10)
+		AddShield(pid, 8)
     end
 	--五虎断门刀效果
     if Match_wugong(pid, wugong) == 59 and IsStrike() then
@@ -948,32 +948,32 @@ function War_WugongHurtLife(enemyid, wugong, level, ang, x, y)
 	--寒冰绵掌效果
     if Match_wugong(pid, wugong) == 5 and IsStrike() then
 		if (WAR.Shield[pid] or 0) > 0 then
-			AddFreeze(eid, 5)
+			AddFreeze(eid, 4)
 		end
 		if JY.Person[eid]["冰封程度"] > 0 then
-			AddShield(pid, 5)
+			AddShield(pid, 4)
 		end
     end
 	if Match_wugong(pid, wugong) == 5 and IsCounter(pid) then
-		AddShield(pid, 5)
+		AddShield(pid, 4)
     end
 	--南山刀法效果
 	if Match_wugong(pid, wugong) == 53 and IsCounter(pid) then
 		if IsStandStill(pid) then
-			AddShield(pid, 10)
+			AddShield(pid, 8)
 		else
-			AddShield(pid, 20)
+			AddShield(pid, 16)
 		end
     end
 	--绵掌效果
     if Match_wugong(pid, wugong) == 7 and IsStrike() then
-		AddShield(pid, 5)
+		AddShield(pid, 4)
     end
 	if Match_wugong(pid, wugong) == 7 and IsCounter(pid) then
-		AddShield(pid, 5)
+		AddShield(pid, 4)
     end
 	if Match_wugong(pid, wugong) == 7 and IsCombo(pid) then
-		AddShield(pid, 5)
+		AddShield(pid, 4)
     end
 	--呼延十八鞭效果
     if Match_wugong(pid, wugong) == 78 and IsStrike() then
@@ -9039,6 +9039,9 @@ function WarMain(warid, isexp)
 			if GetWarMap(WAR.Person[WAR.CurID]["坐标X"], WAR.Person[WAR.CurID]["坐标Y"], 6) > 0 then
 				WarNewLand0()
 			end
+			if WAR.Shield[WAR.CurID] ~= nil then
+				WAR.Shield[WAR.CurID] = WAR.Shield[WAR.CurID] / 2
+			end
 			local lifeb4 = JY.Person[id]["生命"]
 			if WAR.LXZT[id] ~= nil and WAR.LXZT[id] > 0 then
 				local loss = WAR.LXZT[id]
@@ -9204,9 +9207,6 @@ function WarMain(warid, isexp)
 					WAR.Person[WAR.CurID]["生命点数"] = AddPersonAttrib(id, "生命", heal_amount);
 					Cls();
 					War_Show_Count(WAR.CurID, "八卦逆位气血回复");
-				end
-				if WAR.Shield[WAR.CurID] ~= nil then
-					WAR.Shield[WAR.CurID] = WAR.Shield[WAR.CurID] / 2
 				end
 				AddPersonAttrib(id, "受伤程度", -5)
 				AddPersonAttrib(id, "中毒程度", -5)
