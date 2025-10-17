@@ -852,6 +852,15 @@ function GetWugongDescription(wugong)
 	elseif wugong == 32 then
 		mechanic = "背刺或连击：灼烧10"
 		flavor = "衡山派绝技百变千幻云雾十三式，*声东击西，虚虚实实，后招绵绵而至，变幻犹如鬼魅"
+	elseif wugong == 28 then
+		mechanic = "虚招，先制或连击：怒气10"
+		flavor = "石梁派剑法，六六三十六招尽是虚招，*如同雷震之前的闪电，敌人头晕眼花之后，便是雷轰霹雳的猛攻"
+	elseif wugong == 9 then
+		mechanic = "背刺：破招，中毒5"
+		flavor = "西毒欧阳锋从毒蛇身上悟出的古怪拳法，*打出后能在空中任意拐弯"
+	elseif wugong == 30 then
+		mechanic = "疗伤（可攻击同伴，攻击同伴时改为回复气血）"
+		flavor = "恒山派剑法，绵密严谨，长于守御，破绽极少"
 	end
 	local strs = {name.." "..typename, flavor, health..qi..atk..def..dex..move, mechanic}
 	--local str = name.." "..typename.."*"..flavor.."*"..health..qi..atk..def..dex..move.."*"..mechanic

@@ -795,6 +795,19 @@ function War_Show_Count(id, str)
 	lib.FreeSur(surid)
 end
 
+function BreakStance(eid, warpid, wareid)
+	local stance = JY.Person[eid]["主运内功"]
+	if IsBackstab(warpid, wareid) then
+		JY.Person[eid]["主运内功"] = 0
+		return
+	end
+	--大剪刀
+	if stance == 75 then
+		return
+	end
+	JY.Person[eid]["主运内功"] = 0
+end
+
 function IsStrike()
 	return WAR.ACT == 1 and WAR.DZXY == 0
 end
@@ -882,53 +895,59 @@ function War_WugongHurtLife(enemyid, wugong, level, ang, x, y)
 		War_Show_Count(WAR.CurID, "吸取气血");
 	end
 
+	local noDamage = false
+	local isHeal = false
 	--接下来的效果不影响友军
 	if WAR.Person[WAR.CurID]["我方"] ~= WAR.Person[enemyid]["我方"] then
 	--松风剑法背刺效果
-    if Match_wugong(pid, wugong) == 27 and IsBackstab(WAR.CurID, enemyid) then
+    if Match_wugong(pid, wugong, 27) and IsBackstab(WAR.CurID, enemyid) then
 		AddInternalDamage(eid, 15)
-		WAR.Person[enemyid]["特效动画"] = 93
-		Set_Eff_Text(enemyid, "特效文字2", "青城摧心掌")
+		--WAR.Person[enemyid]["特效动画"] = 93
+		--Set_Eff_Text(enemyid, "特效文字2", "青城摧心掌")
+    end
+	--灵蛇拳效果
+    if Match_wugong(pid, wugong, 9) and IsBackstab(WAR.CurID, enemyid) then
+		BreakStance(eid, WAR.CurID, enemyid)
+		AddPoison(eid, 5, enemyid)
     end
 	--玄天指效果
-    if Match_wugong(pid, wugong) == 130 and IsStrike() then
+    if Match_wugong(pid, wugong, 130) and IsStrike() then
 		AddFreeze(eid, 5)
     end
 	--柴刀十八路效果
-    if Match_wugong(pid, wugong) == 50 and IsStrike() then
+    if Match_wugong(pid, wugong, 50) and IsStrike() then
 		AddBlood(eid, 5)
     end
 	--大剪刀效果
-	--这里还要补一个神兵效果
-    if Match_wugong(pid, wugong) == 75 and IsCounter(pid) then
+    if Match_wugong(pid, wugong, 75) and IsCounter(pid) then
 		AddBlood(eid, 10)
     end
 	--石鼓打穴笔效果
-    if Match_wugong(pid, wugong) == 71 and IsStrike() then
+    if Match_wugong(pid, wugong, 71) and IsStrike() then
 		AddStun(eid, 5)
     end
 	--分筋错骨手效果
-    if Match_wugong(pid, wugong) == 117 and IsStrike() then
+    if Match_wugong(pid, wugong, 117) and IsStrike() then
 		AddBurn(eid, 5, enemyid)
     end
 	--云雾十三式效果
-    if Match_wugong(pid, wugong) == 32 and (IsBackstab(WAR.CurID, enemyid) or IsCombo(pid)) then
+    if Match_wugong(pid, wugong, 32) and (IsBackstab(WAR.CurID, enemyid) or IsCombo(pid)) then
 		AddBurn(eid, 10, enemyid)
     end
 	--呼延枪法效果
-    if Match_wugong(pid, wugong) == 165 and IsStrike() then
+    if Match_wugong(pid, wugong, 165) and IsStrike() then
 		AddBurn(pid, 5, WAR.CurID)
     end
 	--泼水杖法效果
-    if Match_wugong(pid, wugong) == 86 and IsStrike() then
+    if Match_wugong(pid, wugong, 86) and IsStrike() then
 		AddShield(pid, 8)
     end
 	--五虎断门刀效果
-    if Match_wugong(pid, wugong) == 59 and IsStrike() then
+    if Match_wugong(pid, wugong, 59) and IsStrike() then
 		AddRage(pid, 5)
     end
 	--鹰爪功效果
-    if Match_wugong(pid, wugong) == 4 and IsStrike() then
+    if Match_wugong(pid, wugong, 4) and IsStrike() then
 		if (WAR.LQZ[pid] or 0) > 0 then
 			AddBlood(eid, 5)
 		end
@@ -937,7 +956,7 @@ function War_WugongHurtLife(enemyid, wugong, level, ang, x, y)
 		end
     end
 	--透骨打穴法效果
-    if Match_wugong(pid, wugong) == 127 and IsStrike() then
+    if Match_wugong(pid, wugong, 127) and IsStrike() then
 		if JY.Person[eid]["受伤程度"] > 0 then
 			AddStun(eid, 5)
 		end
@@ -946,7 +965,7 @@ function War_WugongHurtLife(enemyid, wugong, level, ang, x, y)
 		end
     end
 	--寒冰绵掌效果
-    if Match_wugong(pid, wugong) == 5 and IsStrike() then
+    if Match_wugong(pid, wugong, 5) and IsStrike() then
 		if (WAR.Shield[pid] or 0) > 0 then
 			AddFreeze(eid, 4)
 		end
@@ -954,11 +973,15 @@ function War_WugongHurtLife(enemyid, wugong, level, ang, x, y)
 			AddShield(pid, 4)
 		end
     end
-	if Match_wugong(pid, wugong) == 5 and IsCounter(pid) then
+	if Match_wugong(pid, wugong, 5) and IsCounter(pid) then
+		AddShield(pid, 4)
+    end
+	--春蚕掌法效果
+	if Match_wugong(pid, wugong, 5) and IsCounter(pid) then
 		AddShield(pid, 4)
     end
 	--南山刀法效果
-	if Match_wugong(pid, wugong) == 53 and IsCounter(pid) then
+	if Match_wugong(pid, wugong, 53) and IsCounter(pid) then
 		if IsStandStill(pid) then
 			AddShield(pid, 8)
 		else
@@ -966,41 +989,45 @@ function War_WugongHurtLife(enemyid, wugong, level, ang, x, y)
 		end
     end
 	--绵掌效果
-    if Match_wugong(pid, wugong) == 7 and IsStrike() then
+    if Match_wugong(pid, wugong, 7) and IsStrike() then
 		AddShield(pid, 4)
     end
-	if Match_wugong(pid, wugong) == 7 and IsCounter(pid) then
+	if Match_wugong(pid, wugong, 7) and IsCounter(pid) then
 		AddShield(pid, 4)
     end
-	if Match_wugong(pid, wugong) == 7 and IsCombo(pid) then
+	if Match_wugong(pid, wugong, 7) and IsCombo(pid) then
 		AddShield(pid, 4)
     end
 	--呼延十八鞭效果
-    if Match_wugong(pid, wugong) == 78 and IsStrike() then
+    if Match_wugong(pid, wugong, 78) and IsStrike() then
 		AddBlood(pid, 5)
     end
 	--杨家枪法效果
-    if Match_wugong(pid, wugong) == 68 and IsStrike() then
+    if Match_wugong(pid, wugong, 68) and IsStrike() then
 		AddFreeze(pid, 5)
     end
 	--金龙鞭法效果
-    if Match_wugong(pid, wugong) == 69 and IsStrike() then
+    if Match_wugong(pid, wugong, 69) and IsStrike() then
 		AddInternalDamage(pid, 5)
     end
 	--铁指诀效果
-    if Match_wugong(pid, wugong) == 121 and IsStrike() then
+    if Match_wugong(pid, wugong, 121) and IsStrike() then
 		AddInternalDamage(eid, 5)
     end
 	--五毒神掌效果
-    if Match_wugong(pid, wugong) == 3 and IsStrike() then
+    if Match_wugong(pid, wugong, 3) and IsStrike() then
 		AddPoison(eid, 7, enemyid)
     end
 	--中平枪法效果
-    if Match_wugong(pid, wugong) == 70 and IsStrike() then
+    if Match_wugong(pid, wugong, 70) and IsStrike() then
 		AddStun(pid, 5)
     end
+	--雷震剑法效果
+    if Match_wugong(pid, wugong, 28) and (GetStyle(eid) == 0 or IsCombo(pid)) then
+		AddRage(pid, 10)
+    end
 	--狂风刀法效果
-    if Match_wugong(pid, wugong) == 55 and GetStyle(eid) == 0 then
+    if Match_wugong(pid, wugong, 55) and GetStyle(eid) == 0 then
 		local blood55 = 10
 		local ally55 = GetAllyNum(WAR.CurID)
 		if ally55 == 0 then
@@ -1009,40 +1036,28 @@ function War_WugongHurtLife(enemyid, wugong, level, ang, x, y)
 			blood55 = 20
 		end
 		AddBlood(eid, blood55)
-		WAR.Person[enemyid]["特效动画"] = 89
-		Set_Eff_Text(enemyid, "特效文字2", "飞沙走石十三式")
+		--WAR.Person[enemyid]["特效动画"] = 89
+		--Set_Eff_Text(enemyid, "特效文字2", "飞沙走石十三式")
+    end
+	else
+	--绵里藏针效果
+    if WugongCanHeal(pid, wugong) then
+		isHeal = true
     end
 	end
-	--误伤打到自己人
-	--[[if WAR.Person[WAR.CurID]["我方"] == WAR.Person[enemyid]["我方"] then
-		--我方
-		if WAR.Person[WAR.CurID]["我方"] then
-			--水笙误伤加血
-			if match_ID(pid, 589) then
-				hurt = -(math.modf(hurt) + Rnd(3))
-			--其他人误伤30%
-			else
-				hurt = math.modf(hurt * 0.3) + Rnd(3)
-			end
-		--NPC，误伤=20%
-		else
-			--倾国反弹100%
-			if WAR.NZQK == 3 then
-			
-			--触发逆转乾坤，NPC误伤提高至50%
-			elseif WAR.NZQK == 0 then
-				hurt = math.modf(hurt * 0.2) + Rnd(3)
-			else
-				hurt = math.modf(hurt * 0.5) + Rnd(3)
-			end
-		end
-	end]]
 
 	if WAR.LQZ[pid] ~= nil then
 		WAR.LQZ[pid] = WAR.LQZ[pid] - raged
 	end
 	if WAR.Shield[eid] ~= nil then
 		WAR.Shield[eid] = WAR.Shield[eid] - absorbed
+	end
+
+	if isHeal then
+		hurt = - hurt
+	end
+	if noDamage then
+		hurt = 0
 	end
 
 	--无酒不欢：伤害的结算到此为止，扣除被攻击方血量
@@ -1071,8 +1086,8 @@ function War_WugongHurtLife(enemyid, wugong, level, ang, x, y)
 	return limitX(hurt, 0, hurt);
 end
 
-function Match_wugong(pid, wugong)
-	return wugong
+function Match_wugong(pid, wugong, expected)
+	return wugong == expected
 end
 
 function GetStyle(id)
@@ -7315,12 +7330,16 @@ function War_KfMove(movefanwei, atkfanwei, wugong)
 		local stanceType = JY.Wugong[stance]["武功类型"]
 		local wugongType = JY.Wugong[wugong]["武功类型"]
 		local function isBluff(stance)
+			--雷震剑法
+			if stance == 28 then
+				return true
+			end
 			return false
 		end
 		if stanceType < 6 and wugongType < 6 and not isBluff(stance) and not IsSpecialized(pid, wugong) and stanceType ~= wugongType then
 			DrawStrBoxWaitKey("不能连续使用不同类型的外功", C_WHITE, CC.DefaultFont)
 		end
-		if WAR.Person[GetWarMap(x, y, 2)] ~= nil and WAR.Person[GetWarMap(x, y, 2)]["我方"] == false then
+		if WAR.Person[GetWarMap(x, y, 2)] ~= nil and (WAR.Person[GetWarMap(x, y, 2)]["我方"] == false or WugongCanAlly(pid, wugong)) then
 			local distance = math.abs(x-x0) + math.abs(y-y0)
 			if distance <= negativelen then
 				DrawStrBoxWaitKey("该武功最小距离为"..(negativelen + 1), C_WHITE, CC.DefaultFont)
@@ -7378,6 +7397,21 @@ function War_KfMove(movefanwei, atkfanwei, wugong)
 		end
 	end
 end
+
+function WugongCanAlly(pid, wugong)
+	if WugongCanHeal(pid, wugong) then
+		return true
+	end
+	return false
+end
+
+function WugongCanHeal(pid, wugong)
+	if Match_wugong(pid, wugong, 30) then
+		return true
+	end
+	return false
+end
+
 --WarDrawAtt 
 function WarDrawAtt(x, y, fanwei, flag, cx, cy, atk)
   local x0, y0 = nil, nil
@@ -10420,7 +10454,7 @@ end
 
 --是否背刺
 function IsBackstab(warpid, wareid)
-	return WAR.ACT == 1 and WAR.Person[warpid]["人方向"] == WAR.Person[wareid]["人方向"]
+	return WAR.Person[warpid]["人方向"] == WAR.Person[wareid]["人方向"]
 end
 
 --判断攻击后面对的方向
