@@ -861,6 +861,9 @@ function GetWugongDescription(wugong)
 	elseif wugong == 30 then
 		mechanic = "疗伤（可攻击同伴，攻击同伴时改为回复气血）"
 		flavor = "恒山派剑法，绵密严谨，长于守御，破绽极少"
+	elseif wugong == 6 then
+		mechanic = "该武功不造成伤害，改为增加卸力"
+		flavor = "春蚕掌法招招全是守势，出手奇短，*抬手踢足，全不出半尺之外，不求有功，但求无过"
 	end
 	local strs = {name.." "..typename, flavor, health..qi..atk..def..dex..move, mechanic}
 	--local str = name.." "..typename.."*"..flavor.."*"..health..qi..atk..def..dex..move.."*"..mechanic

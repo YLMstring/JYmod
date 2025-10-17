@@ -977,8 +977,9 @@ function War_WugongHurtLife(enemyid, wugong, level, ang, x, y)
 		AddShield(pid, 4)
     end
 	--春蚕掌法效果
-	if Match_wugong(pid, wugong, 5) and IsCounter(pid) then
-		AddShield(pid, 4)
+	if Match_wugong(pid, wugong, 6) then
+		noDamage = true
+		AddShield(pid, hurt)
     end
 	--南山刀法效果
 	if Match_wugong(pid, wugong, 53) and IsCounter(pid) then
