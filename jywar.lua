@@ -7317,7 +7317,7 @@ function War_KfMove(movefanwei, atkfanwei, wugong)
 		local function isBluff(stance)
 			return false
 		end
-		if stanceType < 6 and wugongType < 6 and not isBluff(stance) and stanceType ~= wugongType then
+		if stanceType < 6 and wugongType < 6 and not isBluff(stance) and not IsSpecialized(pid, wugong) and stanceType ~= wugongType then
 			DrawStrBoxWaitKey("不能连续使用不同类型的外功", C_WHITE, CC.DefaultFont)
 		end
 		if WAR.Person[GetWarMap(x, y, 2)] ~= nil and WAR.Person[GetWarMap(x, y, 2)]["我方"] == false then
@@ -10420,7 +10420,7 @@ end
 
 --是否背刺
 function IsBackstab(warpid, wareid)
-	return WAR.Person[warpid]["人方向"] == WAR.Person[wareid]["人方向"]
+	return WAR.ACT == 1 and WAR.Person[warpid]["人方向"] == WAR.Person[wareid]["人方向"]
 end
 
 --判断攻击后面对的方向
