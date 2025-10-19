@@ -886,6 +886,10 @@ function War_WugongHurtLife(enemyid, wugong, level, ang, x, y)
 	WAR.Person[enemyid]["Life_Before_Hit"] = JY.Person[eid]["生命"]
 
 	local hurt, raged, absorbed = War_CalculateDamage(pid, eid, wugong)
+	--逍遥游
+	if Match_wugong(pid, wugong, 2) and not MatchStyle(pid, 2) then
+		WAR.Person[WAR.CurID]["移动步数"] = WAR.Person[WAR.CurID]["移动步数"] + 1
+    end
 
 	JY.Person[pid]["主运内功"] = wugong
 	
@@ -904,7 +908,7 @@ function War_WugongHurtLife(enemyid, wugong, level, ang, x, y)
     if Match_wugong(pid, wugong, 27) and IsBackstab(WAR.CurID, enemyid) then
 		AddInternalDamage(eid, 15)
 		--WAR.Person[enemyid]["特效动画"] = 93
-		--Set_Eff_Text(enemyid, "特效文字2", "青城摧心掌")圣火
+		--Set_Eff_Text(enemyid, "特效文字2", "青城摧心掌")
     end
 	--灵蛇拳效果
     if Match_wugong(pid, wugong, 9) and IsBackstab(WAR.CurID, enemyid) then
@@ -9302,7 +9306,6 @@ function WarMain(warid, isexp)
 			local function TurnEndReal()
 				--逍遥游 攻击后可移动
 	        	if WAR.Person[p]["我方"] == true and MatchStyle(id, 2) then
-					WAR.Person[p]["移动步数"] = WAR.Person[p]["移动步数"] + 1
 					kfmoveAferwards(p)
 	        	end
 				--鹤蛇八打 攻击后可移动
