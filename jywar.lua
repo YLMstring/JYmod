@@ -9242,7 +9242,42 @@ function WarMain(warid, isexp)
 				WAR.ZYHB = 0
 	        end
 			
+			local function kfmoveAferwards(p, id)
+				if WAR.Person[p]["移动步数"] < 1 then
+					return
+				end
+				if WAR.AutoFight ~= 0 then
+					return
+				end
+				if JY.Person[id]["生命"] <= 0 then
+					return
+				end
+				War_CalMoveStep(p, WAR.Person[p]["移动步数"], 0)
+				local x, y = nil, nil
+				while 1 do
+					if JY.Restart == 1 then
+						break
+					end
+					x, y = War_SelectMove()
+					if x ~= nil then
+						WAR.ShowHead = 0
+						War_MovePerson(x, y)
+						break;
+					end
+				end
+			end
+
 			local function TurnEndReal()
+				--逍遥游 攻击后可移动
+	        	if WAR.Person[p]["我方"] == true and GetStyle(id) == 2 then
+					kfmoveAferwards(p)
+	        	end
+				--泰山十八盘
+				if GetWarMap(WAR.Person[WAR.CurID]["坐标X"], WAR.Person[WAR.CurID]["坐标Y"], 6) > 0 
+					and WAR.Person[p]["我方"] == true and GetStyle(id) == 31 then
+					AddRage(id, 10)
+					kfmoveAferwards(p)
+				end
 				--回合结束消耗体力内力
 				if inteam(id) then
 					JY.Person[id]["体力"] = math.max(JY.Person[id]["体力"] - 1, 0)
@@ -9519,36 +9554,6 @@ function WarMain(warid, isexp)
 				end
 				WAR.FLHS5 = 0
 				WAR.CurID = z
-	        end
-
-			local function kfmoveAferwards(p, id)
-				if WAR.Person[p]["移动步数"] < 1 then
-					return
-				end
-				if WAR.AutoFight ~= 0 then
-					return
-				end
-				if JY.Person[id]["生命"] <= 0 then
-					return
-				end
-				War_CalMoveStep(p, WAR.Person[p]["移动步数"], 0)
-				local x, y = nil, nil
-				while 1 do
-					if JY.Restart == 1 then
-						break
-					end
-					x, y = War_SelectMove()
-					if x ~= nil then
-						WAR.ShowHead = 0
-						War_MovePerson(x, y)
-						break;
-					end
-				end
-			end
-
-	        --逍遥游 攻击后可移动
-	        if WAR.Person[p]["我方"] == true and GetStyle(id) == 2 then
-				kfmoveAferwards(p)
 	        end
 
 			--阿凡提 攻击后可移动

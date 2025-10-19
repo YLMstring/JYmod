@@ -867,6 +867,9 @@ function GetWugongDescription(wugong)
 	elseif wugong == 2 then
 		mechanic = "回合结束时，可以继续移动"
 		flavor = "北丐洪七公少年时练的功夫，*身法飘逸，回旋往复，灵动如燕"
+	elseif wugong == 31 then
+		mechanic = "回合结束时，若脚踏八卦方位，怒气10，可以继续移动"
+		flavor = "泰山派剑法，将十八盘处羊肠曲折，*五步一盘，十步一回的险峻地势融入剑法，*越盘越高，越行越险，剑招越转越加狠辣"
 	end
 	local strs = {name.." "..typename, flavor, health..qi..atk..def..dex..move, mechanic}
 	--local str = name.." "..typename.."*"..flavor.."*"..health..qi..atk..def..dex..move.."*"..mechanic
