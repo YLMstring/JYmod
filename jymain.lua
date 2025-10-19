@@ -799,7 +799,7 @@ function GetWugongDescription(wugong)
 		mechanic = "进招：灼烧5"
 		flavor = "江湖上流传甚广的擒拿手法，*长于脱人关节，断人筋骨"
 	elseif wugong == 165 then
-		mechanic = "进招：自身灼烧5"
+		mechanic = "进招：自身灼烧10"
 		flavor = "北宋名将呼延赞传下的枪法，在军中流传甚广"
 	elseif wugong == 121 then
 		mechanic = "进招：内伤5"
@@ -808,13 +808,13 @@ function GetWugongDescription(wugong)
 		mechanic = "进招：自身流血5"
 		flavor = "北宋名将呼延赞传下的鞭法，*其人曾以一根钢鞭震断敌人十条长枪"
 	elseif wugong == 69 then
-		mechanic = "进招：自身内伤5"
+		mechanic = "进招：自身内伤10"
 		flavor = "丁不四的九节鞭法门，既威猛，又华丽"
 	elseif wugong == 68 then
-		mechanic = "进招：自身冰封5"
+		mechanic = "进招：自身冰封10"
 		flavor = "北宋名将杨再兴传下的枪法，招数灵动，变幻巧妙"
 	elseif wugong == 70 then
-		mechanic = "进招：自身封穴5"
+		mechanic = "进招：自身封穴10"
 		flavor = "中平枪，枪中王，远近高低都不妨，*乃是六合枪中最精妙的家数"
 	elseif wugong == 3 then
 		mechanic = "进招：中毒7"
@@ -864,6 +864,9 @@ function GetWugongDescription(wugong)
 	elseif wugong == 6 then
 		mechanic = "该武功不造成伤害，改为增加卸力"
 		flavor = "春蚕掌法招招全是守势，出手奇短，*抬手踢足，全不出半尺之外，不求有功，但求无过"
+	elseif wugong == 2 then
+		mechanic = "回合结束时，可以继续移动"
+		flavor = "北丐洪七公少年时练的功夫，*身法飘逸，回旋往复，灵动如燕"
 	end
 	local strs = {name.." "..typename, flavor, health..qi..atk..def..dex..move, mechanic}
 	--local str = name.." "..typename.."*"..flavor.."*"..health..qi..atk..def..dex..move.."*"..mechanic

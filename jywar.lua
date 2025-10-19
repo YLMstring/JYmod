@@ -903,7 +903,7 @@ function War_WugongHurtLife(enemyid, wugong, level, ang, x, y)
     if Match_wugong(pid, wugong, 27) and IsBackstab(WAR.CurID, enemyid) then
 		AddInternalDamage(eid, 15)
 		--WAR.Person[enemyid]["特效动画"] = 93
-		--Set_Eff_Text(enemyid, "特效文字2", "青城摧心掌")
+		--Set_Eff_Text(enemyid, "特效文字2", "青城摧心掌")圣火
     end
 	--灵蛇拳效果
     if Match_wugong(pid, wugong, 9) and IsBackstab(WAR.CurID, enemyid) then
@@ -936,7 +936,7 @@ function War_WugongHurtLife(enemyid, wugong, level, ang, x, y)
     end
 	--呼延枪法效果
     if Match_wugong(pid, wugong, 165) and IsStrike() then
-		AddBurn(pid, 5, WAR.CurID)
+		AddBurn(pid, 10, WAR.CurID)
     end
 	--泼水杖法效果
     if Match_wugong(pid, wugong, 86) and IsStrike() then
@@ -1005,11 +1005,11 @@ function War_WugongHurtLife(enemyid, wugong, level, ang, x, y)
     end
 	--杨家枪法效果
     if Match_wugong(pid, wugong, 68) and IsStrike() then
-		AddFreeze(pid, 5)
+		AddFreeze(pid, 10)
     end
 	--金龙鞭法效果
     if Match_wugong(pid, wugong, 69) and IsStrike() then
-		AddInternalDamage(pid, 5)
+		AddInternalDamage(pid, 10)
     end
 	--铁指诀效果
     if Match_wugong(pid, wugong, 121) and IsStrike() then
@@ -1021,7 +1021,7 @@ function War_WugongHurtLife(enemyid, wugong, level, ang, x, y)
     end
 	--中平枪法效果
     if Match_wugong(pid, wugong, 70) and IsStrike() then
-		AddStun(pid, 5)
+		AddStun(pid, 10)
     end
 	--雷震剑法效果
     if Match_wugong(pid, wugong, 28) and (GetStyle(eid) == 0 or IsCombo(pid)) then
@@ -9521,14 +9521,17 @@ function WarMain(warid, isexp)
 				WAR.CurID = z
 	        end
 
-	        --圣火神功 攻击后可移动
-	        if (0 < WAR.Person[p]["移动步数"] or 0 < WAR.ZYYD) and WAR.Person[p]["我方"] == true and inteam(id) and WAR.AutoFight == 0 and PersonKF(id, 93) and 0 < JY.Person[id]["生命"] then
-				if 0 < WAR.ZYYD then
-					WAR.Person[p]["移动步数"] = WAR.ZYYD
-					War_CalMoveStep(p, WAR.ZYYD, 0)
-				else
-					War_CalMoveStep(p, WAR.Person[p]["移动步数"], 0)
+			local function kfmoveAferwards(p, id)
+				if WAR.Person[p]["移动步数"] < 1 then
+					return
 				end
+				if WAR.AutoFight ~= 0 then
+					return
+				end
+				if JY.Person[id]["生命"] <= 0 then
+					return
+				end
+				War_CalMoveStep(p, WAR.Person[p]["移动步数"], 0)
 				local x, y = nil, nil
 				while 1 do
 					if JY.Restart == 1 then
@@ -9541,18 +9544,12 @@ function WarMain(warid, isexp)
 						break;
 					end
 				end
+			end
+
+	        --逍遥游 攻击后可移动
+	        if WAR.Person[p]["我方"] == true and GetStyle(id) == 2 then
+				kfmoveAferwards(p)
 	        end
-
-			--无酒不欢：无论是否触发了圣火再移动，这个变量都应该在这一步清除，否则会影响到下一个人的圣火判定
-			--触发周伯通左右补偿不清除
-			if WAR.ZHB == 0 then
-				WAR.ZYYD = 0
-			end
-
-			--周伯通的追加互搏判定
-			if WAR.ZHB == 1 then
-				WAR.ZHB = 0
-			end
 
 			--阿凡提 攻击后可移动
 			if match_ID(id,606) and WAR.Person[p]["我方"] == true and WAR.AutoFight == 0 and 0 < JY.Person[id]["生命"] then
