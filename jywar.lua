@@ -890,8 +890,12 @@ function War_WugongHurtLife(enemyid, wugong)
 	if Match_wugong(pid, wugong, 2) and not MatchStyle(pid, 2) then
 		WAR.Person[WAR.CurID]["移动步数"] = WAR.Person[WAR.CurID]["移动步数"] + 1
     end
-
-	JY.Person[pid]["主运内功"] = wugong
+	
+	if IsFullForce(pid, wugong) then
+		JY.Person[pid]["主运内功"] = 0
+	else
+		JY.Person[pid]["主运内功"] = wugong
+	end
 	
 	if WAR.LXZT[eid] ~= nil and WAR.LXZT[eid] > 0 then
 		WAR.Person[WAR.CurID]["生命点数"] = (WAR.Person[WAR.CurID]["生命点数"] or 0) + AddPersonAttrib(pid, "生命", WAR.LXZT[eid]);
@@ -2152,7 +2156,8 @@ function WarShowHead(id)
 end
 
 function War_PredictDamage(pid, eid, wugong)
-	return War_CalculateDamage(pid, eid, wugong)
+	local dmg, raged, absorbed = War_CalculateDamage(pid, eid, wugong)
+	return dmg - raged + absorbed
 end
 
 function War_CalculateDamage(pid, eid, wugong)
