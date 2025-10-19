@@ -875,7 +875,7 @@ function ExecDoctor(id1, id2)
 end
 
 --无酒不欢：计算武功伤害，WAR.CurID为攻击方
-function War_WugongHurtLife(enemyid, wugong, level, ang, x, y)
+function War_WugongHurtLife(enemyid, wugong)
 
 	local pid = WAR.Person[WAR.CurID]["人物编号"]
 	local eid = WAR.Person[enemyid]["人物编号"]
@@ -995,6 +995,18 @@ function War_WugongHurtLife(enemyid, wugong, level, ang, x, y)
     end
 	if Match_wugong(pid, wugong, 5) and IsCounter(pid) then
 		AddShield(pid, 4)
+    end
+	--罗汉拳效果
+	if Match_wugong(pid, wugong, 1) and IsCounter(pid) and IsProtecting(pid, 1, WAR.CurID) then
+		AddBurn(eid, 10)
+    end
+	--罗汉刀法效果
+	if Match_wugong(pid, wugong, 51) and IsCounter(pid) and IsProtecting(pid, 51, WAR.CurID) then
+		AddBlood(eid, 10)
+    end
+	--天竺佛指效果
+	if Match_wugong(pid, wugong, 122) and IsCounter(pid) and IsProtecting(pid, 122, WAR.CurID) then
+		AddStun(eid, 10)
     end
 	--春蚕掌法效果
 	if Match_wugong(pid, wugong, 6) then
@@ -1159,6 +1171,10 @@ end
 function AddPoison(eid, num, enemyid)
 	JY.Person[eid]["中毒程度"] = JY.Person[eid]["中毒程度"] + num
 	WAR.Person[enemyid]["中毒点数"] = (WAR.Person[enemyid]["中毒点数"] or 0) + JY.Person[eid]["中毒程度"]
+end
+
+function IsProtecting(eid, wugong, enemyid)
+	return WAR.Person[enemyid]["反击武功"] == wugong + 11000
 end
 
 function AddFreeze(eid, num)
@@ -5118,17 +5134,73 @@ function War_Fight_Sub(id, wugongnum, x, y)
 		end
 	end
 
+	local function canProtect(wareid, protector)
+		local prid = WAR.Person[protector]["人物编号"]
+		if wareid == protector then
+			return false
+		end
+		if WAR.Person[protector]["我方"] ~= WAR.Person[wareid]["我方"] then
+			return false
+		end
+		if JY.Person[prid]["生命"] <= 0 then
+			return false
+		end
+		local distance = -1
+		--罗汉拳
+		if MatchStyle(prid, 1) then
+			distance = 1
+		end
+		--罗汉刀法
+		if MatchStyle(prid, 51) then
+			distance = 1
+		end
+		--天竺佛指
+		if MatchStyle(prid, 122) then
+			distance = 1
+		end
+		if distance < 0 then
+			return false
+		end
+		return RealJL(wareid, protector, distance)
+	end
+
+	local function findProtector(wareid)
+		local protectorWarid = -1
+		for j = 0, WAR.PersonNum - 1 do
+			if canProtect(wareid, j) then
+				if protectorWarid < 0 then
+					protectorWarid = j
+				elseif JY.Person[WAR.Person[j]["人物编号"]]["生命"] > JY.Person[WAR.Person[protectorWarid]["人物编号"]]["生命"] then
+					protectorWarid = j
+				end
+			end
+		end
+		return protectorWarid
+	end
+
+	local function hitPerson(wareid, i, j)
+		local proid = findProtector(wareid)
+		if proid then
+			WAR.Person[proid]["生命点数"] = (WAR.Person[proid]["生命点数"] or 0) - War_WugongHurtLife(wareid, wugong)
+			if WAR.Person[proid]["反击武功"] > 0 then
+				WAR.Person[proid]["反击武功"] = WAR.Person[proid]["反击武功"] + 1000
+			end
+		else
+			WAR.Person[wareid]["生命点数"] = (WAR.Person[wareid]["生命点数"] or 0) - War_WugongHurtLife(wareid, wugong)
+		end
+		WAR.Effect = 2
+		SetWarMap(i, j, 4, 2)
+	end
+
     --计算伤害的敌人
     for i = 0, CC.WarWidth - 1 do
 		for j = 0, CC.WarHeight - 1 do
 			lib.GetKey()
 			local effect = GetWarMap(i, j, 4)
 			if 0 < effect then
-				local emeny = GetWarMap(i, j, 2)
-				if 0 <= emeny and emeny ~= WAR.CurID then		--如果有人，并且不是当前控制人
-					WAR.Person[emeny]["生命点数"] = (WAR.Person[emeny]["生命点数"] or 0) - War_WugongHurtLife(emeny, wugong, level, ng, x, y)
-					WAR.Effect = 2
-					SetWarMap(i, j, 4, 2)
+				local wareid = GetWarMap(i, j, 2)
+				if wareid >= 0 and wareid ~= WAR.CurID then		--如果有人，并且不是当前控制人
+					hitPerson(wareid, i, j)
 				end
 			end
 		end
@@ -5326,14 +5398,14 @@ function War_Fight_Sub(id, wugongnum, x, y)
 	AddPersonAttrib(pid, "体力", -jtl);
 
 	--斗转星移计算，现在人人能反击，好时代来临力
-	if WAR.Person[WAR.CurID]["反击武功"] ~= 9999 then
+	if WAR.Person[WAR.CurID]["反击武功"] < 10000 then
 	local dz = {}
 	local dznum = 0
 	for i = 0, WAR.PersonNum - 1 do
-		if WAR.Person[i]["反击武功"] ~= -1 and WAR.Person[i]["反击武功"] ~= 9999 then
+		if WAR.Person[i]["反击武功"] ~= -1 and WAR.Person[i]["反击武功"] < 10000 then
 			dznum = dznum + 1
 			dz[dznum] = {i, WAR.Person[WAR.CurID]["坐标X"] - WAR.Person[i]["坐标X"], WAR.Person[WAR.CurID]["坐标Y"] - WAR.Person[i]["坐标Y"]}
-			WAR.Person[i]["反击武功"] = 9999
+			WAR.Person[i]["反击武功"] = WAR.Person[i]["反击武功"] + 10000
 		end
 	end
 	for i = 1, dznum do
@@ -5341,7 +5413,6 @@ function War_Fight_Sub(id, wugongnum, x, y)
 		local kongfuid = JY.Person[rid]["主运内功"]
 		
 		local datas = GetValidTargets(dz[i][1], kongfuid)
-		--JY.Person[rid]["姓名"] = dz[i][2].."猪头"..dz[i][3]
 		local data = {}
 		data.x, data.y = dz[i][2], dz[i][3]
 		if Contains(datas, data) then

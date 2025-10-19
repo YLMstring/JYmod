@@ -788,16 +788,16 @@ function GetWugongDescription(wugong)
 	local flavor = "这是风味文本"
 	if wugong == 27 then
 		mechanic = "背刺：内伤15"
-		flavor = "青城派剑法，刚劲轻灵，兼而有之，*如松之劲，如风之轻"
+		flavor = "青城派剑法，刚劲轻灵，兼而有之，如松之劲，如风之轻"
 	elseif wugong == 55 then
 		mechanic = "先制：流血10，若只有一名同伴，改为流血20，*若单独行动，改为流血30"
 		flavor = "万里独行田伯光的飞沙走石十三式刀法，*快似闪电，是世间少有的快刀"
 	elseif wugong == 130 then
 		mechanic = "进招：冰封5"
-		flavor = "梅庄二庄主黑白子的玄天指神功，*内劲凌厉，可化水为冰"
+		flavor = "梅庄二庄主黑白子的玄天指神功，内劲凌厉，可化水为冰"
 	elseif wugong == 117 then
 		mechanic = "进招：灼烧5"
-		flavor = "江湖上流传甚广的擒拿手法，*长于脱人关节，断人筋骨"
+		flavor = "江湖上流传甚广的擒拿手法，长于脱人关节，断人筋骨"
 	elseif wugong == 165 then
 		mechanic = "进招：自身灼烧10"
 		flavor = "北宋名将呼延赞传下的枪法，在军中流传甚广"
@@ -824,7 +824,7 @@ function GetWugongDescription(wugong)
 		flavor = "广西黎山洞黎老汉的刀法，人被刀劈，就会流血"
 	elseif wugong == 86 then
 		mechanic = "进招：卸力8"
-		flavor = "绝情谷樊一翁的九九八十一路泼水杖法，*严谨紧密，水泼不进"
+		flavor = "绝情谷樊一翁的九九八十一路泼水杖法，严谨紧密，水泼不进"
 	elseif wugong == 59 then
 		mechanic = "进招：怒气5"
 		flavor = "传自云州秦家寨的刚猛刀法，在江湖上赫赫有名"
@@ -848,7 +848,7 @@ function GetWugongDescription(wugong)
 		flavor = "一把短柄长口的奇形剪刀，剪口尽是锯齿，*小心剪你的脑袋瓜子！"
 	elseif wugong == 53 then
 		mechanic = "反击：卸力8，不动：改为卸力16"
-		flavor = "南山樵子南希仁的外家刀法，*劈刺截扫，斩削砍剁，信手而应"
+		flavor = "南山樵子南希仁的外家刀法，劈刺截扫，斩削砍剁，信手而应"
 	elseif wugong == 32 then
 		mechanic = "背刺或连击：灼烧10"
 		flavor = "衡山派绝技百变千幻云雾十三式，*声东击西，虚虚实实，后招绵绵而至，变幻犹如鬼魅"
@@ -866,7 +866,7 @@ function GetWugongDescription(wugong)
 		flavor = "春蚕掌法招招全是守势，出手奇短，*抬手踢足，全不出半尺之外，不求有功，但求无过"
 	elseif wugong == 2 then
 		mechanic = "移动步数+1；回合结束时，可以继续移动"
-		flavor = "北丐洪七公少年时练的功夫，*身法飘逸，回旋往复，灵动如燕"
+		flavor = "北丐洪七公少年时练的功夫，身法飘逸，回旋往复，灵动如燕"
 	elseif wugong == 31 then
 		mechanic = "回合结束时，若脚踏八卦方位，怒气10，可以继续移动"
 		flavor = "泰山派剑法，将十八盘处羊肠曲折，*五步一盘，十步一回的险峻地势融入剑法，*越盘越高，越行越险，剑招越转越加狠辣"
@@ -875,13 +875,22 @@ function GetWugongDescription(wugong)
 		flavor = "穷凶极恶云中鹤擅长的奇门功夫，*长腿远跨，钢抓横掠，宛然便如一只仙鹤"
 	elseif wugong == 72 then
 		mechanic = "神兵，回合结束时，你和所有同伴可以移动1格"
-		flavor = "梅庄二庄主黑白子用以对敌的棋盘棋子，*武学之中含有棋理"
+		flavor = "梅庄二庄主黑白子用以对敌的棋盘棋子，武学之中含有棋理"
 	elseif wugong == 34 then
 		mechanic = "每三次进招中，前两次进招怒气不减"
 		flavor = "华山派剑法，乃掌门岳不群的得意之作，*第二剑比第一剑的劲道狠，第三剑又胜过了第二剑"
 	elseif wugong == 116 then
 		mechanic = "全力，攻击距离为2-4"
 		flavor = "青城派的暗器功夫，以诡变险狠见长"
+	elseif wugong == 1 then
+		mechanic = "援护1，援护且反击：灼烧10"
+		flavor = "少林派扎根基的入门功夫，粗浅朴实"
+	elseif wugong == 51 then
+		mechanic = "援护1，援护且反击：流血10"
+		flavor = "少林旁支仙霞派枯木大师的外家刀法"
+	elseif wugong == 122 then
+		mechanic = "援护1，援护且反击：封穴10"
+		flavor = "少林派点穴绝技，一指点出，带有极轻微的呲呲声响"
 	end
 	local strs = {name.." "..typename, flavor, health..qi..atk..def..dex..move, mechanic}
 	--local str = name.." "..typename.."*"..flavor.."*"..health..qi..atk..def..dex..move.."*"..mechanic
