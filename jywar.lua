@@ -801,8 +801,8 @@ function BreakStance(eid, warpid, wareid)
 		JY.Person[eid]["主运内功"] = 0
 		return
 	end
-	--大剪刀
-	if stance == 75 then
+	--大剪刀，棋盘招式
+	if stance == 75 or stance == 72 then
 		return
 	end
 	JY.Person[eid]["主运内功"] = 0
@@ -897,6 +897,7 @@ function War_WugongHurtLife(enemyid, wugong, level, ang, x, y)
 
 	local noDamage = false
 	local isHeal = false
+	local freeRage = false
 	--接下来的效果不影响友军
 	if WAR.Person[WAR.CurID]["我方"] ~= WAR.Person[enemyid]["我方"] then
 	--松风剑法背刺效果
@@ -914,6 +915,17 @@ function War_WugongHurtLife(enemyid, wugong, level, ang, x, y)
     if Match_wugong(pid, wugong, 130) and IsStrike() then
 		AddFreeze(eid, 5)
     end
+	--太岳三青峰效果
+    if Match_wugong(pid, wugong, 34) and IsStrike() then
+		if WAR.TYSQF[pid] == nil then
+			WAR.TYSQF[pid] = 1
+		else
+			WAR.TYSQF[pid] = WAR.TYSQF[pid] + 1
+		end
+		if WAR.TYSQF[pid] % 3 ~= 0 then
+			freeRage = true
+		end
+    end
 	--柴刀十八路效果
     if Match_wugong(pid, wugong, 50) and IsStrike() then
 		AddBlood(eid, 5)
@@ -929,6 +941,10 @@ function War_WugongHurtLife(enemyid, wugong, level, ang, x, y)
 	--分筋错骨手效果
     if Match_wugong(pid, wugong, 117) and IsStrike() then
 		AddBurn(eid, 5, enemyid)
+    end
+	--鹤蛇八打效果
+    if Match_wugong(pid, wugong, 74) and IsCombo(pid) then
+		AddBlood(eid, 10)
     end
 	--云雾十三式效果
     if Match_wugong(pid, wugong, 32) and (IsBackstab(WAR.CurID, enemyid) or IsCombo(pid)) then
@@ -1024,11 +1040,11 @@ function War_WugongHurtLife(enemyid, wugong, level, ang, x, y)
 		AddStun(pid, 10)
     end
 	--雷震剑法效果
-    if Match_wugong(pid, wugong, 28) and (GetStyle(eid) == 0 or IsCombo(pid)) then
+    if Match_wugong(pid, wugong, 28) and (MatchStyle(eid, 0) or IsCombo(pid)) then
 		AddRage(pid, 10)
     end
 	--狂风刀法效果
-    if Match_wugong(pid, wugong, 55) and GetStyle(eid) == 0 then
+    if Match_wugong(pid, wugong, 55) and MatchStyle(eid, 0) then
 		local blood55 = 10
 		local ally55 = GetAllyNum(WAR.CurID)
 		if ally55 == 0 then
@@ -1047,7 +1063,7 @@ function War_WugongHurtLife(enemyid, wugong, level, ang, x, y)
     end
 	end
 
-	if WAR.LQZ[pid] ~= nil then
+	if WAR.LQZ[pid] ~= nil and not freeRage then
 		WAR.LQZ[pid] = WAR.LQZ[pid] - raged
 	end
 	if WAR.Shield[eid] ~= nil then
@@ -1091,8 +1107,8 @@ function Match_wugong(pid, wugong, expected)
 	return wugong == expected
 end
 
-function GetStyle(id)
-	return JY.Person[id]["主运内功"]
+function MatchStyle(id, style)
+	return JY.Person[id]["主运内功"] == style
 end
 
 function AddRage(eid, num)
@@ -1164,7 +1180,7 @@ function GetAllyNum(warid)
 			num = num + 1
 		end
 	end
-	lib.Debug(warid.." "..num)
+	--lib.Debug(warid.." "..num)
 	return num
 end
 
@@ -1583,6 +1599,7 @@ function WarSetGlobal()
 	WAR.TSSB = {}			--进阶泰山，使用后20时序内闪避
 	WAR.JDYJ = {}			--剑胆琴心增加御剑能力
 	WAR.WMYH = {}			--无明业火状态，耗损使用的内力一半的生命
+	WAR.TYSQF = {}			--太岳三青峰状态
 
 	WAR.JHLY = {}			--无酒不欢：举火燎原，金乌+燃木+火焰刀
 	WAR.LRHF = {}			--无酒不欢：利刃寒锋，修罗+阴风+沧溟
@@ -1705,20 +1722,14 @@ function WarShowHead(id)
 		zt_num = zt_num + 1
 	end
 
-	--岳灵珊，慧中灵剑显示
-	if match_ID(pid, 79) then
-		local JF = 0
-		for i = 1, CC.Kungfunum do
-			if JY.Wugong[JY.Person[pid]["武功" .. i]]["武功类型"] == 3 then
-				JF = JF + 1
-			end
-		end
+	--太岳三青峰显示
+	if WAR.TYSQF[pid] ~= nil then
 		if WAR.Person[id]["我方"] == true then
 			lib.LoadPNG(98, 4 * 2 , x1 - size*9- CC.RowPixel, CC.ScreenH - size*2 - CC.RowPixel*2 - (size*2+CC.RowPixel*2)*zt_num, 1)
-			DrawString(x1 - size*6- CC.RowPixel, CC.ScreenH - size - CC.RowPixel*3 + 1 - (size*2+CC.RowPixel*2)*zt_num, "慧中灵剑:"..JF, C_WHITE, size)
+			DrawString(x1 - size*6- CC.RowPixel, CC.ScreenH - size - CC.RowPixel*3 + 1 - (size*2+CC.RowPixel*2)*zt_num, "慧中灵剑:"..WAR.TYSQF[pid], C_WHITE, size)
 		else
 			lib.LoadPNG(98, 4 * 2 , x1 + width + CC.RowPixel, CC.RowPixel + 3 + (size*2+CC.RowPixel*2)*zt_num, 1)
-			DrawString(x1 + width + size*2 + CC.RowPixel*3, size + 3 + (size*2+CC.RowPixel*2)*zt_num, "慧中灵剑:"..JF, C_WHITE, size)
+			DrawString(x1 + width + size*2 + CC.RowPixel*3, size + 3 + (size*2+CC.RowPixel*2)*zt_num, "慧中灵剑:"..WAR.TYSQF[pid], C_WHITE, size)
 		end
 		zt_num = zt_num + 1
 	end
@@ -8767,6 +8778,10 @@ function WarMain(warid, isexp)
 		if WAR.Person[id]["人物编号"] == 29 then
 			mov = mov * 2
 		end
+		--逍遥游
+		if MatchStyle(id, 2) then
+			mov = mov + 1
+		end
 		return mov
 	end
 	local function getdelay(x, y)
@@ -9269,12 +9284,25 @@ function WarMain(warid, isexp)
 
 			local function TurnEndReal()
 				--逍遥游 攻击后可移动
-	        	if WAR.Person[p]["我方"] == true and GetStyle(id) == 2 then
+	        	if WAR.Person[p]["我方"] == true and MatchStyle(id, 2) then
+					WAR.Person[p]["移动步数"] = WAR.Person[p]["移动步数"] + 1
 					kfmoveAferwards(p)
+	        	end
+				--鹤蛇八打 攻击后可移动
+	        	if WAR.Person[p]["我方"] == true and MatchStyle(id, 74) then
+					kfmoveAferwards(p)
+	        	end
+				--棋盘招式
+	        	if WAR.Person[p]["我方"] == true and MatchStyle(id, 72) then
+					for j = 0, WAR.PersonNum - 1 do
+						if WAR.Person[j]["我方"] == WAR.Person[p]["我方"] and JY.Person[WAR.Person[j]["人物编号"]]["生命"] > 0 then
+							kfmoveAferwards(j)
+						end
+					end
 	        	end
 				--泰山十八盘
 				if GetWarMap(WAR.Person[WAR.CurID]["坐标X"], WAR.Person[WAR.CurID]["坐标Y"], 6) > 0 
-					and WAR.Person[p]["我方"] == true and GetStyle(id) == 31 then
+					and WAR.Person[p]["我方"] == true and MatchStyle(id, 31) then
 					AddRage(id, 10)
 					kfmoveAferwards(p)
 				end

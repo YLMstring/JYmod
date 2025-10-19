@@ -865,11 +865,20 @@ function GetWugongDescription(wugong)
 		mechanic = "该武功不造成伤害，改为增加卸力"
 		flavor = "春蚕掌法招招全是守势，出手奇短，*抬手踢足，全不出半尺之外，不求有功，但求无过"
 	elseif wugong == 2 then
-		mechanic = "回合结束时，可以继续移动"
+		mechanic = "移动步数+1；回合结束时，可以继续移动"
 		flavor = "北丐洪七公少年时练的功夫，*身法飘逸，回旋往复，灵动如燕"
 	elseif wugong == 31 then
 		mechanic = "回合结束时，若脚踏八卦方位，怒气10，可以继续移动"
 		flavor = "泰山派剑法，将十八盘处羊肠曲折，*五步一盘，十步一回的险峻地势融入剑法，*越盘越高，越行越险，剑招越转越加狠辣"
+	elseif wugong == 74 then
+		mechanic = "回合结束时，可以继续移动；连击：流血10"
+		flavor = "穷凶极恶云中鹤擅长的奇门功夫，*长腿远跨，钢抓横掠，宛然便如一只仙鹤"
+	elseif wugong == 72 then
+		mechanic = "神兵，回合结束时，你和所有同伴可以移动1格"
+		flavor = "梅庄二庄主黑白子用以对敌的棋盘棋子，*武学之中含有棋理"
+	elseif wugong == 34 then
+		mechanic = "每三次进招中，前两次进招怒气不减"
+		flavor = "华山派剑法，乃掌门岳不群的得意之作，*第二剑比第一剑的劲道狠，第三剑又胜过了第二剑"
 	end
 	local strs = {name.." "..typename, flavor, health..qi..atk..def..dex..move, mechanic}
 	--local str = name.." "..typename.."*"..flavor.."*"..health..qi..atk..def..dex..move.."*"..mechanic
