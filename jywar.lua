@@ -7348,18 +7348,26 @@ function War_KfMove(movefanwei, atkfanwei, wugong)
 			end
 			return false
 		end
+		local isValid = true
+		if IsFullForce(pid, wugong) and not IsStandStill(pid) then
+			DrawStrBoxWaitKey("移动后不能使用该武功", C_WHITE, CC.DefaultFont)
+			isValid = false
+		end
 		if stanceType < 6 and wugongType < 6 and not isBluff(stance) and not IsSpecialized(pid, wugong) and stanceType ~= wugongType then
 			DrawStrBoxWaitKey("不能连续使用不同类型的外功", C_WHITE, CC.DefaultFont)
+			isValid = false
 		end
-		if WAR.Person[GetWarMap(x, y, 2)] ~= nil and (WAR.Person[GetWarMap(x, y, 2)]["我方"] == false or WugongCanAlly(pid, wugong)) then
-			local distance = math.abs(x-x0) + math.abs(y-y0)
-			if distance <= negativelen then
-				DrawStrBoxWaitKey("该武功最小距离为"..(negativelen + 1), C_WHITE, CC.DefaultFont)
-			else
-				return x, y
-			end
-		else
+		local distance = math.abs(x-x0) + math.abs(y-y0)
+		if distance <= negativelen then
+			DrawStrBoxWaitKey("该武功最小距离为"..(negativelen + 1), C_WHITE, CC.DefaultFont)
+			isValid = false
+		end
+		if WAR.Person[GetWarMap(x, y, 2)] == nil or (WAR.Person[GetWarMap(x, y, 2)]["我方"] == true and not WugongCanAlly(pid, wugong)) then
 			DrawStrBoxWaitKey("需指定敌人为目标", C_WHITE, CC.DefaultFont)
+			isValid = false
+		end
+		if isValid then
+			return x, y
 		end
     elseif key == VK_ESCAPE or ktype == 4 then
       return nil
@@ -7410,6 +7418,14 @@ function War_KfMove(movefanwei, atkfanwei, wugong)
 	end
 end
 
+function IsFullForce(pid, wugong)
+	--青字九打
+	if Match_wugong(pid, wugong, 116) then
+		return true
+	end
+	return false
+end
+
 function WugongCanAlly(pid, wugong)
 	if WugongCanHeal(pid, wugong) then
 		return true
@@ -7418,6 +7434,7 @@ function WugongCanAlly(pid, wugong)
 end
 
 function WugongCanHeal(pid, wugong)
+	--绵里藏针
 	if Match_wugong(pid, wugong, 30) then
 		return true
 	end

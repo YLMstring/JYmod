@@ -879,6 +879,9 @@ function GetWugongDescription(wugong)
 	elseif wugong == 34 then
 		mechanic = "每三次进招中，前两次进招怒气不减"
 		flavor = "华山派剑法，乃掌门岳不群的得意之作，*第二剑比第一剑的劲道狠，第三剑又胜过了第二剑"
+	elseif wugong == 116 then
+		mechanic = "全力，攻击距离为2-4"
+		flavor = "青城派的暗器功夫，以诡变险狠见长"
 	end
 	local strs = {name.." "..typename, flavor, health..qi..atk..def..dex..move, mechanic}
 	--local str = name.." "..typename.."*"..flavor.."*"..health..qi..atk..def..dex..move.."*"..mechanic
