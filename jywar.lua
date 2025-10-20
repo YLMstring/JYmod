@@ -2193,6 +2193,10 @@ function War_CalculateDamage(pid, eid, wugong)
 	local raged = 0
 	if IsStrike() and WAR.LQZ[pid] ~= nil then
 		raged = WAR.LQZ[pid]
+		--无上大力杵
+		if Match_wugong(pid, wugong, 83) then
+			raged = raged * 2
+		end
 		dmg = dmg + WAR.LQZ[pid]
 	end
 	local absorbed = 0

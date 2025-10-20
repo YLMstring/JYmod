@@ -897,6 +897,9 @@ function GetWugongDescription(wugong)
 	elseif wugong == 126 then
 		mechanic = "反击：封穴5，若上回合起发动过背刺，改为封穴10"
 		flavor = "东邪黄药师的绝技，讲究“快、准、奇、清”，*出手优雅，气度闲逸，轻描淡写，行若无事"
+	elseif wugong == 83 then
+		mechanic = "该武功受到怒气加成时效果为2倍"
+		flavor = "无上大力杵法无甚变化，只是横挥八招，直击八招，*一十六招反复使出，至刚至猛，威武癫狂"
 	end
 	local strs = {name.." "..typename, flavor, health..qi..atk..def..dex..move, mechanic}
 	--local str = name.." "..typename.."*"..flavor.."*"..health..qi..atk..def..dex..move.."*"..mechanic
