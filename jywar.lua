@@ -876,11 +876,19 @@ end
 
 --无酒不欢：计算武功伤害，WAR.CurID为攻击方
 function War_WugongHurtLife(enemyid, wugong)
-
+	
 	local pid = WAR.Person[WAR.CurID]["人物编号"]
 	local eid = WAR.Person[enemyid]["人物编号"]
 
-	local WGLX = JY.Wugong[wugong]["武功类型"]
+	--万岳朝宗总是后手
+	if Match_wugong(pid, wugong, 33) and JY.Person[eid]["主运内功"] > 0 then
+		local datas = GetValidTargets(enemyid, JY.Person[eid]["主运内功"])
+		local data = {}
+		data.x, data.y = WAR.Person[WAR.CurID]["坐标X"] - WAR.Person[enemyid]["坐标X"], WAR.Person[WAR.CurID]["坐标Y"] - WAR.Person[enemyid]["坐标Y"]
+		if Contains(datas, data) then
+			Retaliate(enemyid, JY.Person[eid]["主运内功"])
+		end
+	end
 
 	--无酒不欢：记录人物血量
 	WAR.Person[enemyid]["Life_Before_Hit"] = JY.Person[eid]["生命"]
@@ -918,6 +926,10 @@ function War_WugongHurtLife(enemyid, wugong)
     if Match_wugong(pid, wugong, 9) and IsBackstab(WAR.CurID, enemyid) then
 		BreakStance(eid, WAR.CurID, enemyid)
 		AddPoison(eid, 5, enemyid)
+    end
+	--万岳朝宗效果
+	if Match_wugong(pid, wugong, 33) and IsStandStill(pid) and IsStrike() then
+		BreakStance(eid, WAR.CurID, enemyid)
     end
 	--玄天指效果
     if Match_wugong(pid, wugong, 130) and IsStrike() then
@@ -1102,14 +1114,15 @@ function War_WugongHurtLife(enemyid, wugong)
 	--人物死亡
 	if JY.Person[eid]["生命"] <= 0 then
 		JY.Person[eid]["生命"] = 0
-		WAR.Person[WAR.CurID]["经验"] = WAR.Person[WAR.CurID]["经验"] + JY.Person[eid]["等级"] * 5
 		WAR.Person[enemyid]["反击武功"] = -1		--如果被打死则不会触发反击
-		if WAR.SZSD == eid then						--取消死战标记
-			WAR.SZSD = -1
-		end
 	elseif WAR.DZXY ~= 1 and WAR.Person[WAR.CurID]["我方"] ~= WAR.Person[enemyid]["我方"] and JY.Person[eid]["主运内功"] > 0 then
 		WAR.Person[enemyid]["反击武功"] = JY.Person[eid]["主运内功"]
 	end
+	--万岳朝宗不反击
+	if Match_wugong(pid, wugong, 33) then
+		WAR.Person[enemyid]["反击武功"] = -1
+    end
+
 	--[[误伤不显示动画
 	if DWPD() == false then
 		WAR.Person[enemyid]["特效动画"] = -1
@@ -5421,20 +5434,22 @@ function War_Fight_Sub(id, wugongnum, x, y)
 		local data = {}
 		data.x, data.y = dz[i][2], dz[i][3]
 		if Contains(datas, data) then
-			local tmp = WAR.CurID
-			WAR.CurID = dz[i][1]
-			WAR.DZXY = 1
-
-			War_Fight_Sub(dz[i][1], kongfuid + 100, WAR.Person[tmp]["坐标X"], WAR.Person[tmp]["坐标Y"])
-			
-			WAR.CurID = tmp
-			WAR.DZXY = 0
+			Retaliate(dz[i][1], kongfuid)
 		end
 		WAR.Person[dz[i][1]]["反击武功"] = -1
 	end
 	end
 
 	return 1;
+end
+
+function Retaliate(newid, kongfuid)
+	local tmp = WAR.CurID
+	WAR.CurID = newid
+	WAR.DZXY = 1
+	War_Fight_Sub(newid, kongfuid + 100, WAR.Person[tmp]["坐标X"], WAR.Person[tmp]["坐标Y"])
+	WAR.CurID = tmp
+	WAR.DZXY = 0
 end
 
 function Contains(targets, target)
