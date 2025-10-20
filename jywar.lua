@@ -916,6 +916,10 @@ function War_WugongHurtLife(enemyid, wugong)
 	local freeRage = false
 	--接下来的效果不影响友军
 	if WAR.Person[WAR.CurID]["我方"] ~= WAR.Person[enemyid]["我方"] then
+	--记录背刺
+	if IsBackstab(WAR.CurID, enemyid) then
+		WAR.LHFXS[pid] = 2
+	end
 	--松风剑法背刺效果
     if Match_wugong(pid, wugong, 27) and IsBackstab(WAR.CurID, enemyid) then
 		AddInternalDamage(eid, 15)
@@ -957,6 +961,14 @@ function War_WugongHurtLife(enemyid, wugong)
 	--石鼓打穴笔效果
     if Match_wugong(pid, wugong, 71) and IsStrike() then
 		AddStun(eid, 5)
+    end
+	--兰花拂穴手效果
+    if Match_wugong(pid, wugong, 126) and IsCounter(pid) then
+		local flowernum = 5
+		if (WAR.LHFXS[pid] or 0) > 0 then
+			flowernum = 10
+		end
+		AddStun(eid, flowernum)
     end
 	--分筋错骨手效果
     if Match_wugong(pid, wugong, 117) and IsStrike() then
@@ -1637,6 +1649,7 @@ function WarSetGlobal()
 	WAR.JDYJ = {}			--剑胆琴心增加御剑能力
 	WAR.WMYH = {}			--无明业火状态，耗损使用的内力一半的生命
 	WAR.TYSQF = {}			--太岳三青峰状态
+	WAR.LHFXS = {}			--兰花拂穴手状态
 
 	WAR.JHLY = {}			--无酒不欢：举火燎原，金乌+燃木+火焰刀
 	WAR.LRHF = {}			--无酒不欢：利刃寒锋，修罗+阴风+沧溟
@@ -1763,10 +1776,10 @@ function WarShowHead(id)
 	if WAR.TYSQF[pid] ~= nil then
 		if WAR.Person[id]["我方"] == true then
 			lib.LoadPNG(98, 4 * 2 , x1 - size*9- CC.RowPixel, CC.ScreenH - size*2 - CC.RowPixel*2 - (size*2+CC.RowPixel*2)*zt_num, 1)
-			DrawString(x1 - size*6- CC.RowPixel, CC.ScreenH - size - CC.RowPixel*3 + 1 - (size*2+CC.RowPixel*2)*zt_num, "慧中灵剑:"..WAR.TYSQF[pid], C_WHITE, size)
+			DrawString(x1 - size*6- CC.RowPixel, CC.ScreenH - size - CC.RowPixel*3 + 1 - (size*2+CC.RowPixel*2)*zt_num, "太岳三青峰:"..WAR.TYSQF[pid], C_WHITE, size)
 		else
 			lib.LoadPNG(98, 4 * 2 , x1 + width + CC.RowPixel, CC.RowPixel + 3 + (size*2+CC.RowPixel*2)*zt_num, 1)
-			DrawString(x1 + width + size*2 + CC.RowPixel*3, size + 3 + (size*2+CC.RowPixel*2)*zt_num, "慧中灵剑:"..WAR.TYSQF[pid], C_WHITE, size)
+			DrawString(x1 + width + size*2 + CC.RowPixel*3, size + 3 + (size*2+CC.RowPixel*2)*zt_num, "太岳三青峰:"..WAR.TYSQF[pid], C_WHITE, size)
 		end
 		zt_num = zt_num + 1
 	end
@@ -9148,6 +9161,13 @@ function WarMain(warid, isexp)
 			if GetWarMap(WAR.Person[WAR.CurID]["坐标X"], WAR.Person[WAR.CurID]["坐标Y"], 6) > 0 then
 				WarNewLand0()
 			end
+			--兰花拂穴手背刺计数
+			if WAR.LHFXS[pid] == 2 then
+				WAR.LHFXS[pid] = 1
+			else
+				WAR.LHFXS[pid] = 0
+			end
+
 			if WAR.Shield[WAR.CurID] ~= nil then
 				WAR.Shield[WAR.CurID] = WAR.Shield[WAR.CurID] / 2
 			end

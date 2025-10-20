@@ -891,6 +891,12 @@ function GetWugongDescription(wugong)
 	elseif wugong == 122 then
 		mechanic = "援护1，援护且反击：封穴10"
 		flavor = "少林派点穴绝技，一指点出，带有极轻微的呲呲声响"
+	elseif wugong == 33 then
+		mechanic = "进招：让对手先发动反击，不动：破招"
+		flavor = "嵩山派剑法，气象森严，便似千军万马奔驰而来，*长枪大戟，黄沙万里，堂堂正正，端严雄伟"
+	elseif wugong == 126 then
+		mechanic = "反击：封穴5，若上回合起发动过背刺，改为封穴10"
+		flavor = "东邪黄药师的绝技，讲究“快、准、奇、清”，*出手优雅，气度闲逸，轻描淡写，行若无事"
 	end
 	local strs = {name.." "..typename, flavor, health..qi..atk..def..dex..move, mechanic}
 	--local str = name.." "..typename.."*"..flavor.."*"..health..qi..atk..def..dex..move.."*"..mechanic
