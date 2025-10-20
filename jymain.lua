@@ -841,7 +841,7 @@ function GetWugongDescription(wugong)
 		mechanic = "进招：若对手有内伤，封穴5，若对手有封穴，内伤5"
 		flavor = "西毒欧阳锋的阴毒点穴手段，极难破解"
 	elseif wugong == 71 then
-		mechanic = "进招：封穴5"
+		mechanic = "书法，进招：封穴5"
 		flavor = "梅庄三庄主秃笔翁的二十八招石鼓打穴笔法，*可将名家书法融入其中"
 	elseif wugong == 75 then
 		mechanic = "神兵，反击：流血10"
@@ -900,6 +900,9 @@ function GetWugongDescription(wugong)
 	elseif wugong == 83 then
 		mechanic = "该武功受到怒气加成时效果为2倍"
 		flavor = "无上大力杵法无甚变化，只是横挥八招，直击八招，*一十六招反复使出，至刚至猛，威武癫狂"
+	elseif wugong == 84 then
+		mechanic = "书法，进招：不受怒气加成，将怒气转化为卸力，将卸力转化为怒气"
+		flavor = "武林至尊，宝刀屠龙。*号令天下，莫敢不从。*倚天不出，谁与争锋？*张三丰情之所至，将这二十四个字演为一套武功"
 	end
 	local strs = {name.." "..typename, flavor, health..qi..atk..def..dex..move, mechanic}
 	--local str = name.." "..typename.."*"..flavor.."*"..health..qi..atk..def..dex..move.."*"..mechanic

@@ -994,6 +994,11 @@ function War_WugongHurtLife(enemyid, wugong)
     if Match_wugong(pid, wugong, 59) and IsStrike() then
 		AddRage(pid, 5)
     end
+	--倚天屠龙功效果
+    if Match_wugong(pid, wugong, 84) and IsStrike() then
+		AddShield(pid, (WAR.LQZ[pid] or 0))
+		AddRage(pid, (WAR.Shield[pid] or 0))
+    end
 	--鹰爪功效果
     if Match_wugong(pid, wugong, 4) and IsStrike() then
 		if (WAR.LQZ[pid] or 0) > 0 then
@@ -2196,6 +2201,10 @@ function War_CalculateDamage(pid, eid, wugong)
 		--无上大力杵
 		if Match_wugong(pid, wugong, 83) then
 			raged = raged * 2
+		end
+		--倚天屠龙功
+		if Match_wugong(pid, wugong, 84) and IsStrike() then
+			raged = 0
 		end
 		dmg = dmg + WAR.LQZ[pid]
 	end
