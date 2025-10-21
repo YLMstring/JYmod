@@ -926,14 +926,43 @@ function War_WugongHurtLife(enemyid, wugong)
 		--WAR.Person[enemyid]["特效动画"] = 93
 		--Set_Eff_Text(enemyid, "特效文字2", "青城摧心掌")
     end
+	--白蟒鞭法效果
+    if Match_wugong(pid, wugong, 164) and IsStrike() then
+		if JY.Person[eid]["冰封程度"] > 0 and JY.Person[eid]["冰封程度"] == JY.Person[pid]["冰封程度"] then
+			BreakStance(eid, WAR.CurID, enemyid)
+		elseif JY.Person[eid]["灼烧程度"] > 0 and JY.Person[eid]["灼烧程度"] == JY.Person[pid]["灼烧程度"] then
+			BreakStance(eid, WAR.CurID, enemyid)
+		elseif JY.Person[eid]["受伤程度"] > 0 and JY.Person[eid]["受伤程度"] == JY.Person[pid]["受伤程度"] then
+			BreakStance(eid, WAR.CurID, enemyid)
+		elseif JY.Person[eid]["中毒程度"] > 0 and JY.Person[eid]["中毒程度"] == JY.Person[pid]["中毒程度"] then
+			BreakStance(eid, WAR.CurID, enemyid)
+		elseif (WAR.LXZT[eid] or 0) > 0 and WAR.LXZT[eid] == WAR.LXZT[pid] then
+			BreakStance(eid, WAR.CurID, enemyid)
+		elseif (WAR.FXDS[eid] or 0) > 0 and WAR.FXDS[eid] == WAR.FXDS[pid] then
+			BreakStance(eid, WAR.CurID, enemyid)
+		end
+    end
 	--灵蛇拳效果
     if Match_wugong(pid, wugong, 9) and IsBackstab(WAR.CurID, enemyid) then
 		BreakStance(eid, WAR.CurID, enemyid)
 		AddPoison(eid, 5, enemyid)
     end
+	--绕指柔剑效果
+    if Match_wugong(pid, wugong, 36) and IsBackstab(WAR.CurID, enemyid) then
+		BreakStance(eid, WAR.CurID, enemyid)
+		AddShield(pid, 16)
+	end
 	--万岳朝宗效果
 	if Match_wugong(pid, wugong, 33) and IsStandStill(pid) and IsStrike() then
 		BreakStance(eid, WAR.CurID, enemyid)
+    end
+	--七弦无形剑效果
+	if Match_wugong(pid, wugong, 33) and IsStrike() then
+		BreakStance(eid, WAR.CurID, enemyid)
+    end
+	--狮子吼效果
+	if Match_wugong(pid, wugong, 33) and IsStrike() then
+		AddBurn(eid, 5, enemyid)
     end
 	--玄天指效果
     if Match_wugong(pid, wugong, 130) and IsStrike() then
@@ -1033,6 +1062,10 @@ function War_WugongHurtLife(enemyid, wugong)
 	if Match_wugong(pid, wugong, 1) and IsCounter(pid) and IsProtecting(pid, 1, WAR.CurID) then
 		AddBurn(eid, 10)
     end
+	--龙爪手效果
+	if Match_wugong(pid, wugong, 20) and IsCounter(pid) and IsProtecting(pid, 20, WAR.CurID) then
+		AddRage(pid, 10)
+    end
 	--罗汉刀法效果
 	if Match_wugong(pid, wugong, 51) and IsCounter(pid) and IsProtecting(pid, 51, WAR.CurID) then
 		AddBlood(eid, 10)
@@ -1080,6 +1113,16 @@ function War_WugongHurtLife(enemyid, wugong)
     if Match_wugong(pid, wugong, 121) and IsStrike() then
 		AddInternalDamage(eid, 5)
     end
+	--凝血神抓效果
+    if Match_wugong(pid, wugong, 134) and IsStrike() then
+		AddInternalDamage(eid, 2 * (WAR.LXZT[eid] or 0))
+		WAR.LXZT[eid] = 0
+    end
+	--铁掌效果
+    if Match_wugong(pid, wugong, 13) and IsStrike() then
+		AddInternalDamage(eid, 2 * JY.Person[eid]["灼烧程度"])
+		JY.Person[eid]["灼烧程度"] = 0
+    end
 	--五毒神掌效果
     if Match_wugong(pid, wugong, 3) and IsStrike() then
 		AddPoison(eid, 7, enemyid)
@@ -1087,6 +1130,10 @@ function War_WugongHurtLife(enemyid, wugong)
 	--中平枪法效果
     if Match_wugong(pid, wugong, 70) and IsStrike() then
 		AddStun(pid, 10)
+    end
+	--雪山剑法效果
+    if Match_wugong(pid, wugong, 35) and (IsStandStill(pid) or IsCombo(pid)) then
+		AddFreeze(eid, 10)
     end
 	--雷震剑法效果
     if Match_wugong(pid, wugong, 28) and (MatchStyle(eid, 0) or IsCombo(pid)) then
@@ -1125,6 +1172,13 @@ function War_WugongHurtLife(enemyid, wugong)
 	if noDamage then
 		hurt = 0
 	end
+
+	--虎爪绝户手效果
+    if Match_wugong(pid, wugong, 128) and (MatchStyle(eid, 0) or IsBackstab(WAR.CurID, enemyid)) then
+		JY.Person[eid]["生命最大值"] = JY.Person[eid]["生命最大值"] - hurt
+		JY.Person[eid]["头像代号"] = 313
+		AddRage(eid, 5)
+    end
 
 	--无酒不欢：伤害的结算到此为止，扣除被攻击方血量
 	JY.Person[eid]["生命"] = JY.Person[eid]["生命"] - hurt
@@ -3064,14 +3118,18 @@ function War_Fight_Sub(id, wugongnum, x, y)
 	local level = 11   
 
 	WAR.ShowHead = 0
-	local m1, m2, m3, a1, a2 = WugongArea(wugong, level)  --获取武功的范围
+	local m1, m2, m3, a1, a2 = WugongArea(wugong)  --获取武功的范围
 	if GetWarMap(WAR.Person[id]["坐标X"], WAR.Person[id]["坐标Y"], 6) == 2 then
-		a1 = 3
+		if a1 == 0 then
+			a1 = 3
+		end
 		a2 = a2 + 1
 	end --红色
 	
 	if IsAlone(id) then
-		a1 = 3
+		if a1 == 0 then
+			a1 = 3
+		end
 		a2 = a2 + 1
 	end
 	local movefanwei = {m1, m2, m3}				--可移动的范围
@@ -5202,6 +5260,10 @@ function War_Fight_Sub(id, wugongnum, x, y)
 		if MatchStyle(prid, 122) then
 			distance = 1
 		end
+		--龙爪手
+		if MatchStyle(prid, 20) then
+			distance = 2
+		end
 		if distance < 0 then
 			return false
 		end
@@ -5527,7 +5589,7 @@ function GetValidTargets(warid, kungfuid)
 	end
 	local targets = {}
 	local targetsindex = 0
-	local m1, m2, m3, a1, a2 = WugongArea(kungfuid, 10)
+	local m1, m2, m3, a1, a2 = WugongArea(kungfuid)
 	local distance = 0
 	for i = -10, 10 do
 		for j = -10, 10 do
@@ -7424,7 +7486,12 @@ function War_KfMove(movefanwei, atkfanwei, wugong)
 			DrawStrBoxWaitKey("需指定敌人为目标", C_WHITE, CC.DefaultFont)
 			isValid = false
 		end
+		if JY.Person[pid]["内力"] < NeedCost(pid, wugong, distance) then
+			DrawStrBoxWaitKey("内力不足", C_WHITE, CC.DefaultFont)
+			isValid = false
+		end
 		if isValid then
+			JY.Person[pid]["内力"] = JY.Person[pid]["内力"] - GetCost(pid, wugong, distance)
 			return x, y
 		end
     elseif key == VK_ESCAPE or ktype == 4 then
@@ -7481,10 +7548,37 @@ function IsFullForce(pid, wugong)
 	if Match_wugong(pid, wugong, 116) then
 		return true
 	end
+	--狮子吼
+	if Match_wugong(pid, wugong, 92) then
+		return true
+	end
+	--七弦无形剑
+	if Match_wugong(pid, wugong, 151) then
+		return true
+	end
 	return false
 end
 
+function GetCost(pid, wugong, distance)
+	if distance > JY.Wugong[wugong]["敌人中毒点数"] then
+		return JY.Wugong[wugong]["消耗内力点数"]
+	end
+	return 0
+end
+
+function NeedCost(pid, wugong, distance)
+	local cost = GetCost(pid, wugong, distance)
+	if JY.Wugong[wugong]["敌人中毒点数"] == 9 then
+		return math.max(1, cost)
+	end
+	return cost
+end
+
 function WugongCanAlly(pid, wugong)
+	local m1, m2, m3, a1, a2 = WugongArea(wugong)  --获取武功的范围
+	if m1 == 0 and m2 == 0 then 
+		return true
+	end
 	if WugongCanHeal(pid, wugong) then
 		return true
 	end
@@ -12637,7 +12731,7 @@ function RealJL(id1, id2, len)
 end
 
 --武功范围
-function WugongArea(wugong, level)
+function WugongArea(wugong)
   --无酒不欢：参数说明
   --m1为移动范围斜向延伸：
 	--0：延伸为直线距离-1，1：延伸至直线距离，2：延伸为0 3：移动范围固定为自身周围8格
@@ -12657,6 +12751,8 @@ function WugongArea(wugong, level)
 	--3：鞭
 	--4：枪
 	--5：自身
+	--6：延伸的拳指
+	--7：暗器
 	local fightscope = JY.Wugong[wugong]["攻击范围"]
 	local m3 = 0
 	if fightscope == 0 then
@@ -12692,6 +12788,24 @@ function WugongArea(wugong, level)
 		m2 = 0
 		a1 = 0
 		a2 = 0
+	elseif fightscope == 6 then
+		m1 = 2
+		m2 = 2
+		a1 = 0
+		a2 = 0
+	elseif fightscope == 7 then
+		m1 = 0
+		m2 = 4
+		a1 = 0
+		a2 = 0
+		m3 = 1
+	end
+	--狮子吼 七弦无形剑
+	if wugong == 92 or wugong == 151 then
+		m1 = 0
+		m2 = 0
+		a1 = 2
+		a2 = 3
 	end
 
 	return m1, m2, m3, a1, a2

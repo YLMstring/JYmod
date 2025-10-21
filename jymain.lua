@@ -903,6 +903,33 @@ function GetWugongDescription(wugong)
 	elseif wugong == 84 then
 		mechanic = "书法，进招：不受怒气加成，将怒气转化为卸力，将卸力转化为怒气"
 		flavor = "武林至尊，宝刀屠龙。*号令天下，莫敢不从。*倚天不出，谁与争锋？*张三丰情之所至，将这二十四个字演为一套武功"
+	elseif wugong == 36 then
+		mechanic = "背刺：破招，卸力20"
+		flavor = "武当派七十二招绕指柔剑，以浑厚内力逼弯剑刃，*轻柔曲折，飘忽不定，剑招闪烁无常，敌人难以挡架"
+	elseif wugong == 20 then
+		mechanic = "援护2，援护且反击：怒气10"
+		flavor = "少林派的三十六式抓法，要旨端在凌厉狠辣，不求变化繁多，*龙影飞空，龙爪急舞，快极狠极"
+	elseif wugong == 164 then
+		mechanic = "进招：若对手与自身有相同层数的负面效果，打破"
+		flavor = "九阴真经中记载的鬼魅鞭法，身法奇诡莫测，*如风吹柳絮，水送浮萍，实非人间气象"
+	elseif wugong == 92 then
+		mechanic = "内力2，攻击3格内所有对手，全力，进招：灼烧5"
+		flavor = "佛门中极上乘的功夫，一声断喝中蕴蓄深厚的内家劲力"
+	elseif wugong == 151 then
+		mechanic = "内力2，攻击3格内所有侠客，音律，全力，进招：打破"
+		flavor = "梅庄大庄主黄钟公苦练数十年的绝技，琴音中灌注上乘内力，*用以扰乱敌人心神，对方内力和琴音一生共鸣，便不知不觉的为琴音所制"
+	elseif wugong == 134 then
+		mechanic = "进招：对手的流血转化为2倍的内伤"
+		flavor = "天地会总舵主陈近南的阴毒功夫，*中招之人全身血液慢慢凝结，变成浆糊一般，无药可治"
+	elseif wugong == 13 then
+		mechanic = "进招：对手的灼烧转化为2倍的内伤"
+		flavor = "铁掌帮数百年来扬威中原的掌法，*威猛虽不及降龙十八掌，但精奇巧妙犹有过之"
+	elseif wugong == 35 then
+		mechanic = "不动或连击：冰封10"
+		flavor = "雪山派自创派祖师传下的七十二路剑法，*刺伤对手时，往往留下雪花六出之形"
+	elseif wugong == 128 then
+		mechanic = "先制或背刺：造成永久伤害，对手怒气5"
+		flavor = "俞莲舟从武当虎爪手中脱胎所创绝学，*招招拿人腰眼，是令人断子绝孙，毁灭门户的杀手"
 	end
 	local strs = {name.." "..typename, flavor, health..qi..atk..def..dex..move, mechanic}
 	--local str = name.." "..typename.."*"..flavor.."*"..health..qi..atk..def..dex..move.."*"..mechanic
