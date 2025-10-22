@@ -868,7 +868,7 @@ function GetWugongDescription(wugong)
 		mechanic = "移动步数+1；回合结束时，可以继续移动"
 		flavor = "北丐洪七公少年时练的功夫，身法飘逸，回旋往复，灵动如燕"
 	elseif wugong == 31 then
-		mechanic = "回合结束时，若脚踏八卦方位，怒气10，可以继续移动"
+		mechanic = "回合结束时，若足踏八卦方位，怒气10，*可以继续移动，无视经过敌人身边的移动限制"
 		flavor = "泰山派剑法，将十八盘处羊肠曲折，*五步一盘，十步一回的险峻地势融入剑法，*越盘越高，越行越险，剑招越转越加狠辣"
 	elseif wugong == 74 then
 		mechanic = "回合结束时，可以继续移动；连击：流血10"
@@ -904,7 +904,7 @@ function GetWugongDescription(wugong)
 		mechanic = "书法，进招：不受怒气加成，将怒气转化为卸力，将卸力转化为怒气"
 		flavor = "武林至尊，宝刀屠龙。*号令天下，莫敢不从。*倚天不出，谁与争锋？*张三丰情之所至，将这二十四个字演为一套武功"
 	elseif wugong == 36 then
-		mechanic = "背刺：破招，卸力20"
+		mechanic = "需要内力；背刺：破招，卸力20"
 		flavor = "武当派七十二招绕指柔剑，以浑厚内力逼弯剑刃，*轻柔曲折，飘忽不定，剑招闪烁无常，敌人难以挡架"
 	elseif wugong == 20 then
 		mechanic = "援护2，援护且反击：怒气10"
@@ -930,6 +930,36 @@ function GetWugongDescription(wugong)
 	elseif wugong == 128 then
 		mechanic = "先制或背刺：造成永久伤害，对手怒气5"
 		flavor = "俞莲舟从武当虎爪手中脱胎所创绝学，*招招拿人腰眼，是令人断子绝孙，毁灭门户的杀手"
+	elseif wugong == 40 then
+		mechanic = "进招：施加等同于对手流血的中毒"
+		flavor = "金蛇郎君夏雪宜的怪异剑法，*剑尖两叉既可钻刺，亦可钩锁敌人兵刃，*剑身上一道血痕，发出碧油油的暗光，极是诡异"
+	elseif wugong == 79 then
+		mechanic = "音律，反击：施加等同于对手冰封的封穴"
+		flavor = "小龙女的绸带功夫，夭矫灵动，长于打穴，*可与音乐相合，铃声叮叮，有如乐曲"
+	elseif wugong == 57 then
+		mechanic = "令对手退场时，改为令其重新开始集气并加入我方，生命值提升至其冰封点数的5倍"
+		flavor = "宁波天童寺心观老和尚所创的慈悲刀，只制敌而不杀人"
+	elseif wugong == 162 then
+		mechanic = "进招或连击：3格内对手冰封5"
+		flavor = "封不平在中条山隐居十五年而创制出的得意剑法，*剑招一剑快似一剑，剑锋所发劲气渐渐扩展，寒气逼人"
+	elseif wugong == 11 then
+		mechanic = "可攻击空位，若能够背刺攻击目标延伸处的侠客，则一并攻击之；进招：自身中毒5，分别触发一次自身和对手的中毒"
+		flavor = "黑风双煞服食砒霜练成的阴毒功夫，*手爪上含有剧毒，专在对方明知不能发招之时暴起疾进，最是难闪难挡"
+	elseif wugong == 58 then
+		mechanic = "回合结束时，若足踏八卦方位，卸力16，*可以继续移动，无视经过敌人身边的移动限制"
+		flavor = "八卦门刀法，讲究足踏八卦方位，忽前忽后，左绕右旋，不加思索，*将敌人转得头晕眼花"
+	elseif wugong == 133 then
+		mechanic = "回合结束时，若足踏八卦方位，1格内对手封穴10，*可以继续移动，无视经过敌人身边的移动限制"
+		flavor = "八卦门掌法，讲究足踏八卦方位，兜圈急转，转折如意，乘隙发招，*将敌人转得头晕眼花"
+	elseif wugong == 39 then
+		mechanic = "不动或反击：回复等同于卸力的气血"
+		flavor = "全真派端凝厚重的剑法，一招一式，法度谨严无比，变化精微"
+	elseif wugong == 37 then
+		mechanic = "无误伤，额外触发一次八卦正位效果，合击：反两仪刀法"
+		flavor = "昆仑派剑法，剑分阴阳，亦刚亦柔，剑招施发两仪术数中的极致"
+	elseif wugong == 60 then
+		mechanic = "无误伤，额外触发一次八卦逆位效果，合击：两仪剑法"
+		flavor = "华山派刀法，狠辣沉猛，不依常规，刀招施发两仪术数中的极致"
 	end
 	local strs = {name.." "..typename, flavor, health..qi..atk..def..dex..move, mechanic}
 	--local str = name.." "..typename.."*"..flavor.."*"..health..qi..atk..def..dex..move.."*"..mechanic
