@@ -3232,9 +3232,9 @@ function War_Fight_Sub(id, wugongnum, x, y)
 	end
 	if wife > 0 and WAR.WIFE == 0 then
 		for j = 0, WAR.PersonNum - 1 do
-			if id ~= j and WAR.Person[j]["我方"] == WAR.Person[id]["我方"]
+			if id ~= j and emeny ~= j and WAR.Person[j]["我方"] == WAR.Person[id]["我方"]
 			and JY.Person[WAR.Person[j]["人物编号"]]["生命"] > 0
-			and MatchStyle(WAR.Person[j]["人物编号"], wife) then
+			and JY.Person[WAR.Person[j]["人物编号"]]["主运内功"] == wife then
 				local datas = GetValidTargets(j, wugong)
 				local data = {}
 				data.x, data.y = WAR.Person[j]["坐标X"] - x, WAR.Person[j]["坐标Y"] - y
