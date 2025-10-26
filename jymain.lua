@@ -914,13 +914,13 @@ function GetWugongDescription(wugong)
 		mechanic = "援护2，援护且反击：怒气10"
 		flavor = "少林派的三十六式抓法，要旨端在凌厉狠辣，不求变化繁多，*龙影飞空，龙爪急舞，快极狠极"
 	elseif wugong == 164 then
-		mechanic = "进招：若对手与自身有相同层数的负面效果，打破"
+		mechanic = "进招：若对手与自身有相同层数的负面效果，破招"
 		flavor = "九阴真经中记载的鬼魅鞭法，身法奇诡莫测，*如风吹柳絮，水送浮萍，实非人间气象"
 	elseif wugong == 92 then
 		mechanic = "内力2，攻击3格内所有对手，全力，进招：灼烧5"
 		flavor = "佛门中极上乘的功夫，一声断喝中蕴蓄深厚的内家劲力"
 	elseif wugong == 151 then
-		mechanic = "内力2，攻击3格内所有侠客，音律，全力，进招：打破"
+		mechanic = "内力2，攻击3格内所有侠客，音律，全力，进招：破招"
 		flavor = "梅庄大庄主黄钟公苦练数十年的绝技，琴音中灌注上乘内力，*用以扰乱敌人心神，对方内力和琴音一生共鸣，便不知不觉的为琴音所制"
 	elseif wugong == 134 then
 		mechanic = "进招：对手的流血转化为2倍的内伤"
@@ -965,10 +965,10 @@ function GetWugongDescription(wugong)
 		mechanic = "无误伤，额外触发一次八卦逆位效果；合击：两仪剑法"
 		flavor = "华山派刀法，狠辣沉猛，不依常规，刀招施发两仪术数中的极致"
 	elseif wugong == 42 then
-		mechanic = "进招：打破全真剑法，若掌握全真剑法，冰封10；*若掌握双手互搏和全真剑法，具有全真剑法的效果；合击：全真剑法"
+		mechanic = "进招：破招全真剑法，若掌握全真剑法，冰封10；*若掌握双手互搏和全真剑法，具有全真剑法的效果；合击：全真剑法"
 		flavor = "林朝英所创剑法，飘忽来去，轻灵跳脱，*丰姿绰约，姿势闲雅，是全真剑法的克星。"
 	elseif wugong == 61 then
-		mechanic = "需要内力，进招：打破雪山剑法，若为合击，灼烧10；合击：雪山剑法"
+		mechanic = "需要内力，进招：破招雪山剑法，若为合击，灼烧10；合击：雪山剑法"
 		flavor = "史小翠专为克制雪山剑法而创的七十三路刀法，*但联手并使时，又会变成威力无穷的一套武功"
 	elseif wugong == 22 then
 		mechanic = "过招：击退，若引起碰撞，双方内伤5"
@@ -983,7 +983,7 @@ function GetWugongDescription(wugong)
 		mechanic = "消耗内力，过招：击退2次"
 		flavor = "天竺释氏的一门厉害武功，能以巨力掷物，还可连环加力"
 	elseif wugong == 15 then
-		mechanic = "进招：卸力10，3回合内卸力不会在回合开始时衰减"
+		mechanic = "进招：卸力10，3回合内卸力不会在回合开始时减半"
 		flavor = "老顽童周伯通悟出的七十二手拳法，*要旨在于空柔二字，大成若缺，其用不弊，*大盈若冲，其用不穷"
 	elseif wugong == 12 then
 		mechanic = "虚招，进招：若上回合起发动过背刺，*进招时也可触发连击，持续2回合"
@@ -1004,6 +1004,85 @@ function GetWugongDescription(wugong)
 	local strs = {name.." "..typename, flavor, health..qi..atk..def..dex..move, mechanic}
 	--local str = name.." "..typename.."*"..flavor.."*"..health..qi..atk..def..dex..move.."*"..mechanic
 	return strs
+end
+
+function ExplainKeyword(word)
+	if word == "进招" then
+		return "【进招】主动攻击时触发效果，连击不触发"
+	end
+	if word == "反击" then
+		return "【反击】反击时触发效果，连击不触发（被攻击后若自身架势能攻击到对手可发动反击）"
+	end
+	if word == "连击" then
+		return "【连击】首次连击时触发效果（迅捷每比对手高20，可额外发动一次连击）"
+	end
+	if word == "过招" then
+		return "【过招】主动攻击结算完毕后，仅对中央目标触发一次效果"
+	end
+	if word == "背刺" then
+		return "【背刺】从敌人背后发动攻击时触发效果"
+	end
+	if word == "先制" then
+		return "【先制】攻击没有进入架势的敌人时触发效果"
+	end
+	if word == "不动" then
+		return "【不动】本回合开始起未移动且未使用轻身功夫时触发效果"
+	end
+	if word == "全力" then
+		return "【全力】未移动且未使用轻身功夫才能使用，不会进入架势（不能反击）"
+	end
+	if word == "冰封" then
+		return "【冰封】造成伤害时伤害降低等同于层数，回合结束时降低5层"
+	end
+	if word == "灼烧" then
+		return "【灼烧】受到灼烧时行动次序降低一位，若无法降低，流失等同于层数的气血，回合结束时降低5层"
+	end
+	if word == "内伤" then
+		return "【内伤】受到伤害时伤害上升等同于层数，回合结束时降低5层"
+	end
+	if word == "封穴" then
+		return "【封穴】被攻击时迅捷临时减去层数，回合结束时降低5层"
+	end
+	if word == "中毒" then
+		return "【中毒】回合开始时流失等同于层数的气血，回合结束时降低5层"
+	end
+	if word == "流血" then
+		return "【流血】受到伤害时对手回复等同于层数的气血，回合开始时降至0，流失等量气血"
+	end
+	if word == "怒气" then
+		return "【怒气】进招时一次性增加伤害"
+	end
+	if word == "卸力" then
+		return "【卸力】一次性抵消伤害，回合开始时减半"
+	end
+	if word == "破招" then
+		return "【破招】让对手退出架势（退出架势后无法反击）"
+	end
+	if word == "虚招" then
+		return "【虚招】主动攻击的中央目标下回合移动力-1，进入架势后可以自由使用其他类型的外功"
+	end
+	if word == "疗伤" then
+		return "【疗伤】可攻击同伴，攻击同伴时改为回复气血"
+	end
+	if word == "援护" then
+		return "【援护】身边相应距离内的气血更少的同伴被攻击时，替代同伴成为攻击目标"
+	end
+	if word == "击退" then
+		return "【击退】将对手朝远离自身的方向移动一格，若引起碰撞，改为下回合移动力-1"
+	end
+	if word == "神兵" then
+		return "【神兵】进入架势后，只有满足背刺条件才能被破招"
+	end
+	if word == "音律" then
+		return "【音律】使用音律相关的杂学时，有额外效果"
+	end
+	if word == "书法" then
+		return "【书法】使用书法相关的杂学时，有额外效果"
+	end
+	if word == "八卦" then
+		return "【八卦】特殊战场方格，红色为正位（攻击时溅射1格内目标），蓝色为逆位（回合结束时回复16%的已损失气血）"
+	end
+	return "如果你看到这句话，那就说明bug了"
 end
 
 function GetWugongDescriptionFull(wugong)

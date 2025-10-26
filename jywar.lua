@@ -1402,6 +1402,7 @@ end
 
 function AddBurn(eid, num, enemyid)
 	WAR.BURNCOUNT[enemyid] = 1
+	JY.Person[eid]["灼烧程度"] = JY.Person[eid]["灼烧程度"] + num
 	if PushBackBurn(enemyid, 1) == false then
 		local loss = JY.Person[eid]["灼烧程度"]
 		WAR.Person[enemyid]["Life_Before_Hit"] = JY.Person[eid]["生命"]
@@ -1410,7 +1411,6 @@ function AddBurn(eid, num, enemyid)
 		Cls();
 		War_Show_Count(WAR.CurID, "走火入魔");
 	end
-	JY.Person[eid]["灼烧程度"] = JY.Person[eid]["灼烧程度"] + num
 end
 
 function GetAllyNum(warid)
