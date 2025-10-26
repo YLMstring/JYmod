@@ -3344,7 +3344,7 @@ function War_Fight_Sub(id, wugongnum, x, y)
 	elseif wugong == 60 then
 		wife = 37
 	end
-	if wife > 0 and WAR.WIFE == 0 then
+	if wife > 0 and WAR.WIFE == 0 and WAR.DZXY == 0 then
 		for j = 0, WAR.PersonNum - 1 do
 			if id ~= j and emeny ~= j and WAR.Person[j]["我方"] == WAR.Person[id]["我方"]
 			and JY.Person[WAR.Person[j]["人物编号"]]["生命"] > 0

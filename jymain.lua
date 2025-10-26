@@ -324,8 +324,9 @@ function BookShelf(pid)
 			end
 			ClsN()
 			lib.LoadPNG(1, 1000 * 2 , 0 , 0, 1)
+			while true do
 			local type2 = myJYMsgBox(JY.Wugong[shelf[r2]]["名称"], GetWugongDescriptionFull(shelf[r2]),
-				{"确定","返回"}, 2, pid)
+				{"确定","返回","关键词解释"}, 3, pid)
 			if type2 == 1 then
 				if CanLearn(pid, shelf[r2]) then
 					LearnWugong(pid, shelf[r2])
@@ -336,6 +337,14 @@ function BookShelf(pid)
 				DrawStrBoxWaitKey("尚未满足学习条件", C_WHITE, CC.DefaultFont)
 				ClsN()
 				lib.LoadPNG(1, 1000 * 2 , 0 , 0, 1)
+				break
+			end
+			if type2 == 3 then
+				CheckKeyword(GetWugongDescription(shelf[r2])[4], pid)
+			end
+			if type2 == 2 then
+				break
+			end
 			end
 		end
 	end
@@ -563,11 +572,19 @@ function InitMC()
 		if type == 4 then
 			return
 		end
+		while true do
 		local type2 = myJYMsgBox(JY.Wugong[wugonglist[type]]["名称"], GetWugongDescriptionFull(wugonglist[type]),
-			{"确定","返回"}, 2, 5)
+			{"确定","返回","关键词解释"}, 3, 5)
 		if type2 == 1 then
 			LearnWugong(0, wugonglist[type])
 			return
+		end
+		if type2 == 2 then
+			break
+		end
+		if type2 == 3 then
+			CheckKeyword(GetWugongDescription(wugonglist[type])[4], 0)
+		end
 		end
 	end
 end
@@ -582,15 +599,23 @@ function WarReward(pid, combatid)
 		wg0 = WAR.Data["音乐"]
 	end
 	if CanLearn(pid, wg0) then
-		local type = myJYMsgBox(JY.Person[pid]["姓名"].."福源际遇", GetWugongDescriptionExtra(wg0), {"学习","不必"}, 2, 5)
+		while true do
+		local type = myJYMsgBox(JY.Person[pid]["姓名"].."福源际遇", GetWugongDescriptionExtra(wg0), {"学习","不必","关键词解释"}, 3, 5)
 		if type == 1 then
 			LearnWugong(pid, wg0)
 			return
 		end
+		if type == 2 then
+			break
+		end
+		if type == 3 then
+			CheckKeyword(GetWugongDescription(wg0)[4], pid)
+		end
+		end
 	end
-	local wg1 = RandomReward(pid, 6)
-	local wg2 = RandomReward(pid, 6, wg1)
-	local wg3 = RandomReward(pid, 6, wg1, wg2)
+	local wg1 = RandomReward(pid, 9)
+	local wg2 = RandomReward(pid, 9, wg1)
+	local wg3 = RandomReward(pid, 9, wg1, wg2)
 	local wugonglist = {wg1, wg2, wg3}
 
 	while true do
@@ -599,11 +624,19 @@ function WarReward(pid, combatid)
 		if type == 4 then
 			return
 		end
+		while true do
 		local type2 = myJYMsgBox(JY.Wugong[wugonglist[type]]["名称"], GetWugongDescriptionFull(wugonglist[type]),
-			{"确定","返回"}, 2, 5)
+			{"确定","返回","关键词解释"}, 3, 5)
 		if type2 == 1 then
 			LearnWugong(pid, wugonglist[type])
 			return
+		end
+		if type2 == 2 then
+			break
+		end
+		if type2 == 3 then
+			CheckKeyword(GetWugongDescription(wugonglist[type])[4], pid)
+		end
 		end
 	end
 end
@@ -613,7 +646,7 @@ function RandomReward(pid, isInit, former1, former2, former3)
 	local poolnum = 0
 	for i = 1, 175 do
 		if JY.Wugong[i]["攻击力1"] ~= 1 and NewPersonKF(pid, i) == false and JY.Wugong[i]["武功类型"] < isInit then
-			if CanLearn(pid, i) then
+			if CanLearn(pid, i) and (isInit ~= 6 or JY.Wugong[i]["攻击力10"] == 1) then
 				poolnum = poolnum + 1
 				pool[poolnum] = i
 			end
@@ -647,9 +680,18 @@ function InitTeammate(pid)
 	if pid == 79 then --令狐冲
 		wugong = 42
 	end
-	local type = myJYMsgBox(JY.Person[pid]["姓名"].. "初始武功", GetWugongDescriptionFull(wugong), {"学习","不必"}, 2, pid)
+	while true do
+	local type = myJYMsgBox(JY.Person[pid]["姓名"].. "初始武功", GetWugongDescriptionFull(wugong), {"学习","不必","关键词解释"}, 3, pid)
 	if type == 1 then
 		LearnWugong(pid, wugong)
+		return
+	end
+	if type == 2 then
+		break
+	end
+	if type == 3 then
+		CheckKeyword(GetWugongDescription(wugong)[4], pid)
+	end
 	end
 end
 
@@ -957,15 +999,15 @@ function GetWugongDescription(wugong)
 		flavor = "八卦门掌法，讲究足踏八卦方位，兜圈急转，转折如意，乘隙发招，*将敌人转得头晕眼花"
 	elseif wugong == 39 then
 		mechanic = "不动或反击：回复等同于卸力的气血"
-		flavor = "全真派端凝厚重的剑法，一招一式，法度谨严无比，变化精微"
+		flavor = "全真派端凝厚重的剑法，一招一式，*法度谨严无比，变化精微"
 	elseif wugong == 37 then
 		mechanic = "无误伤，额外触发一次八卦正位效果；合击：反两仪刀法"
-		flavor = "昆仑派剑法，剑分阴阳，亦刚亦柔，剑招施发两仪术数中的极致"
+		flavor = "昆仑派剑法，剑分阴阳，亦刚亦柔，*剑招施发两仪术数中的极致"
 	elseif wugong == 60 then
 		mechanic = "无误伤，额外触发一次八卦逆位效果；合击：两仪剑法"
-		flavor = "华山派刀法，狠辣沉猛，不依常规，刀招施发两仪术数中的极致"
+		flavor = "华山派刀法，狠辣沉猛，不依常规，*刀招施发两仪术数中的极致"
 	elseif wugong == 42 then
-		mechanic = "进招：破招全真剑法，若掌握全真剑法，冰封10；*若掌握双手互搏和全真剑法，具有全真剑法的效果；合击：全真剑法"
+		mechanic = "进招：破招全真剑法，若掌握全真剑法，冰封10；*若掌握双手互搏和全真剑法，具有全真剑法的效果；*合击：全真剑法"
 		flavor = "林朝英所创剑法，飘忽来去，轻灵跳脱，*丰姿绰约，姿势闲雅，是全真剑法的克星。"
 	elseif wugong == 61 then
 		mechanic = "需要内力，进招：破招雪山剑法，若为合击，灼烧10；合击：雪山剑法"
@@ -1006,18 +1048,33 @@ function GetWugongDescription(wugong)
 	return strs
 end
 
+function CheckKeyword(des, m2)
+	local list = {"进招","反击","连击","过招","合击","背刺","先制","不动","全力","冰封","灼烧","内伤","封穴","中毒","流血",
+					"怒气","卸力","破招","虚招","疗伤","援护","击退","神兵","音律","书法","八卦"}
+	for i = 1, #list do
+		if string.find(des, list[i]) ~= nil then
+			say(ExplainKeyword(list[i]),JY.Person[m2]["头像代号"],1,JY.Person[m2]["姓名"])
+			ClsN()
+			lib.LoadPNG(1, 1000 * 2 , 0 , 0, 1)
+		end
+	end
+end
+
 function ExplainKeyword(word)
 	if word == "进招" then
 		return "【进招】主动攻击时触发效果，连击不触发"
 	end
 	if word == "反击" then
-		return "【反击】反击时触发效果，连击不触发（被攻击后若自身架势能攻击到对手可发动反击）"
+		return "【反击】反击时触发效果，连击不触发（被攻击后能以自身架势反击对手）"
 	end
 	if word == "连击" then
 		return "【连击】首次连击时触发效果（迅捷每比对手高20，可额外发动一次连击）"
 	end
 	if word == "过招" then
 		return "【过招】主动攻击结算完毕后，仅对中央目标触发一次效果"
+	end
+	if word == "合击" then
+		return "【合击】同伴主动使用对应武学后，若你已进入架势，攻击其中央目标"
 	end
 	if word == "背刺" then
 		return "【背刺】从敌人背后发动攻击时触发效果"
@@ -1080,7 +1137,7 @@ function ExplainKeyword(word)
 		return "【书法】使用书法相关的杂学时，有额外效果"
 	end
 	if word == "八卦" then
-		return "【八卦】特殊战场方格，红色为正位（攻击时溅射1格内目标），蓝色为逆位（回合结束时回复16%的已损失气血）"
+		return "【八卦】特殊战场方格，红色为正位（攻击时溅射1格内目标），蓝色为逆位（回合结束时回复百分之十六的已损失气血）"
 	end
 	return "如果你看到这句话，那就说明bug了"
 end
