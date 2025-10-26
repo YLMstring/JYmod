@@ -2419,7 +2419,7 @@ function War_CalculateDamage(pid, eid, wugong)
 		dmg = dmg + WAR.LQZ[pid]
 	end
 	local absorbed = 0
-	if WAR.Shield[eid] ~= nil then
+	if WAR.Shield[eid] ~= nil and WAR.DZXY ~= 1 then
 		absorbed = math.min(WAR.Shield[eid], dmg - 1)
 		dmg = dmg - absorbed
 	end
@@ -5570,6 +5570,10 @@ function War_Fight_Sub(id, wugongnum, x, y)
 		if IsBluff(pid, wugong) then
 			WAR.MOVEBUFF[emenyForPush] = (WAR.MOVEBUFF[emenyForPush] or 0) - 1
 		end
+		--千手如来掌
+		if Match_wugong(pid, wugong, 173) then
+			AddShield(pid, (WAR.Shield[pid] or 0))
+		end
 		--大力金刚掌
 		if Match_wugong(pid, wugong, 22) then
 			local push = PushPerson(WAR.CurID, emenyForPush)
@@ -7672,6 +7676,10 @@ function IsBluff(pid, stance)
 	end
 	--百花错拳
 	if Match_wugong(pid, stance, 10) then
+		return true
+	end
+	--千手如来掌
+	if Match_wugong(pid, stance, 173) then
 		return true
 	end
 	return false

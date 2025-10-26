@@ -1042,6 +1042,9 @@ function GetWugongDescription(wugong)
 	elseif wugong == 56 then
 		mechanic = "无误伤，进招：将对手足踏的八卦转移到自己脚下；*不动：计算自身连击数时，将负面效果层数加到迅捷上"
 		flavor = "丐帮吴长老的刀法，时而凝重缓慢，斜砍横削，似乎不成章法，*时而白光闪动，连环进击，来势极其凶猛"
+	elseif wugong == 173 then
+		mechanic = "虚招，过招：自身卸力层数变为2倍"
+		flavor = "少林绝学，招式寻常但变招奇幻，*一掌变两掌，两掌变四掌，四掌变八掌，*乃至幻化为十六掌，三十二掌"
 	end
 	local strs = {name.." "..typename, flavor, health..qi..atk..def..dex..move, mechanic}
 	--local str = name.." "..typename.."*"..flavor.."*"..health..qi..atk..def..dex..move.."*"..mechanic
@@ -1107,10 +1110,10 @@ function ExplainKeyword(word)
 		return "【流血】受到伤害时对手回复等同于层数的气血，回合开始时降至0，流失等量气血"
 	end
 	if word == "怒气" then
-		return "【怒气】进招时一次性增加伤害"
+		return "【怒气】主动攻击对手时一次性增加伤害，连击不触发"
 	end
 	if word == "卸力" then
-		return "【卸力】一次性抵消伤害，回合开始时减半"
+		return "【卸力】被对手主动攻击时一次性抵消伤害，回合开始时减半"
 	end
 	if word == "破招" then
 		return "【破招】让对手退出架势（退出架势后无法反击）"
