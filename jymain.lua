@@ -1045,6 +1045,24 @@ function GetWugongDescription(wugong)
 	elseif wugong == 173 then
 		mechanic = "虚招，过招：自身卸力层数变为2倍"
 		flavor = "少林绝学，招式寻常但变招奇幻，*一掌变两掌，两掌变四掌，四掌变八掌，*乃至幻化为十六掌，三十二掌"
+	elseif wugong == 21 then
+		mechanic = "进招：施加等同于对手冰封的内伤；背刺：冰封10"
+		flavor = "百损道人的阴毒武功，掌力阴损毒辣，世所罕见"
+	elseif wugong == 19 then
+		mechanic = "进招：施加等同于对手内伤的冰封；背刺：内伤10"
+		flavor = "成昆带有寒冰内劲的指法，是武林中最为阴毒的功夫"
+	elseif wugong == 18 then
+		mechanic = "全力，攻击距离为1-4；进招：封穴10"
+		flavor = "东邪黄药师的绝学，指法暗器精微奥妙，当世独步"
+	elseif wugong == 65 then
+		mechanic = "可攻击距离为1的对手；进招：灼烧12"
+		flavor = "少林绝学，刀法练成之后，在一根干木旁快劈九九八十一刀，*刀刃不能损伤木材丝毫，*刀上发出的热力，却要将木材点燃生火"
+	elseif wugong == 64 then
+		mechanic = "卸力抵消伤害时，对手流失等量气血；*卸力不会在回合开始时减半"
+		flavor = "武当派刀法，刚中带柔，另有一功"
+	elseif wugong == 141 then
+		mechanic = "全力，攻击距离为2-4；攻击范围+1"
+		flavor = "上乘的暗器手法，一手挥出三九二十七枚暗器，分打数人"
 	end
 	local strs = {name.." "..typename, flavor, health..qi..atk..def..dex..move, mechanic}
 	--local str = name.." "..typename.."*"..flavor.."*"..health..qi..atk..def..dex..move.."*"..mechanic
@@ -1095,7 +1113,7 @@ function ExplainKeyword(word)
 		return "【冰封】造成伤害时伤害降低等同于层数，回合结束时降低5层"
 	end
 	if word == "灼烧" then
-		return "【灼烧】受到灼烧时行动次序降低一位，若无法降低，流失等同于层数的气血，回合结束时降低5层"
+		return "【灼烧】受到灼烧前行动次序降低一位，若无法降低，流失等同于层数的气血；回合结束时降低5层"
 	end
 	if word == "内伤" then
 		return "【内伤】受到伤害时伤害上升等同于层数，回合结束时降低5层"
@@ -1140,7 +1158,7 @@ function ExplainKeyword(word)
 		return "【书法】使用书法相关的杂学时，有额外效果"
 	end
 	if word == "八卦" then
-		return "【八卦】特殊战场方格，红色为正位（攻击时溅射1格内目标），蓝色为逆位（回合结束时回复百分之十六的已损失气血）"
+		return "【八卦】特殊战场方格，红色为正位（攻击范围+1），蓝色为逆位（回合结束时回复百分之十六的已损失气血）"
 	end
 	return "如果你看到这句话，那就说明bug了"
 end

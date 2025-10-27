@@ -1023,6 +1023,10 @@ function War_WugongHurtLife(enemyid, wugong)
     if Match_wugong(pid, wugong, 117) and IsStrike(pid) then
 		AddBurn(eid, 5, enemyid)
     end
+	--燃木刀法效果
+    if Match_wugong(pid, wugong, 65) and IsStrike(pid) then
+		AddBurn(eid, 12, enemyid)
+    end
 	--鹤蛇八打效果
     if Match_wugong(pid, wugong, 74) and IsCombo(pid) then
 		AddBlood(eid, 10)
@@ -1099,6 +1103,10 @@ function War_WugongHurtLife(enemyid, wugong)
 	if Match_wugong(pid, wugong, 122) and IsCounter(pid) and IsProtecting(pid, 122, WAR.CurID) then
 		AddStun(eid, 10)
     end
+	--弹指神通效果
+	if Match_wugong(pid, wugong, 18) then
+		AddStun(eid, 10)
+    end
 	--春蚕掌法效果
 	if Match_wugong(pid, wugong, 6) then
 		noDamage = true
@@ -1146,6 +1154,24 @@ function War_WugongHurtLife(enemyid, wugong)
 	--金蛇剑法效果
     if Match_wugong(pid, wugong, 40) and IsStrike(pid) then
 		AddBlood(eid, JY.Person[eid]["中毒程度"])
+    end
+	--玄冥神掌效果
+    if Match_wugong(pid, wugong, 21) then
+		if IsStrike(pid) then
+			AddFreeze(eid, JY.Person[eid]["受伤程度"])
+		end
+		if IsBackstab(WAR.CurID, enemyid) then
+			AddInternalDamage(eid, 10)
+		end
+    end
+	--幻阴指效果
+    if Match_wugong(pid, wugong, 21) then
+		if IsStrike(pid) then
+			AddInternalDamage(eid, JY.Person[eid]["冰封程度"])
+		end
+		if IsBackstab(WAR.CurID, enemyid) then
+			AddFreeze(eid, 10)
+		end
     end
 	--银索金铃效果
     if Match_wugong(pid, wugong, 79) and IsCounter(pid) then
@@ -1269,6 +1295,14 @@ function War_WugongHurtLife(enemyid, wugong)
 	end
 	if WAR.Shield[eid] ~= nil then
 		WAR.Shield[eid] = WAR.Shield[eid] - absorbed
+	end
+
+	if MatchStyle(eid, 64) and absorbed > 0 then
+		local loss = absorbed
+		JY.Person[pid]["生命"] = JY.Person[pid]["生命"] - loss
+		WAR.Person[WAR.CurID]["生命点数"] = (WAR.Person[WAR.CurID]["生命点数"] or 0) - loss
+		Cls();
+		War_Show_Count(WAR.CurID, "玄虚反伤");
 	end
 
 	if isHeal then
@@ -1402,15 +1436,17 @@ end
 
 function AddBurn(eid, num, enemyid)
 	WAR.BURNCOUNT[enemyid] = 1
-	JY.Person[eid]["灼烧程度"] = JY.Person[eid]["灼烧程度"] + num
 	if PushBackBurn(enemyid, 1) == false then
 		local loss = JY.Person[eid]["灼烧程度"]
-		WAR.Person[enemyid]["Life_Before_Hit"] = JY.Person[eid]["生命"]
-		JY.Person[eid]["生命"] = JY.Person[eid]["生命"] - loss
-		WAR.Person[WAR.CurID]["生命点数"] = (WAR.Person[enemyid]["生命点数"] or 0) - loss
-		Cls();
-		War_Show_Count(WAR.CurID, "走火入魔");
+		if loss > 0 then
+			WAR.Person[enemyid]["Life_Before_Hit"] = JY.Person[eid]["生命"]
+			JY.Person[eid]["生命"] = JY.Person[eid]["生命"] - loss
+			WAR.Person[WAR.CurID]["生命点数"] = (WAR.Person[enemyid]["生命点数"] or 0) - loss
+			Cls();
+			War_Show_Count(WAR.CurID, "走火入魔");
+		end
 	end
+	JY.Person[eid]["灼烧程度"] = JY.Person[eid]["灼烧程度"] + num
 end
 
 function GetAllyNum(warid)
@@ -7698,6 +7734,14 @@ function IsFullForce(pid, wugong)
 	if Match_wugong(pid, wugong, 151) then
 		return true
 	end
+	--弹指神通
+	if Match_wugong(pid, wugong, 18) then
+		return true
+	end
+	--满天花雨
+	if Match_wugong(pid, wugong, 141) then
+		return true
+	end
 	return false
 end
 
@@ -9418,7 +9462,7 @@ function WarMain(warid, isexp)
 				WarNewLand0()
 			end
 			
-			if WAR.Shield[WAR.CurID] ~= nil and (WAR.KMSHIELD[pid] or 0) < 1 then
+			if WAR.Shield[WAR.CurID] ~= nil and (WAR.KMSHIELD[pid] or 0) < 1 and not MatchStyle(pid, 64) then
 				WAR.Shield[WAR.CurID] = WAR.Shield[WAR.CurID] / 2
 			end
 
@@ -13002,7 +13046,14 @@ function WugongArea(wugong)
 		a1 = 2
 		a2 = 3
 	end
-
+	--弹指神通 燃木刀法
+	if wugong == 18 or wugong == 65 then
+		m3 = 0
+	end
+	--满天花雨
+	if wugong == 141 then
+		a2 = 1
+	end
 	return m1, m2, m3, a1, a2
 end
 
