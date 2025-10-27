@@ -5004,7 +5004,7 @@ function ShowMenu(menuItem, numItem, numShow, x1, y1, x2, y2, isBox, isEsc, size
 			end
 		end
 		if In_Tactics == true then
-			if newMenu[i][1] == "秒杀" then
+			if newMenu[i][1] == "调度" then
 				DrawString(x1 + CC.MenuBorderPixel + size*2, y1 + CC.MenuBorderPixel + (i - start) * (size + CC.RowPixel) +2, "P", LimeGreen, CC.FontSmall)
 			elseif newMenu[i][1] == "换位" then
 				DrawString(x1 + CC.MenuBorderPixel + size*2, y1 + CC.MenuBorderPixel + (i - start) * (size + CC.RowPixel) +2, "D", LimeGreen, CC.FontSmall)
@@ -5104,7 +5104,7 @@ function ShowMenu(menuItem, numItem, numShow, x1, y1, x2, y2, isBox, isEsc, size
 				DrawBox(x1,y1,x1+w,y1+h,C_WHITE);
 			end
 		--战术
-		elseif In_Battle == true and keyPress == VK_S then
+		elseif In_Battle == true and keyPress == VK_S and menuItem[4][3] == 1 then
 			local r=War_TacticsMenu();
 			if r==1 then
 			returnValue= -4;
@@ -5203,7 +5203,7 @@ function ShowMenu(menuItem, numItem, numShow, x1, y1, x2, y2, isBox, isEsc, size
 				DrawBox(x1,y1,x1+w,y1+h,C_WHITE);
 			end
 		--蓄力
-		elseif (In_Battle == true or In_Tactics == true) and keyPress == VK_P then
+		elseif (In_Battle == true or In_Tactics == true) and keyPress == VK_P and menuItem[4][3] == 1 then
 			local r=War_ActupMenu();
 			if In_Battle == true then
 				returnValue = -4;
@@ -5212,7 +5212,7 @@ function ShowMenu(menuItem, numItem, numShow, x1, y1, x2, y2, isBox, isEsc, size
 			end
 			break;
 		--防御
-		elseif (In_Battle == true or In_Tactics == true) and keyPress == VK_D then
+		elseif (In_Battle == true or In_Tactics == true) and keyPress == VK_D and menuItem[4][3] == 1 then
 			local r=War_DefupMenu();
 			if In_Battle == true then
 				returnValue = -4;
@@ -5226,7 +5226,7 @@ function ShowMenu(menuItem, numItem, numShow, x1, y1, x2, y2, isBox, isEsc, size
 				DrawBox(x1,y1,x1+w,y1+h,C_WHITE);
 			end
 		--等待
-		elseif (In_Battle == true or In_Tactics == true) and keyPress == VK_W then
+		elseif (In_Battle == true or In_Tactics == true) and keyPress == VK_W and menuItem[4][3] == 1 then
 			local r = War_Wait();
 			if In_Battle == true then
 				returnValue = -4;

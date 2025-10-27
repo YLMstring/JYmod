@@ -59,8 +59,6 @@ function AIThink(kfid)
 			end
 		end
 	end
-	--lib.Debug(JY.Person[pid]["姓名"])
-	--lib.Debug(atkarray[1].p)
 	if atkarray[1].p > 0 then
 		for i = 2, num do
 			if atkarray[i].p == 0 or atkarray[i].p < atkarray[1].p / 2 then
@@ -968,7 +966,7 @@ function War_WugongHurtLife(enemyid, wugong)
 	--奇门三才刀效果
 	if Match_wugong(pid, wugong, 56) and IsStrike(pid) then
 		local color = GetWarMap(WAR.Person[enemyid]["坐标X"], WAR.Person[enemyid]["坐标Y"], 6)
-		if color > 0 then
+		if color ~= nil and color >= 0 then
 			SetWarMap(WAR.Person[enemyid]["坐标X"], WAR.Person[enemyid]["坐标Y"], 6, color);
 		end
     end
@@ -1456,7 +1454,6 @@ function GetAllyNum(warid)
 			num = num + 1
 		end
 	end
-	--lib.Debug(warid.." "..num)
 	return num
 end
 
@@ -5757,7 +5754,7 @@ function PushPerson(warpid, wareid)
 	if j9 < -1 then j9 = -1 end
 	i9, j9 = WAR.Person[wareid]["坐标X"] + i9, WAR.Person[wareid]["坐标Y"] + j9
 	--表示有障碍物
-	if GetWarMap(i9, j9, 1) > 0 then
+	if GetWarMap(i9, j9, 1) ~= nil and GetWarMap(i9, j9, 1) > 0 then
 		WAR.MOVEBUFF[wareid] = (WAR.MOVEBUFF[wareid] or 0) - 1
 		return -1
 	end
@@ -5951,6 +5948,10 @@ function War_Manual_Sub()
 	{"撤退", War_Retreat, 1},	--12
 	{"自动", War_AutoMenu, 1}	--13
 	}
+	--移动过不许用
+	if WAR.Wait[pid] == -1 then
+		warmenu[4][3] = 0
+	end
 
 	--特色指令
 	if JY.Person[pid]["特色指令"] == 1 then
@@ -6277,14 +6278,14 @@ end
 --无酒不欢：战术菜单
 function War_TacticsMenu()
 	local menu={};
-	menu[1]={"秒杀",nil,1};
+	menu[1]={"调度",nil,1};
 	menu[2]={"换位",nil,1};
 	menu[3]={"等待",nil,1};
     local r = ShowMenu(menu,#menu,0,CC.MainSubMenuX+15,CC.MainSubMenuY,0,0,1,1,CC.DefaultFont,C_ORANGE, C_WHITE);
-	--蓄力
+	--调度
 	if r == 1 then
 		return War_ActupMenu()
-	--防御
+	--换位
 	elseif r == 2 then
 		return War_DefupMenu()
 	--等待
@@ -6294,6 +6295,19 @@ function War_TacticsMenu()
 	elseif r == 4 then
 		return 1
 	end
+end
+
+function PushBackFriend(warid, target)
+	local ownTime = WAR.Person[warid].Time
+	local targetTime = WAR.Person[target].Time
+	for j = 0, WAR.PersonNum - 1 do
+		if WAR.Person[j]["死亡"] == false and not WAR.Person[j]["我方"]
+		and targetTime < WAR.Person[j].Time and WAR.Person[j].Time < ownTime then
+			--中间有人
+			return
+		end
+	end
+	WAR.Person[warid].Time, WAR.Person[target].Time = WAR.Person[target].Time, WAR.Person[warid].Time
 end
 
 function PushBack(warid, time)
@@ -6313,7 +6327,6 @@ function PushBack(warid, time)
 		--已经是倒数第一
 		return false
 	end
-	--lib.Debug(WAR.Person[target]["人物编号"])
 	WAR.Person[warid].Time, WAR.Person[target].Time = WAR.Person[target].Time, WAR.Person[warid].Time
 	if WAR.Person[warid]["我方"] ~= WAR.Person[target]["我方"] then
 		PushBack(warid, time - 1)
@@ -6339,7 +6352,6 @@ function PushBackBurn(warid, time)
 		--已经是倒数第一
 		return false
 	end
-	--lib.Debug(WAR.Person[target]["人物编号"])
 	WAR.Person[warid].Time, WAR.Person[target].Time = WAR.Person[target].Time, WAR.Person[warid].Time
 	if WAR.BURNCOUNT[target] == 1 then
 		PushBackBurn(warid, time)
@@ -7353,10 +7365,8 @@ end
 function War_ActupMenu()
 	local p = WAR.CurID
 	local id = WAR.Person[p]["人物编号"]
-	local x0, y0 = WAR.Person[p]["坐标X"], WAR.Person[p]["坐标Y"]
 
-	--赵敏是否在场
-	local ZM = 0
+	--[[秒杀
 	if inteam(id) then
 		for i = 0, WAR.PersonNum - 1 do
 			local zid = WAR.Person[i]["人物编号"]
@@ -7364,65 +7374,20 @@ function War_ActupMenu()
 				JY.Person[zid]["生命"] = 0
 			end
 		end
-	end
+	end]]
 
-	--主运蛤蟆蓄力带防御效果
-	if Curr_NG(id, 95) then
-		WAR.Actup[id] = 2;
-		WAR.Defup[id] = 1
-		WAR.HMGXL[id] = 1
-		CurIDTXDH(WAR.CurID, 85,1);
-		DrawStrBox(-1, -1, "攻守兼备·蓄势待发", LightSlateBlue, CC.DefaultFont)
-		ShowScreen()
-		lib.Delay(400)
-		return 1;
-	--被动紫霞蓄力强化
-	elseif PersonKF(id, 89) then
-		WAR.Actup[id] = 2
-		if inteam(id) then
-			WAR.ZXXS[id] = 1 + math.modf(JY.Base["天书数量"]/7)
-		else
-			WAR.ZXXS[id] = 3
-		end
-		CurIDTXDH(WAR.CurID, 85, 1);
-		DrawStrBox(-1, -1, "紫霞蓄势·连绵不绝", Violet, CC.DefaultFont, M_DeepSkyBlue)
-		ShowScreen()
-		lib.Delay(400)
-		return 1;
-	--被动龙象蓄力带防御效果
-	elseif PersonKF(id, 103) then
-		WAR.Actup[id] = 2;
-		WAR.Defup[id] = 1
-		CurIDTXDH(WAR.CurID, 85, 1);
-		DrawStrBox(-1, -1, "龙之蓄力·象之防御", LightGreen, CC.DefaultFont)
-		ShowScreen()
-		lib.Delay(400)
-		return 1;
-	--标主蓄力必成功
-	elseif id == 0 and JY.Base["标准"] > 0 then
-		WAR.Actup[id] = 2
-	--NPC蓄力必成功
-	elseif not inteam(id) then
-		WAR.Actup[id] = 2
-	--我方，赵敏在场必成功
-	elseif inteam(id) and ZM == 1 then
-		WAR.Actup[id] = 2
-	--常态70%几率成功
-	elseif JLSD(15, 85, id) then
-		WAR.Actup[id] = 2
+	Cls()
+	War_CalMoveStep(WAR.CurID, 10, 1)
+	local x,y = War_SelectMove()
+	local tdID = lib.GetWarMap(x, y, 2)
+	if tdID >= 0 and p ~= tdID and WAR.Person[tdID]["我方"] == WAR.Person[p]["我方"] then
+		PushBackFriend(p, tdID)
+		WAR.Wait[id] = 1
+		return 1
 	end
-	if WAR.Actup[id] ~= 2 then
-		Cls()
-		DrawStrBox(-1, -1, "蓄力失败", C_GOLD, CC.DefaultFont)
-		ShowScreen()
-		lib.Delay(400)
-	else
-		CurIDTXDH(WAR.CurID, 85, 1);
-		DrawStrBox(-1, -1, "蓄力成功", C_GOLD, CC.DefaultFont)
-		ShowScreen()
-		lib.Delay(400)
-	end
+	WAR.Wait[id] = 1
 	return 1
+	
 end
 
 
@@ -7430,16 +7395,15 @@ end
 function War_DefupMenu()
 	local p = WAR.CurID
 	local id = WAR.Person[p]["人物编号"]
-	WAR.Defup[id] = 1
 	Cls()
 	War_CalMoveStep(WAR.CurID, 1, 1)
 	local x,y = War_SelectMove()
 	local tdID = lib.GetWarMap(x, y, 2)
-	if tdID > 0 and p ~= tdID and WAR.Person[tdID]["我方"] == WAR.Person[p]["我方"] then
+	if tdID >= 0 and p ~= tdID and WAR.Person[tdID]["我方"] == WAR.Person[p]["我方"] then
 		WAR.Person[p]["坐标X"], WAR.Person[p]["坐标Y"], WAR.Person[tdID]["坐标X"], WAR.Person[tdID]["坐标Y"]
 		= WAR.Person[tdID]["坐标X"], WAR.Person[tdID]["坐标Y"], WAR.Person[p]["坐标X"], WAR.Person[p]["坐标Y"]
 		return 1
-	end			
+	end		
 	WAR.Wait[id] = 1
 	return 1
 end
@@ -8875,7 +8839,6 @@ end
 function WarFixBack()
 	for j = 0, WAR.PersonNum - 1 do
 		local i = War_AutoSelectEnemy_near(j)
-		--lib.Debug(j.."start"..i)
 		if i >= 0 then
 			WAR.Person[j]["人方向"] = War_Direct(WAR.Person[j]["坐标X"], WAR.Person[j]["坐标Y"],
 				WAR.Person[i]["坐标X"], WAR.Person[i]["坐标Y"])
@@ -9640,7 +9603,7 @@ function WarMain(warid, isexp)
 				WAR.ZYHB = 0
 	        end
 			
-			local function kfmoveAferwards(p, id, isfree)
+			local function kfmoveAferwards(isfree)
 				if WAR.Person[p]["移动步数"] < 1 then
 					return
 				end
@@ -9659,6 +9622,10 @@ function WarMain(warid, isexp)
 					end
 					x, y = War_SelectMove()
 					if x ~= nil then
+						--不许等待
+	  					if x ~= WAR.Person[p]["坐标X"] or y ~= WAR.Person[p]["坐标Y"] then
+	  						WAR.Wait[id] = -1
+	  					end
 						WAR.ShowHead = 0
 						War_MovePerson(x, y)
 						break;
@@ -9670,24 +9637,24 @@ function WarMain(warid, isexp)
 			local function TurnEndReal()
 				--逍遥游 攻击后可移动
 	        	if WAR.Person[p]["我方"] == true and MatchStyle(id, 2) then
-					kfmoveAferwards(p, false)
+					kfmoveAferwards(false)
 	        	end
 				--鹤蛇八打 攻击后可移动
 	        	if WAR.Person[p]["我方"] == true and MatchStyle(id, 74) then
-					kfmoveAferwards(p, false)
+					kfmoveAferwards(false)
 	        	end
 				--泰山十八盘
 				if GetBaguaEffect(WAR.CurID) > 0 and MatchStyle(id, 31) then
 					AddRage(id, 10)
 					if WAR.Person[p]["我方"] == true then
-						kfmoveAferwards(p, true)
+						kfmoveAferwards(true)
 					end
 				end
 				--八卦刀法
 				if GetBaguaEffect(WAR.CurID) > 0 and MatchStyle(id, 58) then
 					AddShield(id, 16)
 					if WAR.Person[p]["我方"] == true then
-						kfmoveAferwards(p, true)
+						kfmoveAferwards(true)
 					end
 				end
 				--八卦掌法
@@ -9698,7 +9665,7 @@ function WarMain(warid, isexp)
 						end
 					end
 					if WAR.Person[p]["我方"] == true then
-						kfmoveAferwards(p, true)
+						kfmoveAferwards(true)
 					end
 				end
 				--棋盘招式
@@ -9706,7 +9673,7 @@ function WarMain(warid, isexp)
 					for j = 0, WAR.PersonNum - 1 do
 						if WAR.Person[j]["我方"] == WAR.Person[p]["我方"] and JY.Person[WAR.Person[j]["人物编号"]]["生命"] > 0 then
 							WAR.Person[p]["移动步数"] = 1
-							kfmoveAferwards(j, false)
+							kfmoveAferwards(false)
 						end
 					end
 	        	end				
@@ -10903,7 +10870,6 @@ end
 function War_Direct(x1, y1, x2, y2)
 	local x = x2 - x1
 	local y = y2 - y1
-	--lib.Debug("x "..x.."  y "..y)
 	if x == 0 and y == 0 then
 		return WAR.Person[WAR.CurID]["人方向"]
 	end
@@ -11334,7 +11300,7 @@ function War_StatusMenu()
     WarDrawMap(1, x, y);
     ShowScreen();
     x, y = War_SelectMove()
-	if lib.GetWarMap(x, y, 2) > 0 or lib.GetWarMap(x, y, 5) > 0 then
+	if lib.GetWarMap(x, y, 2) >= 0 then
 		local tdID = lib.GetWarMap(x, y, 2)
 		local eid = WAR.Person[tdID]["人物编号"]
 		ShowPersonStatus(1, eid)
