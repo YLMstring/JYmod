@@ -1083,10 +1083,16 @@ function GetWugongDescription(wugong)
 		flavor = "东邪黄药师吹奏的乐曲，*含有上乘内功，诱惑聆曲者随之翩翩起舞"
 	elseif wugong == 125 then
 		mechanic = "攻击距离为1-2；可攻击空位，*若能够背刺攻击目标延伸处的侠客，则一并攻击之；*进招：可令对手任意转向"
-		flavor = "少林派独步天下的袖功，*口中谈笑，袍袖已动，潇洒自在"
+		flavor = "少林派独步天下的袖功，口中谈笑，袍袖已动，潇洒自在"
 	elseif wugong == 137 then
 		mechanic = "无误伤，可攻击空位，*若有怒气，怒气效果改为回复自身，*且一并攻击攻击目标延伸处的侠客；*令对手退场时，改为令其重新开始集气并加入我方，*生命值提升至其封穴点数的5倍"
-		flavor = "少林派独步天下的袖功，*口中谈笑，袍袖已动，潇洒自在"
+		flavor = "少林绝学，出指轻柔无比，*似是拈住一朵鲜花，温颜微笑间神功已运"
+	elseif wugong == 62 then
+		mechanic = "无视距离援护掌握夫妻刀法的同伴，援护且反击：流血10；*合击：夫妻刀法"
+		flavor = "神秘高僧所传的奇门刀法，阴阳开合，配合天衣无缝"
+	elseif wugong == 16 then
+		mechanic = "过招：选择一个方向击退，若引起碰撞，双方流失等同于你卸力的气血"
+		flavor = "张三丰所创拳法，与自古以来武学之道全然不同，*讲究以静制动，后发制人"
 	end
 	local strs = {name.." "..typename, flavor, health..qi..atk..def..dex..move, mechanic}
 	--local str = name.." "..typename.."*"..flavor.."*"..health..qi..atk..def..dex..move.."*"..mechanic

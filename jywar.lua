@@ -1089,6 +1089,10 @@ function War_WugongHurtLife(enemyid, wugong)
 	if Match_wugong(pid, wugong, 5) and IsCounter(pid) then
 		AddShield(pid, 4)
     end
+	--夫妻刀法效果
+	if Match_wugong(pid, wugong, 62) and IsCounter(pid) and IsProtecting(pid, 62, WAR.CurID) then
+		AddShield(pid, 10)
+    end
 	--罗汉拳效果
 	if Match_wugong(pid, wugong, 1) and IsCounter(pid) and IsProtecting(pid, 1, WAR.CurID) then
 		AddBurn(eid, 10, enemyid)
@@ -3441,6 +3445,8 @@ function War_Fight_Sub(id, wugongnum, x, y)
 		wife = 60
 	elseif wugong == 60 then
 		wife = 37
+	elseif wugong == 62 then
+		wife = 62
 	end
 	if wife > 0 and WAR.WIFE == 0 and WAR.DZXY == 0 then
 		for j = 0, WAR.PersonNum - 1 do
@@ -5320,6 +5326,7 @@ function War_Fight_Sub(id, wugongnum, x, y)
 
 	local function canProtect(wareid, protector)
 		local prid = WAR.Person[protector]["人物编号"]
+		local eid = WAR.Person[wareid]["人物编号"]
 		if wareid == protector then
 			return false
 		end
@@ -5345,6 +5352,10 @@ function War_Fight_Sub(id, wugongnum, x, y)
 		--龙爪手
 		if MatchStyle(prid, 20) then
 			distance = 2
+		end
+		--夫妻刀法
+		if MatchStyle(prid, 62) and NewPersonKF(eid, 62) then
+			distance = 99
 		end
 		if distance < 0 then
 			return false
@@ -5732,12 +5743,28 @@ function War_Fight_Sub(id, wugongnum, x, y)
 		if Match_wugong(pid, wugong, 173) then
 			AddShield(pid, (WAR.Shield[pid] or 0))
 		end
+		--太极拳
+		if Match_wugong(pid, wugong, 16) then
+			local push = PullPerson(WAR.CurID, emenyForPush)
+			local pshield = WAR.Shield[pid]
+			if push < 100 and (pshield or 0) > 0 then
+				WAR.Person[emenyForPush]["生命点数"] = AddPersonAttrib(eid, "生命", -pshield);
+				Cls()
+				War_Show_Count(emenyForPush, "圆转不断")
+				if push >= 0 then
+					WAR.Person[push]["生命点数"] = AddPersonAttrib(WAR.Person[push]["人物编号"], "生命", -pshield);
+					War_Show_Count(push, "圆转不断")
+				end
+			end
+		end
 		--大力金刚掌
 		if Match_wugong(pid, wugong, 22) then
 			local push = PushPerson(WAR.CurID, emenyForPush)
 			if push < 100 then
 				AddInternalDamage(eid, 5)
-				AddInternalDamage(WAR.Person[push]["人物编号"], 5)
+				if push >= 0 then
+					AddInternalDamage(WAR.Person[push]["人物编号"], 5)
+				end
 			end
 		end
 		--大力金刚指
@@ -5745,7 +5772,9 @@ function War_Fight_Sub(id, wugongnum, x, y)
 			local push = PushPerson(WAR.CurID, emenyForPush)
 			if push < 100 then
 				AddBurn(eid, 5, emenyForPush)
-				AddBurn(WAR.Person[push]["人物编号"], 5, push)
+				if push >= 0 then
+					AddBurn(WAR.Person[push]["人物编号"], 5, push)
+				end
 			end
 		end
 		--释迦掷象功
@@ -5878,6 +5907,35 @@ function PushPerson(warpid, wareid)
 	if j9 > 1 then j9 = 1 end
 	if j9 < -1 then j9 = -1 end
 	i9, j9 = WAR.Person[wareid]["坐标X"] + i9, WAR.Person[wareid]["坐标Y"] + j9
+	--表示有障碍物
+	if GetWarMap(i9, j9, 1) ~= nil and GetWarMap(i9, j9, 1) > 0 then
+		WAR.MOVEBUFF[wareid] = (WAR.MOVEBUFF[wareid] or 0) - 1
+		return -1
+	end
+	local wareid2 = GetWarMap(i9, j9, 2)
+	if wareid2 == nil then
+		WAR.Person[wareid]["坐标X"] = i9
+		WAR.Person[wareid]["坐标Y"] = j9
+		return 100
+	end
+	if wareid2 < 0 then
+		WAR.Person[wareid]["坐标X"] = i9
+		WAR.Person[wareid]["坐标Y"] = j9
+		return 100
+	end
+	--表示有人
+	WAR.MOVEBUFF[wareid] = (WAR.MOVEBUFF[wareid] or 0) - 1
+	WAR.MOVEBUFF[wareid2] = (WAR.MOVEBUFF[wareid2] or 0) - 1
+	return wareid2
+end
+
+function PullPerson(warpid, wareid)
+	local x0, y0 = WAR.Person[wareid]["坐标X"],WAR.Person[wareid]["坐标Y"]
+	local i9, j9 = ForcePull(wareid)
+	--没动，跳过
+	if i9 == x0 and j9 == y0 then
+		return 100
+	end
 	--表示有障碍物
 	if GetWarMap(i9, j9, 1) ~= nil and GetWarMap(i9, j9, 1) > 0 then
 		WAR.MOVEBUFF[wareid] = (WAR.MOVEBUFF[wareid] or 0) - 1
@@ -6354,10 +6412,21 @@ function ForceDirection(warid)
 	end
 	Cls()
 	War_CalMoveStep(warid, 1, 1)
-	local x,y = War_SelectMove()
+	local x, y = War_SelectMove()
 	local x0, y0 = WAR.Person[warid]["坐标X"],WAR.Person[warid]["坐标Y"]
 	WAR.Person[warid]["人方向"] = War_Direct(x0, y0, x, y)
 	WAR.Person[warid]["贴图"] = WarCalPersonPic(warid)
+end
+
+function ForcePull(warid)
+	local x0, y0 = WAR.Person[warid]["坐标X"],WAR.Person[warid]["坐标Y"]
+	if WAR.AutoFight ~= 0 then
+		return x0, y0
+	end
+	Cls()
+	War_CalMoveStep(warid, 1, 1)
+	local x, y = War_SelectMove()
+	return x, y
 end
 
 --无酒不欢：选择内功菜单
