@@ -845,22 +845,22 @@ function GetWugongDescription(wugong)
 		mechanic = "进招：灼烧5"
 		flavor = "江湖上流传甚广的擒拿手法，长于脱人关节，断人筋骨"
 	elseif wugong == 165 then
-		mechanic = "进招：自身灼烧10"
+		mechanic = "攻击距离为2-3；进招：自身灼烧10"
 		flavor = "北宋名将呼延赞传下的枪法，在军中流传甚广"
 	elseif wugong == 121 then
 		mechanic = "进招：内伤5"
 		flavor = "华山派指法绝技，附有内劲，浑厚精奇"
 	elseif wugong == 78 then
-		mechanic = "进招：自身流血5"
+		mechanic = "攻击距离为1-2；进招：自身流血5"
 		flavor = "北宋名将呼延赞传下的鞭法，*其人曾以一根钢鞭震断敌人十条长枪"
 	elseif wugong == 69 then
-		mechanic = "进招：自身内伤10"
+		mechanic = "攻击距离为1-2；进招：自身内伤10"
 		flavor = "丁不四的九节鞭法门，既威猛，又华丽"
 	elseif wugong == 68 then
-		mechanic = "进招：自身冰封10"
+		mechanic = "攻击距离为2-3；进招：自身冰封10"
 		flavor = "北宋名将杨再兴传下的枪法，招数灵动，变幻巧妙"
 	elseif wugong == 70 then
-		mechanic = "进招：自身封穴10"
+		mechanic = "攻击距离为2-3；进招：自身封穴10"
 		flavor = "中平枪，枪中王，远近高低都不妨，*乃是六合枪中最精妙的家数"
 	elseif wugong == 3 then
 		mechanic = "进招：中毒7"
@@ -947,7 +947,7 @@ function GetWugongDescription(wugong)
 		mechanic = "该武功受到怒气加成时效果为2倍"
 		flavor = "无上大力杵法无甚变化，只是横挥八招，直击八招，*一十六招反复使出，至刚至猛，威武癫狂"
 	elseif wugong == 84 then
-		mechanic = "书法，进招：不受怒气加成，将怒气转化为卸力，将卸力转化为怒气"
+		mechanic = "书法，攻击距离为1-2；*进招：不受怒气加成，将怒气转化为卸力，将卸力转化为怒气"
 		flavor = "武林至尊，宝刀屠龙。*号令天下，莫敢不从。*倚天不出，谁与争锋？*张三丰情之所至，将这二十四个字演为一套武功"
 	elseif wugong == 36 then
 		mechanic = "需要内力；背刺：破招，卸力20"
@@ -956,13 +956,13 @@ function GetWugongDescription(wugong)
 		mechanic = "援护2，援护且反击：怒气10"
 		flavor = "少林派的三十六式抓法，要旨端在凌厉狠辣，不求变化繁多，*龙影飞空，龙爪急舞，快极狠极"
 	elseif wugong == 164 then
-		mechanic = "进招：若对手与自身有相同层数的负面效果，破招"
+		mechanic = "攻击距离为1-2；*进招：若对手与自身有相同层数的负面效果，破招"
 		flavor = "九阴真经中记载的鬼魅鞭法，身法奇诡莫测，*如风吹柳絮，水送浮萍，实非人间气象"
 	elseif wugong == 92 then
-		mechanic = "内力2，攻击3格内所有对手，全力，进招：灼烧5"
+		mechanic = "内力2，无误伤，攻击3格内所有对手，全力，进招：灼烧5"
 		flavor = "佛门中极上乘的功夫，一声断喝中蕴蓄深厚的内家劲力"
 	elseif wugong == 151 then
-		mechanic = "内力2，攻击3格内所有侠客，音律，全力，进招：破招"
+		mechanic = "内力2，攻击3格内所有对手，音律，全力，进招：破招"
 		flavor = "梅庄大庄主黄钟公苦练数十年的绝技，琴音中灌注上乘内力，*用以扰乱敌人心神，对方内力和琴音一生共鸣，便不知不觉的为琴音所制"
 	elseif wugong == 134 then
 		mechanic = "进招：对手的流血转化为2倍的内伤"
@@ -980,16 +980,16 @@ function GetWugongDescription(wugong)
 		mechanic = "神兵，进招：施加等同于对手中毒的流血"
 		flavor = "金蛇郎君夏雪宜的怪异剑法，*剑尖两叉既可钻刺，亦可钩锁敌人兵刃，*剑身上一道血痕，发出碧油油的暗光，极是诡异"
 	elseif wugong == 79 then
-		mechanic = "音律，反击：施加等同于对手冰封的封穴"
+		mechanic = "音律，攻击距离为1-2；*反击：施加等同于对手冰封的封穴"
 		flavor = "小龙女的绸带功夫，夭矫灵动，长于打穴，*可与音乐相合，铃声叮叮，有如乐曲"
 	elseif wugong == 57 then
-		mechanic = "令对手退场时，改为令其重新开始集气并加入我方，生命值提升至其冰封点数的5倍"
+		mechanic = "无误伤，令对手退场时，改为令其重新开始集气并加入我方，生命值提升至其冰封点数的5倍"
 		flavor = "宁波天童寺心观老和尚所创的慈悲刀，只制敌而不杀人"
 	elseif wugong == 162 then
 		mechanic = "进招或连击：3格内对手冰封5"
 		flavor = "封不平在中条山隐居十五年而创制出的得意剑法，*剑招一剑快似一剑，剑锋所发劲气渐渐扩展，寒气逼人"
 	elseif wugong == 11 then
-		mechanic = "可攻击空位，若能够背刺攻击目标延伸处的侠客，则一并攻击之；*进招：自身中毒5，分别触发一次自身和对手的中毒"
+		mechanic = "可攻击空位，*若能够背刺攻击目标延伸处的侠客，则一并攻击之；*进招：自身中毒5，分别触发一次自身和对手的中毒"
 		flavor = "黑风双煞服食砒霜练成的阴毒功夫，*手爪上含有剧毒，专在对方明知不能发招之时暴起疾进，最是难闪难挡"
 	elseif wugong == 58 then
 		mechanic = "回合结束时，若足踏八卦方位，卸力16，*可以继续移动，无视经过敌人身边的移动限制"
@@ -1022,7 +1022,7 @@ function GetWugongDescription(wugong)
 		mechanic = "进招：随机对手中毒12，随机对手中毒7"
 		flavor = "极歹毒的邪派功夫，须吸取花蛛毒液练功，受尽痛苦煎熬，*待得千蛛练成，容貌奇丑无比"
 	elseif wugong == 119 then
-		mechanic = "消耗内力，过招：击退2次"
+		mechanic = "消耗内力，全力，攻击距离为2-3；过招：击退2次"
 		flavor = "天竺释氏的一门厉害武功，能以巨力掷物，还可连环加力"
 	elseif wugong == 15 then
 		mechanic = "进招：卸力10，3回合内卸力不会在回合开始时减半"
@@ -1034,10 +1034,10 @@ function GetWugongDescription(wugong)
 		mechanic = "虚招，过招：你的进招改为反击，你的反击改为进招，*若使用的武功与从此时起使用过的均不同，则具有百花错拳的效果，持续2回合"
 		flavor = "天池怪侠袁士霄融通百家，别走蹊径所创的独门拳术，*每一招均和各派祖传正宗手法相似而实非，出其不意"
 	elseif wugong == 132 then
-		mechanic = "可攻击空位，若目标延伸处的侠客有灼烧，则一并攻击之；若攻击的是空位，你可以消耗内力1来攻击目标延伸处"
+		mechanic = "可攻击空位，*若目标延伸处的侠客有灼烧，则一并攻击之；*若攻击的是空位，你可以消耗内力1来攻击目标延伸处"
 		flavor = "少林派上乘武学，十指快速连点，凌空指力可击碎金属"
 	elseif wugong == 8 then
-		mechanic = "可攻击空位，若目标延伸处的侠客有冰封，则一并攻击之；进招：对手的冰封和灼烧转化为中毒"
+		mechanic = "可攻击空位，*若目标延伸处的侠客有冰封，则一并攻击之；*进招：对手的冰封和灼烧转化为中毒"
 		flavor = "逍遥派最上乘的武功，出手狠辣刻毒，*蕴含着生死符的发射和破解手法"
 	elseif wugong == 56 then
 		mechanic = "无误伤，进招：将对手足踏的八卦转移到自己脚下；*不动：计算自身连击数时，将负面效果层数加到迅捷上"
@@ -1063,6 +1063,21 @@ function GetWugongDescription(wugong)
 	elseif wugong == 141 then
 		mechanic = "全力，攻击距离为2-4；攻击范围+1"
 		flavor = "上乘的暗器手法，一手挥出三九二十七枚暗器，分打数人"
+	elseif wugong == 45 then
+		mechanic = "进招：施加等同于对手封穴的冰封；令对手退场时，获得等同于溢出伤害的卸力"
+		flavor = "张三丰所创一十三招剑法，每招各不相同，*但所刺之处，全是敌人手腕的神门穴"
+	elseif wugong == 86 then
+		mechanic = "令对手退场时，怒气10，疯魔杖法的攻击范围+1"
+		flavor = "梁山泊好汉鲁智深脱胎于少林棍法所创的功夫，*猛如疯虎，骤若天魔"
+	elseif wugong == 17 then
+		mechanic = "书法，疗伤，可攻击空位，*若目标延伸处的侠客有封穴，则一并攻击之；*若攻击的是空位，你可以消耗内力1来攻击目标延伸处"
+		flavor = "大理段家驰名天下的纯阳功夫，*指上罡气温淳平和，沛然浑厚，可替人打通周身穴道，治愈重伤"
+	elseif wugong == 63 then
+		mechanic = "令对手退场时，气血上限+10，背刺：改为气血上限+20；*吸取流血对手气血的效果变为2倍"
+		flavor = "血刀门的怪异刀法，每一招都是在决不可能的方位砍将出去，*令人绝难想象"
+	elseif wugong == 23 then
+		mechanic = "进招：自身内伤7；对手内伤的效果变为2倍"
+		flavor = "崆峒派绝技，先伤己，再伤敌，*一拳之中共有七股不同劲力，刚中有柔，柔中有刚"
 	end
 	local strs = {name.." "..typename, flavor, health..qi..atk..def..dex..move, mechanic}
 	--local str = name.." "..typename.."*"..flavor.."*"..health..qi..atk..def..dex..move.."*"..mechanic
@@ -5005,9 +5020,9 @@ function ShowMenu(menuItem, numItem, numShow, x1, y1, x2, y2, isBox, isEsc, size
 		end
 		if In_Tactics == true then
 			if newMenu[i][1] == "调度" then
-				DrawString(x1 + CC.MenuBorderPixel + size*2, y1 + CC.MenuBorderPixel + (i - start) * (size + CC.RowPixel) +2, "P", LimeGreen, CC.FontSmall)
-			elseif newMenu[i][1] == "换位" then
 				DrawString(x1 + CC.MenuBorderPixel + size*2, y1 + CC.MenuBorderPixel + (i - start) * (size + CC.RowPixel) +2, "D", LimeGreen, CC.FontSmall)
+			elseif newMenu[i][1] == "换位" then
+				DrawString(x1 + CC.MenuBorderPixel + size*2, y1 + CC.MenuBorderPixel + (i - start) * (size + CC.RowPixel) +2, "P", LimeGreen, CC.FontSmall)
 			elseif newMenu[i][1] == "等待" then
 				DrawString(x1 + CC.MenuBorderPixel + size*2, y1 + CC.MenuBorderPixel + (i - start) * (size + CC.RowPixel) +2, "W", LimeGreen, CC.FontSmall)
 			end

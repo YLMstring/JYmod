@@ -887,7 +887,7 @@ function War_WugongHurtLife(enemyid, wugong)
 	local pid = WAR.Person[WAR.CurID]["人物编号"]
 	local eid = WAR.Person[enemyid]["人物编号"]
 
-	--万岳朝宗总是后手
+	--万岳朝宗总是后手 这样写不对 以后重写
 	if Match_wugong(pid, wugong, 33) and JY.Person[eid]["主运内功"] > 0 and WAR.ACT == 1 then
 		local datas = GetValidTargets(enemyid, JY.Person[eid]["主运内功"])
 		local data = {}
@@ -910,12 +910,6 @@ function War_WugongHurtLife(enemyid, wugong)
 		JY.Person[pid]["主运内功"] = 0
 	else
 		JY.Person[pid]["主运内功"] = wugong
-	end
-	
-	if WAR.LXZT[eid] ~= nil and WAR.LXZT[eid] > 0 then
-		WAR.Person[WAR.CurID]["生命点数"] = (WAR.Person[WAR.CurID]["生命点数"] or 0) + AddPersonAttrib(pid, "生命", WAR.LXZT[eid]);
-		Cls();
-		War_Show_Count(WAR.CurID, "吸取气血")
 	end
 
 	local noDamage = false
@@ -1140,6 +1134,10 @@ function War_WugongHurtLife(enemyid, wugong)
     if Match_wugong(pid, wugong, 69) and IsStrike(pid) then
 		AddInternalDamage(pid, 10)
     end
+	--七伤拳效果
+    if Match_wugong(pid, wugong, 23) and IsStrike(pid) then
+		AddInternalDamage(pid, 7)
+    end
 	--铁指诀效果
     if Match_wugong(pid, wugong, 121) and IsStrike(pid) then
 		AddInternalDamage(eid, 5)
@@ -1174,6 +1172,10 @@ function War_WugongHurtLife(enemyid, wugong)
 	--银索金铃效果
     if Match_wugong(pid, wugong, 79) and IsCounter(pid) then
 		AddStun(eid, JY.Person[eid]["冰封程度"])
+    end
+	--神门十三剑效果
+    if Match_wugong(pid, wugong, 79) and IsStrike(pid) then
+		AddFreeze(eid, (WAR.FXDS[eid] or 0))
     end
 	--铁掌效果
     if Match_wugong(pid, wugong, 13) and IsStrike(pid) then
@@ -1282,14 +1284,15 @@ function War_WugongHurtLife(enemyid, wugong)
 	--绵里藏针效果
     if WugongCanHeal(pid, wugong) then
 		isHeal = true
-	--两仪剑法 反两仪刀法无误伤
-	elseif Match_wugong(pid, wugong, 37) or Match_wugong(pid, wugong, 60) then
+	--两仪剑法 反两仪刀法 狮子吼 慈悲刀法无误伤
+	elseif Match_wugong(pid, wugong, 37) or Match_wugong(pid, wugong, 60) or Match_wugong(pid, wugong, 33)
+	or Match_wugong(pid, wugong, 57) then
 		noDamage = true
     end
 	end
 
-	if WAR.LQZ[pid] ~= nil and not freeRage then
-		WAR.LQZ[pid] = WAR.LQZ[pid] - raged
+	if freeRage then
+		raged = 0
 	end
 	if WAR.Shield[eid] ~= nil then
 		WAR.Shield[eid] = WAR.Shield[eid] - absorbed
@@ -1321,6 +1324,23 @@ function War_WugongHurtLife(enemyid, wugong)
 	JY.Person[eid]["生命"] = JY.Person[eid]["生命"] - hurt
 	--人物死亡
 	if JY.Person[eid]["生命"] <= 0 then
+		local overkill = -JY.Person[eid]["生命"]
+		--神门十三剑效果
+		if overkill > 0 and Match_wugong(pid, wugong, 79) then
+			AddShield(pid, overkill)
+		end
+		--疯魔杖法效果
+		if Match_wugong(pid, wugong, 86) then
+			AddRage(pid, 10)
+			WAR.FMZF[pid] = (WAR.FMZF[pid] or 0) + 1
+		end
+		--血刀大法
+		if Match_wugong(pid, wugong, 63) then
+			JY.Person[pid]["生命最大值"] = JY.Person[pid]["生命最大值"] + 10
+			if IsBackstab(WAR.CurID, enemyid) then
+				JY.Person[pid]["生命最大值"] = JY.Person[pid]["生命最大值"] + 10
+			end
+		end
 		JY.Person[eid]["生命"] = 0
 		WAR.Person[enemyid]["反击武功"] = -1		--如果被打死则不会触发反击
 	elseif WAR.DZXY ~= 1 and WAR.Person[WAR.CurID]["我方"] ~= WAR.Person[enemyid]["我方"] and JY.Person[eid]["主运内功"] > 0 then
@@ -1330,6 +1350,18 @@ function War_WugongHurtLife(enemyid, wugong)
 	if Match_wugong(pid, wugong, 33) then
 		WAR.Person[enemyid]["反击武功"] = -1
     end
+
+	--流血吸血效果
+	if WAR.LXZT[eid] ~= nil and WAR.LXZT[eid] > 0 then
+		local healing = WAR.LXZT[eid]
+		--血刀大法
+		if Match_wugong(pid, wugong, 63) then
+			healing = healing * 2
+		end
+		WAR.Person[WAR.CurID]["生命点数"] = (WAR.Person[WAR.CurID]["生命点数"] or 0) + AddPersonAttrib(pid, "生命", healing);
+		Cls();
+		War_Show_Count(WAR.CurID, "吸取气血")
+	end
 
 	--慈悲刀法效果
 	if JY.Person[eid]["生命"] == 0 and Match_wugong(pid, wugong, 57) then
@@ -1348,7 +1380,7 @@ function War_WugongHurtLife(enemyid, wugong)
 		WAR.Person[enemyid]["特效文字4"] = nil
 	end]]
 
-	return limitX(hurt, 0, hurt);
+	return limitX(hurt, 0, hurt), raged
 end
 
 function Match_wugong(pid, wugong, expected)
@@ -1879,6 +1911,7 @@ function WarSetGlobal()
 	WAR.KMSHIELD = {}		--空明拳状态
 	WAR.FREEMOVE = false    --八卦特效的自由移动环节用
 	WAR.LHFXS = {}			--兰花拂穴手状态
+	WAR.FMZF = {}			--疯魔杖法状态
 	WAR.LYSJZ = {}			--落英神剑掌状态
 
 	WAR.BHCQ = {}			--百花错拳状态
@@ -2179,14 +2212,14 @@ function WarShowHead(id)
 		zt_num = zt_num + 1
 	end
 
-	--无酒不欢：混乱状态
-	if WAR.HLZT[pid] ~= nil then
+	--疯魔杖法
+	if WAR.FMZF[pid] ~= nil then
 		if WAR.Person[id]["我方"] == true then
 			lib.LoadPNG(98, 18 * 2 , x1 - size*9- CC.RowPixel, CC.ScreenH - size*2 - CC.RowPixel*2 - (size*2+CC.RowPixel*2)*zt_num, 1)
-			DrawString(x1 - size*6- CC.RowPixel, CC.ScreenH - size - CC.RowPixel*3 + 1 - (size*2+CC.RowPixel*2)*zt_num, "混乱状态:" .. WAR.HLZT[pid], C_WHITE, size)
+			DrawString(x1 - size*6- CC.RowPixel, CC.ScreenH - size - CC.RowPixel*3 + 1 - (size*2+CC.RowPixel*2)*zt_num, "疯魔杖法:" .. WAR.FMZF[pid], C_WHITE, size)
 		else
 			lib.LoadPNG(98, 18 * 2 , x1 + width + CC.RowPixel, CC.RowPixel + 3 + (size*2+CC.RowPixel*2)*zt_num, 1)
-			DrawString(x1 + width + size*2 + CC.RowPixel*3, size + 3 + (size*2+CC.RowPixel*2)*zt_num, "混乱状态:" .. WAR.HLZT[pid], C_WHITE, size)
+			DrawString(x1 + width + size*2 + CC.RowPixel*3, size + 3 + (size*2+CC.RowPixel*2)*zt_num, "疯魔杖法:" .. WAR.FMZF[pid], C_WHITE, size)
 		end
 		zt_num = zt_num + 1
 	end
@@ -2438,6 +2471,10 @@ function War_CalculateDamage(pid, eid, wugong)
 	local def = JY.Person[eid]["防御力"]
 	local true_WL = get_skill_power(pid, wugong)
 	local dmg = true_WL - def + JY.Person[eid]["受伤程度"] - JY.Person[pid]["冰封程度"]
+	--七伤拳
+	if Match_wugong(pid, wugong, 23) then
+		dmg = dmg + JY.Person[eid]["受伤程度"]
+	end
 	local raged = 0
 	if IsStrike(pid) and WAR.LQZ[pid] ~= nil then
 		raged = WAR.LQZ[pid]
@@ -3337,6 +3374,13 @@ function War_Fight_Sub(id, wugongnum, x, y)
 			a1 = 3
 		end
 		a2 = a2 + 1
+	end
+	--疯魔杖法
+	if Match_wugong(pid, wugong, 86) and (WAR.FMZF[pid] or 0) > 0 then
+		if a1 == 0 then
+			a1 = 3
+		end
+		a2 = a2 + WAR.FMZF[pid]
 	end
 	local movefanwei = {m1, m2, m3}				--可移动的范围
 	local atkfanwei = {a1, a2}	--攻击范围
@@ -5303,13 +5347,19 @@ function War_Fight_Sub(id, wugongnum, x, y)
 
 	local function hitPerson(wareid, i, j)
 		local proid = findProtector(wareid)
+		local hurt, raged = 0, 0
 		if proid then
-			WAR.Person[proid]["生命点数"] = (WAR.Person[proid]["生命点数"] or 0) - War_WugongHurtLife(wareid, wugong)
+			hurt, raged = War_WugongHurtLife(wareid, wugong)
+			WAR.Person[proid]["生命点数"] = (WAR.Person[proid]["生命点数"] or 0) - hurt
 			if WAR.Person[proid]["反击武功"] > 0 then
 				WAR.Person[proid]["反击武功"] = WAR.Person[proid]["反击武功"] + 1000
 			end
 		else
-			WAR.Person[wareid]["生命点数"] = (WAR.Person[wareid]["生命点数"] or 0) - War_WugongHurtLife(wareid, wugong)
+			hurt, raged = War_WugongHurtLife(wareid, wugong)
+			WAR.Person[wareid]["生命点数"] = (WAR.Person[wareid]["生命点数"] or 0) - hurt
+		end
+		if raged ~= 0 then
+			WAR.LQZ[WAR.Person[WAR.CurID]["人物编号"]] = 0
 		end
 		WAR.Effect = 2
 		SetWarMap(i, j, 4, 2)
@@ -5364,6 +5414,24 @@ function War_Fight_Sub(id, wugongnum, x, y)
 				end
 			end
 		end
+		--一阳指
+		if Match_wugong(pid, wugong, 17) then
+			local i9, j9 = i - WAR.Person[WAR.CurID]["坐标X"], j - WAR.Person[WAR.CurID]["坐标Y"]
+			if i9 > 1 then i9 = 1 end
+			if i9 < -1 then i9 = -1 end
+			if j9 > 1 then j9 = 1 end
+			if j9 < -1 then j9 = -1 end
+			i9, j9 = i + i9, j + j9
+			local wareid2 = GetWarMap(i9, j9, 2)
+			if wareid2 ~= nil and wareid2 >= 0 and wareid2 ~= WAR.CurID then
+				if (WAR.FXDS[WAR.Person[wareid2]["人物编号"]] or 0) > 0 then
+					hitPerson(wareid2, i9, j9)
+				elseif (emenyForPush or -1) < 0 and JY.Person[pid]["内力"] > 0 then
+					PayCost(pid, 1)
+					hitPerson(wareid2, i9, j9)
+				end
+			end
+		end
 	end
 
     --计算伤害的敌人
@@ -5376,6 +5444,8 @@ function War_Fight_Sub(id, wugongnum, x, y)
 			end
 		end
     end
+
+	--怒气归零
 
 	--无酒不欢：标主的大招音效
     local dhxg = JY.Wugong[wugong]["武功动画&音效"]
@@ -5949,7 +6019,7 @@ function War_Manual_Sub()
 	{"自动", War_AutoMenu, 1}	--13
 	}
 	--移动过不许用
-	if WAR.Wait[pid] == -1 then
+	if WAR.Wait[pid] == -1 or WAR.Person[WAR.CurID]["移动步数"] == 0 then
 		warmenu[4][3] = 0
 	end
 
@@ -6223,6 +6293,18 @@ function War_YunGongMenu()
 	end
 end
 
+function ForceDirection(warid)
+	if WAR.AutoFight ~= 0 then
+		return
+	end
+	Cls()
+	War_CalMoveStep(warid, 1, 1)
+	local x,y = War_SelectMove()
+	local x0, y0 = WAR.Person[warid]["坐标X"],WAR.Person[warid]["坐标Y"]
+	WAR.Person[warid]["人方向"] = War_Direct(x0, y0, x, y)
+	WAR.Person[warid]["贴图"] = WarCalPersonPic(warid)
+end
+
 --无酒不欢：选择内功菜单
 function SelectNeiGongMenu()
 	local id, x1, y1 = WAR.Person[WAR.CurID]["人物编号"], WAR.Person[WAR.CurID]["坐标X"], WAR.Person[WAR.CurID]["坐标Y"]
@@ -6278,16 +6360,16 @@ end
 --无酒不欢：战术菜单
 function War_TacticsMenu()
 	local menu={};
-	menu[1]={"调度",nil,1};
-	menu[2]={"换位",nil,1};
+	menu[1]={"换位",nil,1};
+	menu[2]={"调度",nil,1};
 	menu[3]={"等待",nil,1};
     local r = ShowMenu(menu,#menu,0,CC.MainSubMenuX+15,CC.MainSubMenuY,0,0,1,1,CC.DefaultFont,C_ORANGE, C_WHITE);
-	--调度
-	if r == 1 then
-		return War_ActupMenu()
 	--换位
-	elseif r == 2 then
+	if r == 1 then
 		return War_DefupMenu()
+	--调度
+	elseif r == 2 then
+		return War_ActupMenu()
 	--等待
 	elseif r == 3 then
 		return War_Wait()
@@ -7402,8 +7484,10 @@ function War_DefupMenu()
 	if tdID >= 0 and p ~= tdID and WAR.Person[tdID]["我方"] == WAR.Person[p]["我方"] then
 		WAR.Person[p]["坐标X"], WAR.Person[p]["坐标Y"], WAR.Person[tdID]["坐标X"], WAR.Person[tdID]["坐标Y"]
 		= WAR.Person[tdID]["坐标X"], WAR.Person[tdID]["坐标Y"], WAR.Person[p]["坐标X"], WAR.Person[p]["坐标Y"]
+		WAR.Person[p]["移动步数"] = 0
+		WAR.Wait[id] = 1
 		return 1
-	end		
+	end
 	WAR.Wait[id] = 1
 	return 1
 end
@@ -7596,8 +7680,8 @@ function War_KfMove(movefanwei, atkfanwei, wugong)
 			DrawStrBoxWaitKey("该武功最小距离为"..(negativelen + 1), C_WHITE, CC.DefaultFont)
 			isValid = false
 		end
-		--九阴白骨爪 多罗叶指 天山六阳掌可以打空格
-		if WAR.Person[GetWarMap(x, y, 2)] == nil and wugong ~= 11 and wugong ~= 132 and wugong ~= 8 then
+		--九阴白骨爪 多罗叶指 天山六阳掌 一阳指可以打空格
+		if WAR.Person[GetWarMap(x, y, 2)] == nil and wugong ~= 11 and wugong ~= 132 and wugong ~= 8 and wugong ~= 17 then
 			DrawStrBoxWaitKey("需指定敌人为目标", C_WHITE, CC.DefaultFont)
 			isValid = false
 		end
@@ -7706,6 +7790,10 @@ function IsFullForce(pid, wugong)
 	if Match_wugong(pid, wugong, 141) then
 		return true
 	end
+	--释迦掷象功
+	if Match_wugong(pid, wugong, 119) then
+		return true
+	end
 	return false
 end
 
@@ -7738,6 +7826,10 @@ end
 function WugongCanHeal(pid, wugong)
 	--绵里藏针
 	if Match_wugong(pid, wugong, 30) then
+		return true
+	end
+	--一阳指
+	if Match_wugong(pid, wugong, 17) then
 		return true
 	end
 	return false
@@ -9381,7 +9473,6 @@ function WarMain(warid, isexp)
 
 		if WAR.Person[p]["死亡"] == false and WAR.Person[p].Time > 1000 then
 
-
         WarDrawMap(0)
         ShowScreen()
         local keypress = lib.GetKey()
@@ -9390,25 +9481,6 @@ function WarMain(warid, isexp)
         end
         reget = true
         local id = WAR.Person[p]["人物编号"]
-
-
-        --左右触发之后，不可移动
-        if WAR.ZYHB == 2 then
-			WAR.Person[p]["移动步数"] = 0
-		--特效：不可移动
-        elseif WAR.L_NOT_MOVE[WAR.Person[p]["人物编号"]] ~= nil and WAR.L_NOT_MOVE[WAR.Person[p]["人物编号"]] == 1 then
-        	WAR.Person[p]["移动步数"] = 0
-        	WAR.L_NOT_MOVE[WAR.Person[p]["人物编号"]] = nil
-        else
-        	--计算移动步数
-			WAR.Person[p]["移动步数"] = getnewmove(p)
-			WAR.MOVEBUFF[p] = 0
-        end
-
-        --[[最大移动步数10
-        if WAR.Person[p]["移动步数"] > 10 then
-			WAR.Person[p]["移动步数"] = 10
-        end]]
 
         WAR.ShowHead = 0
         WarDrawMap(0)
@@ -9420,6 +9492,18 @@ function WarMain(warid, isexp)
         WAR.Defup[pid] = nil
 
 		local function TurnStartReal(id)
+			--左右触发之后，不可移动
+			if WAR.ZYHB == 2 then
+				WAR.Person[p]["移动步数"] = 0
+			--特效：不可移动
+			elseif WAR.L_NOT_MOVE[WAR.Person[p]["人物编号"]] ~= nil and WAR.L_NOT_MOVE[WAR.Person[p]["人物编号"]] == 1 then
+				WAR.Person[p]["移动步数"] = 0
+				WAR.L_NOT_MOVE[WAR.Person[p]["人物编号"]] = nil
+			else
+				--计算移动步数
+				WAR.Person[p]["移动步数"] = getnewmove(p)
+				WAR.MOVEBUFF[p] = 0
+			end
 			--重置黄蓉八卦位置
 			if GetWarMap(WAR.Person[WAR.CurID]["坐标X"], WAR.Person[WAR.CurID]["坐标Y"], 6) > 0 then
 				WarNewLand0()
