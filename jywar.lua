@@ -964,6 +964,14 @@ function War_WugongHurtLife(enemyid, wugong)
 			SetWarMap(WAR.Person[enemyid]["坐标X"], WAR.Person[enemyid]["坐标Y"], 6, color);
 		end
     end
+	--碧海潮生曲效果
+	if Match_wugong(pid, wugong, 124) and IsStrike(pid) then
+		ForceDirection(enemyid)
+    end
+	--袈裟伏魔功效果
+	if Match_wugong(pid, wugong, 125) and IsStrike(pid) then
+		ForceDirection(enemyid)
+    end
 	--七弦无形剑效果
 	if Match_wugong(pid, wugong, 33) and IsStrike(pid) then
 		BreakStance(eid, WAR.CurID, enemyid)
@@ -1044,10 +1052,12 @@ function War_WugongHurtLife(enemyid, wugong)
     if Match_wugong(pid, wugong, 59) and IsStrike(pid) then
 		AddRage(pid, 5)
     end
-	--倚天屠龙功效果
-    if Match_wugong(pid, wugong, 84) and IsStrike(pid) then
-		AddShield(pid, (WAR.LQZ[pid] or 0))
-		AddRage(pid, (WAR.Shield[pid] or 0))
+	--拈花指效果
+    if Match_wugong(pid, wugong, 137) and IsStrike(pid) and (WAR.LQZ[pid] or 0) > 0 then
+		WAR.Person[WAR.CurID]["生命点数"] = (WAR.Person[WAR.CurID]["生命点数"] or 0) + AddPersonAttrib(pid, "生命", WAR.LQZ[pid]);
+		Cls();
+		War_Show_Count(WAR.CurID, "拈花微笑")
+		WAR.LQZ[pid] = 0
     end
 	--鹰爪功效果
     if Match_wugong(pid, wugong, 4) and IsStrike(pid) then
@@ -1284,9 +1294,9 @@ function War_WugongHurtLife(enemyid, wugong)
 	--绵里藏针效果
     if WugongCanHeal(pid, wugong) then
 		isHeal = true
-	--两仪剑法 反两仪刀法 狮子吼 慈悲刀法无误伤
+	--两仪剑法 反两仪刀法 狮子吼 慈悲刀法 拈花指无误伤
 	elseif Match_wugong(pid, wugong, 37) or Match_wugong(pid, wugong, 60) or Match_wugong(pid, wugong, 33)
-	or Match_wugong(pid, wugong, 57) then
+	or Match_wugong(pid, wugong, 57) or Match_wugong(pid, wugong, 137) then
 		noDamage = true
     end
 	end
@@ -1367,6 +1377,13 @@ function War_WugongHurtLife(enemyid, wugong)
 	if JY.Person[eid]["生命"] == 0 and Match_wugong(pid, wugong, 57) then
 		WAR.Person[enemyid]["我方"] = WAR.Person[WAR.CurID]["我方"]
 		JY.Person[eid]["生命"] = math.min(JY.Person[eid]["冰封程度"] * 5, JY.Person[eid]["生命最大值"])
+		WAR.Person[enemyid].Time = math.min(0, WAR.Person[enemyid].Time)
+	end
+
+	--拈花指效果
+	if JY.Person[eid]["生命"] == 0 and Match_wugong(pid, wugong, 137) then
+		WAR.Person[enemyid]["我方"] = WAR.Person[WAR.CurID]["我方"]
+		JY.Person[eid]["生命"] = math.min((WAR.FXDS[eid] or 0) * 5, JY.Person[eid]["生命最大值"])
 		WAR.Person[enemyid].Time = math.min(0, WAR.Person[enemyid].Time)
 	end
 
@@ -2484,6 +2501,10 @@ function War_CalculateDamage(pid, eid, wugong)
 		end
 		--倚天屠龙功
 		if Match_wugong(pid, wugong, 84) and IsStrike(pid) then
+			raged = 0
+		end
+		--拈花指
+		if Match_wugong(pid, wugong, 137) and IsStrike(pid) then
 			raged = 0
 		end
 		dmg = dmg + WAR.LQZ[pid]
@@ -5432,6 +5453,36 @@ function War_Fight_Sub(id, wugongnum, x, y)
 				end
 			end
 		end
+		--拈花指
+		if Match_wugong(pid, wugong, 137) then
+			local i9, j9 = i - WAR.Person[WAR.CurID]["坐标X"], j - WAR.Person[WAR.CurID]["坐标Y"]
+			if i9 > 1 then i9 = 1 end
+			if i9 < -1 then i9 = -1 end
+			if j9 > 1 then j9 = 1 end
+			if j9 < -1 then j9 = -1 end
+			i9, j9 = i + i9, j + j9
+			local wareid2 = GetWarMap(i9, j9, 2)
+			if wareid2 ~= nil and wareid2 >= 0 and wareid2 ~= WAR.CurID then
+				if (WAR.LQZ[WAR.Person[WAR.CurID]["人物编号"]] or 0) > 0 then
+					hitPerson(wareid2, i9, j9)
+				end
+			end
+		end
+		--袈裟伏魔功
+		if Match_wugong(pid, wugong, 125) then
+			local i9, j9 = i - WAR.Person[WAR.CurID]["坐标X"], j - WAR.Person[WAR.CurID]["坐标Y"]
+			if i9 > 1 then i9 = 1 end
+			if i9 < -1 then i9 = -1 end
+			if j9 > 1 then j9 = 1 end
+			if j9 < -1 then j9 = -1 end
+			i9, j9 = i + i9, j + j9
+			local wareid2 = GetWarMap(i9, j9, 2)
+			if wareid2 ~= nil and wareid2 >= 0 and wareid2 ~= WAR.CurID then
+				if MatchStyle(WAR.Person[wareid2]["人物编号"], 0) then
+					hitPerson(wareid2, i9, j9)
+				end
+			end
+		end
 	end
 
     --计算伤害的敌人
@@ -5673,6 +5724,10 @@ function War_Fight_Sub(id, wugongnum, x, y)
 		if IsBluff(pid, wugong) then
 			WAR.MOVEBUFF[emenyForPush] = (WAR.MOVEBUFF[emenyForPush] or 0) - 1
 		end
+		--倚天屠龙功效果
+    	if Match_wugong(pid, wugong, 84) then
+			WAR.LQZ[pid], WAR.Shield[pid] = WAR.Shield[pid], WAR.LQZ[pid]
+    	end
 		--千手如来掌
 		if Match_wugong(pid, wugong, 173) then
 			AddShield(pid, (WAR.Shield[pid] or 0))
@@ -7668,8 +7723,11 @@ function War_KfMove(movefanwei, atkfanwei, wugong)
 		local wugongType = JY.Wugong[wugong]["武功类型"]
 		local isValid = true
 		if IsFullForce(pid, wugong) and not IsStandStill(pid) then
-			DrawStrBoxWaitKey("移动后不能使用该武功", C_WHITE, CC.DefaultFont)
-			isValid = false
+			--碧海潮生曲
+			if not Match_wugong(pid, wugong, 124) or GetBaguaEffect(WAR.CurID) <= 0 then
+				DrawStrBoxWaitKey("移动后不能使用该武功", C_WHITE, CC.DefaultFont)
+				isValid = false
+			end
 		end
 		if stanceType < 6 and wugongType < 6 and not IsBluff(pid, stance) and not IsSpecialized(pid, wugong) and stanceType ~= wugongType then
 			DrawStrBoxWaitKey("不能连续使用不同类型的外功", C_WHITE, CC.DefaultFont)
@@ -7680,8 +7738,10 @@ function War_KfMove(movefanwei, atkfanwei, wugong)
 			DrawStrBoxWaitKey("该武功最小距离为"..(negativelen + 1), C_WHITE, CC.DefaultFont)
 			isValid = false
 		end
-		--九阴白骨爪 多罗叶指 天山六阳掌 一阳指可以打空格
-		if WAR.Person[GetWarMap(x, y, 2)] == nil and wugong ~= 11 and wugong ~= 132 and wugong ~= 8 and wugong ~= 17 then
+		--九阴白骨爪 多罗叶指 天山六阳掌 一阳指 袈裟伏魔功 拈花指可以打空格
+		if WAR.Person[GetWarMap(x, y, 2)] == nil and wugong ~= 11 and
+		wugong ~= 132 and wugong ~= 8 and wugong ~= 17 and wugong ~= 125 and
+		wugong ~= 137 then
 			DrawStrBoxWaitKey("需指定敌人为目标", C_WHITE, CC.DefaultFont)
 			isValid = false
 		end
@@ -7792,6 +7852,10 @@ function IsFullForce(pid, wugong)
 	end
 	--释迦掷象功
 	if Match_wugong(pid, wugong, 119) then
+		return true
+	end
+	--碧海潮生曲
+	if Match_wugong(pid, wugong, 124) then
 		return true
 	end
 	return false

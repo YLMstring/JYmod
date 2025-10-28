@@ -947,7 +947,7 @@ function GetWugongDescription(wugong)
 		mechanic = "该武功受到怒气加成时效果为2倍"
 		flavor = "无上大力杵法无甚变化，只是横挥八招，直击八招，*一十六招反复使出，至刚至猛，威武癫狂"
 	elseif wugong == 84 then
-		mechanic = "书法，攻击距离为1-2；*进招：不受怒气加成，将怒气转化为卸力，将卸力转化为怒气"
+		mechanic = "书法，攻击距离为1-2；*不受怒气加成，过招：将怒气转化为卸力，将卸力转化为怒气"
 		flavor = "武林至尊，宝刀屠龙。*号令天下，莫敢不从。*倚天不出，谁与争锋？*张三丰情之所至，将这二十四个字演为一套武功"
 	elseif wugong == 36 then
 		mechanic = "需要内力；背刺：破招，卸力20"
@@ -983,7 +983,7 @@ function GetWugongDescription(wugong)
 		mechanic = "音律，攻击距离为1-2；*反击：施加等同于对手冰封的封穴"
 		flavor = "小龙女的绸带功夫，夭矫灵动，长于打穴，*可与音乐相合，铃声叮叮，有如乐曲"
 	elseif wugong == 57 then
-		mechanic = "无误伤，令对手退场时，改为令其重新开始集气并加入我方，生命值提升至其冰封点数的5倍"
+		mechanic = "无误伤，令对手退场时，改为令其重新开始集气并加入我方，*生命值提升至其冰封点数的5倍"
 		flavor = "宁波天童寺心观老和尚所创的慈悲刀，只制敌而不杀人"
 	elseif wugong == 162 then
 		mechanic = "进招或连击：3格内对手冰封5"
@@ -1022,7 +1022,7 @@ function GetWugongDescription(wugong)
 		mechanic = "进招：随机对手中毒12，随机对手中毒7"
 		flavor = "极歹毒的邪派功夫，须吸取花蛛毒液练功，受尽痛苦煎熬，*待得千蛛练成，容貌奇丑无比"
 	elseif wugong == 119 then
-		mechanic = "消耗内力，全力，攻击距离为2-3；过招：击退2次"
+		mechanic = "内力1，全力，攻击距离为2-3；过招：击退2次"
 		flavor = "天竺释氏的一门厉害武功，能以巨力掷物，还可连环加力"
 	elseif wugong == 15 then
 		mechanic = "进招：卸力10，3回合内卸力不会在回合开始时减半"
@@ -1078,6 +1078,15 @@ function GetWugongDescription(wugong)
 	elseif wugong == 23 then
 		mechanic = "进招：自身内伤7；对手内伤的效果变为2倍"
 		flavor = "崆峒派绝技，先伤己，再伤敌，*一拳之中共有七股不同劲力，刚中有柔，柔中有刚"
+	elseif wugong == 124 then
+		mechanic = "内力2，攻击3格内所有对手，音律，全力，*若移动至八卦方位，也可以使用该武功；*进招：可令对手任意转向"
+		flavor = "东邪黄药师吹奏的乐曲，*含有上乘内功，诱惑聆曲者随之翩翩起舞"
+	elseif wugong == 125 then
+		mechanic = "攻击距离为1-2；可攻击空位，*若能够背刺攻击目标延伸处的侠客，则一并攻击之；*进招：可令对手任意转向"
+		flavor = "少林派独步天下的袖功，*口中谈笑，袍袖已动，潇洒自在"
+	elseif wugong == 137 then
+		mechanic = "无误伤，可攻击空位，*若有怒气，怒气效果改为回复自身，*且一并攻击攻击目标延伸处的侠客；*令对手退场时，改为令其重新开始集气并加入我方，*生命值提升至其封穴点数的5倍"
+		flavor = "少林派独步天下的袖功，*口中谈笑，袍袖已动，潇洒自在"
 	end
 	local strs = {name.." "..typename, flavor, health..qi..atk..def..dex..move, mechanic}
 	--local str = name.." "..typename.."*"..flavor.."*"..health..qi..atk..def..dex..move.."*"..mechanic
