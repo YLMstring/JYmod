@@ -1257,6 +1257,13 @@ function War_WugongHurtLife(enemyid, wugong)
 		JY.Person[eid]["灼烧程度"] = 0
 		JY.Person[eid]["冰封程度"] = 0
     end
+	--灵蛇杖法效果
+    if Match_wugong(pid, wugong, 81) and IsStrike(pid) then
+		AddPoison(eid, 10, enemyid)
+    end
+	if Match_wugong(pid, wugong, 81) and IsBackstab(WAR.CurID, enemyid) then
+		hurt = hurt + JY.Person[eid]["中毒程度"]
+    end
 	--五毒神掌效果
     if Match_wugong(pid, wugong, 3) and IsStrike(pid) then
 		AddPoison(eid, 7, enemyid)
@@ -2557,7 +2564,8 @@ function War_CalculateDamage(pid, eid, wugong)
 		dmg = dmg + JY.Person[eid]["受伤程度"]
 	end
 	local raged = 0
-	if IsStrike(pid) and WAR.LQZ[pid] ~= nil then
+	local dragon = Match_wugong(pid, wugong, 26) and IsCounter(pid)
+	if (IsStrike(pid) or dragon) and WAR.LQZ[pid] ~= nil then
 		raged = WAR.LQZ[pid]
 		--无上大力杵
 		if Match_wugong(pid, wugong, 83) then
@@ -2572,6 +2580,9 @@ function War_CalculateDamage(pid, eid, wugong)
 			raged = 0
 		end
 		dmg = dmg + WAR.LQZ[pid]
+		if dragon then
+			raged = 0
+		end
 	end
 	local absorbed = 0
 	if WAR.Shield[eid] ~= nil and WAR.DZXY ~= 1 then
@@ -3440,7 +3451,7 @@ function War_Fight_Sub(id, wugongnum, x, y)
 	local level = 11   
 
 	WAR.ShowHead = 0
-	local m1, m2, m3, a1, a2 = WugongArea(wugong)  --获取武功的范围
+	local m1, m2, m3, a1, a2 = WugongArea(wugong, pid)  --获取武功的范围
 	if GetWarMap(WAR.Person[id]["坐标X"], WAR.Person[id]["坐标Y"], 6) == 2 then
 		if a1 == 0 then
 			a1 = 3
@@ -5864,6 +5875,13 @@ function War_Fight_Sub(id, wugongnum, x, y)
 				end
 			end
 		end
+		--降龙十八掌
+		if Match_wugong(pid, wugong, 26) then
+			local push = PushPerson(WAR.CurID, emenyForPush)
+			if push < 100 then
+				AddRage(pid, 18)
+			end
+		end
 		--大力金刚掌
 		if Match_wugong(pid, wugong, 22) then
 			local push = PushPerson(WAR.CurID, emenyForPush)
@@ -5971,7 +5989,7 @@ function GetValidTargets(warid, kungfuid)
 	end
 	local targets = {}
 	local targetsindex = 0
-	local m1, m2, m3, a1, a2 = WugongArea(kungfuid)
+	local m1, m2, m3, a1, a2 = WugongArea(kungfuid, pid)
 	local distance = 0
 	for i = -10, 10 do
 		for j = -10, 10 do
@@ -8083,7 +8101,7 @@ function NeedCost(pid, wugong, distance)
 end
 
 function WugongCanAlly(pid, wugong)
-	local m1, m2, m3, a1, a2 = WugongArea(wugong)  --获取武功的范围
+	local m1, m2, m3, a1, a2 = WugongArea(wugong, pid)  --获取武功的范围
 	if m1 == 0 and m2 == 0 then 
 		return true
 	end
@@ -13301,7 +13319,7 @@ function RealJL(id1, id2, len)
 end
 
 --武功范围
-function WugongArea(wugong)
+function WugongArea(wugong, pid)
   --无酒不欢：参数说明
   --m1为移动范围斜向延伸：
 	--0：延伸为直线距离-1，1：延伸至直线距离，2：延伸为0 3：移动范围固定为自身周围8格
@@ -13384,6 +13402,9 @@ function WugongArea(wugong)
 	--满天花雨
 	if wugong == 141 then
 		a2 = 1
+	end
+	if wugong == 26 and IsStandStill(pid) then
+		m2 = m2 + 1
 	end
 	return m1, m2, m3, a1, a2
 end

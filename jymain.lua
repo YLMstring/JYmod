@@ -994,7 +994,7 @@ function GetWugongDescription(wugong)
 		mechanic = "进招或连击：3格内对手冰封5"
 		flavor = "封不平在中条山隐居十五年而创制出的得意剑法，*剑招一剑快似一剑，剑锋所发劲气渐渐扩展，寒气逼人"
 	elseif wugong == 11 then
-		mechanic = "可攻击空位，*若能够背刺攻击目标延伸处的侠客，则一并攻击之；*进招：自身中毒5，分别触发一次自身和对手的中毒"
+		mechanic = "可攻击空位，*若能够背刺攻击目标延伸处的侠客，则一并攻击之；*进招：自身中毒5，分别触发自身和对手的中毒"
 		flavor = "黑风双煞服食砒霜练成的阴毒功夫，*手爪上含有剧毒，专在对方明知不能发招之时暴起疾进，最是难闪难挡"
 	elseif wugong == 58 then
 		mechanic = "回合结束时，若足踏八卦方位，卸力16，*可以继续移动，无视经过敌人身边的移动限制"
@@ -1087,7 +1087,7 @@ function GetWugongDescription(wugong)
 		mechanic = "内力2，攻击3格内所有对手，音律，全力，*若移动至八卦方位，也可以使用该武功；*进招：可令对手任意转向"
 		flavor = "东邪黄药师吹奏的乐曲，*含有上乘内功，诱惑聆曲者随之翩翩起舞"
 	elseif wugong == 125 then
-		mechanic = "攻击距离为1-2；可攻击空位，*若能够背刺攻击目标延伸处的侠客，则一并攻击之；*进招：可令对手任意转向"
+		mechanic = "需要内力，可攻击直线距离为2的对手；*可攻击空位，若能够背刺攻击目标延伸处的侠客，则一并攻击之；*进招：可令对手任意转向"
 		flavor = "少林派独步天下的袖功，口中谈笑，袍袖已动，潇洒自在"
 	elseif wugong == 137 then
 		mechanic = "无误伤，可攻击空位，*若有怒气，怒气效果改为回复自身，*且一并攻击攻击目标延伸处的侠客；*令对手退场时，改为令其重新开始集气并加入我方，*生命值提升至其封穴点数的5倍"
@@ -1119,6 +1119,15 @@ function GetWugongDescription(wugong)
 	elseif wugong == 44 then
 		mechanic = "反击：怒气14，可立刻进入其他架势"
 		flavor = "苗家祖传剑法，剑如飞凤，*金面佛苗人凤以之打遍天下无敌手"
+	elseif wugong == 26 then
+		mechanic = "内力1，可攻击直线距离为2的对手；*过招：击退，若引起碰撞，怒气18；反击受怒气加成但不消耗怒气"
+		flavor = "降龙十八掌招式简明而劲力精深，*乃是武学中的巅峰绝诣，天下阳刚之至"
+	elseif wugong == 81 then
+		mechanic = "进招：中毒10；背刺：触发对手的中毒"
+		flavor = "西毒欧阳锋纵横天下的蛇杖功夫，*招数繁复忽伸忽缩，杖头怪蛇剧毒无比"
+	elseif wugong == 26 then
+		mechanic = "需要内力，反击：施加等同于自身的负面效果；*不动：攻击距离+1"
+		flavor = "西狂杨过自创的一十七路掌法，出手与寻常武功大异，*讲究身与心合，哀痛欲绝，失魂落魄"
 	end
 	local strs = {name.." "..typename, flavor, health..qi..atk..def..dex..move, mechanic}
 	--local str = name.." "..typename.."*"..flavor.."*"..health..qi..atk..def..dex..move.."*"..mechanic
