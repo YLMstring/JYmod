@@ -2782,6 +2782,7 @@ function ShowPersonStatus_sub(id, page, istart, tfid, max_row, case, AI_s1, AI_s
 
 		--战场情侣加成
 		if JY.Status == GAME_WMAP then
+			str_gain = str_gain + (WAR.TEMPATK[id] or 0)
 			--队友攻击力加成
 			for i,v in pairs(CC.AddAtk) do
 				if match_ID(id, v[1]) then
@@ -2792,6 +2793,7 @@ function ShowPersonStatus_sub(id, page, istart, tfid, max_row, case, AI_s1, AI_s
 					end
 				end
 			end
+			def_gain = def_gain + (WAR.TEMPDEF[id] or 0)
 			--队友防御力加成
 			for i,v in pairs(CC.AddDef) do
 				if match_ID(id, v[1]) then
@@ -2802,6 +2804,7 @@ function ShowPersonStatus_sub(id, page, istart, tfid, max_row, case, AI_s1, AI_s
 					end
 				end
 			end
+			agi_gain = agi_gain + (WAR.TEMPSPD[id] or 0)
 			--队友轻功加成
 			for i,v in pairs(CC.AddSpd) do
 				if match_ID(id, v[1]) then
@@ -9010,7 +9013,8 @@ function get_skill_power(personid, wugongid, wugonglvl)
 	if WGLX < 6 and abilitylist[WGLX] < power then
 		powerNew = 1
 	end
-	return math.modf(powerNew * JY.Person[personid]["攻击力"])
+	local atk = JY.Person[personid]["攻击力"] + (WAR.TEMPATK[personid] or 0)
+	return math.modf(powerNew * atk)
 end
 
 --无酒不欢：判定天赋外功的函数

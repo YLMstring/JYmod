@@ -948,6 +948,15 @@ function War_WugongHurtLife(enemyid, wugong)
 			BreakStance(eid, WAR.CurID, enemyid)
 		end
     end
+	--黯然销魂掌效果
+    if Match_wugong(pid, wugong, 26) and IsCounter(pid) then
+		AddFreeze(eid, JY.Person[pid]["冰封程度"])
+		AddBurn(eid, JY.Person[pid]["灼烧程度"], enemyid)
+		AddInternalDamage(eid, JY.Person[pid]["受伤程度"])
+		AddPoison(eid, JY.Person[pid]["中毒程度"], enemyid)
+		AddBlood(eid, (WAR.LXZT[pid] or 0))
+		AddStun(eid, (WAR.FXDS[pid] or 0))
+    end
 	--灵蛇拳效果
     if Match_wugong(pid, wugong, 9) and IsBackstab(WAR.CurID, enemyid) then
 		BreakStance(eid, WAR.CurID, enemyid)
@@ -1907,6 +1916,9 @@ function WarSetGlobal()
 	WAR.Defup = {}		--防御记录
 	WAR.Wait = {}		--等待记录
 	WAR.Wait2 = {}		--换位记录
+	WAR.TEMPATK = {}	--临时攻击
+	WAR.TEMPDEF = {}	--临时防御
+	WAR.TEMPSPD = {}	--临时迅捷
 	WAR.HMGXL = {}		--蛤蟆蓄力增加300集气
 	WAR.Weakspot = {}	--破绽计数
 	WAR.KHBX = 0		--葵花刺目
@@ -2043,8 +2055,8 @@ function WarSetGlobal()
 end
 
 function GetFightNum(pid, eid, wugong)
-	local pidq = JY.Person[pid]["轻功"]
-	local eidq = JY.Person[eid]["轻功"]
+	local pidq = JY.Person[pid]["轻功"] + (WAR.TEMPSPD[pid] or 0)
+	local eidq = JY.Person[eid]["轻功"] + (WAR.TEMPSPD[eid] or 0)
 	--奇门三才刀
 	if Match_wugong(pid, wugong, 56) and IsStandStill(pid) then
 		pidq = pidq + JY.Person[pid]["冰封程度"] + JY.Person[pid]["灼烧程度"]
@@ -2557,7 +2569,7 @@ function War_PredictDamage(pid, eid, wugong)
 end
 
 function War_CalculateDamage(pid, eid, wugong)
-	local def = JY.Person[eid]["防御力"]
+	local def = JY.Person[eid]["防御力"] + (WAR.TEMPDEF[eid] or 0)
 	local true_WL = get_skill_power(pid, wugong)
 	local dmg = true_WL - def + JY.Person[eid]["受伤程度"] - JY.Person[pid]["冰封程度"]
 	--七伤拳
