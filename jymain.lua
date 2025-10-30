@@ -743,11 +743,16 @@ function CanLearn(pid, wugong)
 	if JY.Person[pid]["生命最大值"] == 0 then
 		return false
 	end
+	local kind = JY.Wugong[wugong]["武功类型"]
+	local requirement = JY.Wugong[wugong]["攻击力10"]
+	--加入一个等级要求
+	local lv = 2 * requirement - 2
+	if kind < 6 and JY.Person[pid]["等级"] < lv then
+		return false
+	end
 	if pid == 0 or IsSpecialized(pid, wugong) then
 		return true	
 	end
-	local kind = JY.Wugong[wugong]["武功类型"]
-	local requirement = JY.Wugong[wugong]["攻击力10"]
 	if kind == 1 and JY.Person[pid]["拳掌功夫"] + 1 >= requirement then
 		return true
 	end
@@ -938,7 +943,7 @@ function GetWugongDescription(wugong)
 		mechanic = "援护1，援护且反击：封穴10"
 		flavor = "少林派点穴绝技，一指点出，带有极轻微的呲呲声响"
 	elseif wugong == 33 then
-		mechanic = "进招：让对手先发动反击，不动：破招"
+		mechanic = "令对手在你进招前抢先反击，不动：破招"
 		flavor = "嵩山派剑法，气象森严，便似千军万马奔驰而来，*长枪大戟，黄沙万里，堂堂正正，端严雄伟"
 	elseif wugong == 126 then
 		mechanic = "反击：封穴5，若上回合起发动过背刺，改为封穴10"
@@ -1092,7 +1097,28 @@ function GetWugongDescription(wugong)
 		flavor = "神秘高僧所传的奇门刀法，阴阳开合，配合天衣无缝"
 	elseif wugong == 16 then
 		mechanic = "过招：选择一个方向击退，若引起碰撞，双方流失等同于你卸力的气血"
-		flavor = "张三丰所创拳法，与自古以来武学之道全然不同，*讲究以静制动，后发制人"
+		flavor = "张三丰所创拳法，与自古以来武学之道全然不同，*讲究以静制动，后发制人；凝重如山，轻灵如羽"
+	elseif wugong == 46 then
+		mechanic = "反击或连击：对手流失等同于你卸力的气血"
+		flavor = "张三丰所创剑法，与自古以来武学之道全然不同，*讲究以静制动，后发制人；神在剑先，绵绵不绝"
+	elseif wugong == 46 then
+		mechanic = "先制：灼烧5；仅当你学习过与对手同类型的武功时才能反击，*在对手进招前抢先反击，且无范围限制"
+		flavor = "独孤九剑，有进无退！招招都是进攻，攻敌之不得不守，*料敌机先，可破尽天下武学"
+	elseif wugong == 17 then
+		mechanic = "内力1，攻击距离为1-4，*若掌握一阳指，疗伤"
+		flavor = "大理段氏武学的至高法要，指力有质无形，可称无形气剑，*纵横飞舞，回转如意"
+	elseif wugong == 82 then
+		mechanic = "攻击距离为2-3，无视距离援护掌握金刚伏魔圈的同伴，*援护且反击：对手下回合移动力-1；*不动：回合结束时所有负面效果回复5点"
+		flavor = "少林派以佛力伏魔的精妙大法，*长索似缓实急，无声无息，心意相通，配合无间"
+	elseif wugong == 115 then
+		mechanic = "援护2，援护且反击：将自身所有负面效果转化为气血回复，*并触发掌握的所有其他援护武功的效果"
+		flavor = "少林派最精奥的掌法，要义在于摄伏心念，安然怡然；*掌力越练越强，招数愈练愈纯，那是学无止境"
+	elseif wugong == 67 then
+		mechanic = "虚招，进入该武功的架势，*或从该武功进入其他架势时，怒气8"
+		flavor = "胡家祖传刀法，招数精奇，*虚实互用，忽虚忽实，有鬼神莫测之变"
+	elseif wugong == 44 then
+		mechanic = "反击：怒气14，可立刻进入其他架势"
+		flavor = "苗家祖传剑法，剑如飞凤，*金面佛苗人凤以之打遍天下无敌手"
 	end
 	local strs = {name.." "..typename, flavor, health..qi..atk..def..dex..move, mechanic}
 	--local str = name.." "..typename.."*"..flavor.."*"..health..qi..atk..def..dex..move.."*"..mechanic
