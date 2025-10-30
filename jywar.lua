@@ -814,7 +814,7 @@ function IsStrike(pid)
 end
 
 function IsStandStill(pid)
-	return WAR.Wait[pid] == 0
+	return WAR.Wait[pid] == 0 and WAR.Wait2[pid] == 0
 end
 
 function IsCounter(pid)
@@ -1906,6 +1906,7 @@ function WarSetGlobal()
 	WAR.Actup = {}		--蓄力记录
 	WAR.Defup = {}		--防御记录
 	WAR.Wait = {}		--等待记录
+	WAR.Wait2 = {}		--换位记录
 	WAR.HMGXL = {}		--蛤蟆蓄力增加300集气
 	WAR.Weakspot = {}	--破绽计数
 	WAR.KHBX = 0		--葵花刺目
@@ -7760,6 +7761,7 @@ function War_DefupMenu()
 		WAR.Person[p]["坐标X"], WAR.Person[p]["坐标Y"], WAR.Person[tdID]["坐标X"], WAR.Person[tdID]["坐标Y"]
 		= WAR.Person[tdID]["坐标X"], WAR.Person[tdID]["坐标Y"], WAR.Person[p]["坐标X"], WAR.Person[p]["坐标Y"]
 		WAR.Person[p]["移动步数"] = 0
+		WAR.Wait2[id] = 1
 		WAR.Wait[id] = 1
 		return 1
 	end
@@ -9846,6 +9848,7 @@ function WarMain(warid, isexp)
 
 		if WAR.Wait[id] == nil or WAR.Wait[id] < 1 then
 			TurnStartReal(pid)
+			WAR.Wait2[id] = 0
 		end
 		WAR.Wait[id] = 0
 		--段誉的指令，行动前恢复
