@@ -1357,7 +1357,7 @@ function War_WugongHurtLife(enemyid, wugong)
 	--狂风快剑效果
     if Match_wugong(pid, wugong, 162) and (IsStrike(pid) or IsCombo(pid)) then
 		for j = 0, WAR.PersonNum - 1 do
-			if RealJL(WAR.CurID, j) <= 3 and WAR.Person[j]["我方"] ~= WAR.Person[WAR.CurID]["我方"] and JY.Person[WAR.Person[j]["人物编号"]]["生命"] > 0 then
+			if RealJL(WAR.CurID, j, 3) and WAR.Person[j]["我方"] ~= WAR.Person[WAR.CurID]["我方"] and JY.Person[WAR.Person[j]["人物编号"]]["生命"] > 0 then
 				AddFreeze(WAR.Person[j]["人物编号"], 5)
 			end
 		end
@@ -5507,7 +5507,7 @@ function War_Fight_Sub(id, wugongnum, x, y)
 	local function hitPerson(wareid, i, j)
 		local proid = findProtector(wareid)
 		local hurt, raged = 0, 0
-		if proid then
+		if (proid or -1) >= 0 then
 			hurt, raged = War_WugongHurtLife(wareid, wugong)
 			WAR.Person[proid]["生命点数"] = (WAR.Person[proid]["生命点数"] or 0) - hurt
 			if WAR.Person[proid]["反击武功"] > 0 then
@@ -5935,7 +5935,7 @@ function War_Fight_Sub(id, wugongnum, x, y)
 			end
 		end
 		--参合指效果
-		if Match_wugong(pid, wugong, 138) and then
+		if Match_wugong(pid, wugong, 138)then
 			WAR.TEMPDEF[pid] = (WAR.TEMPDEF[pid] or 0) + 5
     	end		
 		--大力金刚掌
