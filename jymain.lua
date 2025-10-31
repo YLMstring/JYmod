@@ -1128,6 +1128,18 @@ function GetWugongDescription(wugong)
 	elseif wugong == 26 then
 		mechanic = "需要内力，反击：施加等同于自身的负面效果；*不动：攻击距离+1"
 		flavor = "西狂杨过自创的一十七路掌法，出手与寻常武功大异，*讲究身与心合，哀痛欲绝，失魂落魄"
+	elseif wugong == 158 then
+		mechanic = "内力1，全力，攻击距离为2-3，*该武功受到怒气加成时效果为5倍，*过招：效果降低1倍，但不会变为负值"
+		flavor = "金轮法王所创奇功，*空中飞起三只轮子，手中各握一轮，随接随掷，*金银铜铁铅五轮齐施，运转如飞"
+	elseif wugong == 54 then
+		mechanic = "音律，进招：力道提升5，直到战斗结束"
+		flavor = "《庄子》中蕴含的杀敌之法，出手因便施巧，*合于音乐节拍，趋退转合，潇洒异常"
+	elseif wugong == 48 then
+		mechanic = "你使用该武功进招前瞬移至任意对手背后；*连击：迅捷提升5，直到战斗结束"
+		flavor = "林远图从葵花宝典中悟出的剑法，*出手之奇之快，直是匪夷所思，*但剑谱的第一道法诀，便是“武林称雄，挥剑自宫”"
+	elseif wugong == 138 then
+		mechanic = "内力1，可攻击直线距离为2的对手；*过招或反击：护体提升5，直到战斗结束；*先制：封穴5"
+		flavor = "姑苏慕容举世无匹的家传武功，神奇精奥不逊于六脉神剑"
 	end
 	local strs = {name.." "..typename, flavor, health..qi..atk..def..dex..move, mechanic}
 	--local str = name.." "..typename.."*"..flavor.."*"..health..qi..atk..def..dex..move.."*"..mechanic

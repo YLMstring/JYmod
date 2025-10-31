@@ -978,6 +978,21 @@ function War_WugongHurtLife(enemyid, wugong)
 			SetWarMap(WAR.Person[enemyid]["坐标X"], WAR.Person[enemyid]["坐标Y"], 6, color);
 		end
     end
+	--庖丁解牛刀效果
+	if Match_wugong(pid, wugong, 54) and IsStrike(pid) then
+		WAR.TEMPATK[pid] = (WAR.TEMPATK[pid] or 0) + 5
+    end
+	--参合指效果
+	if Match_wugong(pid, wugong, 138) and IsCounter(pid) then
+		WAR.TEMPDEF[pid] = (WAR.TEMPDEF[pid] or 0) + 5
+    end
+	if Match_wugong(pid, wugong, 138) and MatchStyle(eid, 0) then
+		AddStun(eid, 5)
+    end
+	--辟邪剑法效果
+	if Match_wugong(pid, wugong, 48) and IsCombo(pid) then
+		WAR.TEMPSPD[pid] = (WAR.TEMPSPD[pid] or 0) + 5
+    end
 	--碧海潮生曲效果
 	if Match_wugong(pid, wugong, 124) and IsStrike(pid) then
 		ForceDirection(enemyid)
@@ -2017,6 +2032,8 @@ function WarSetGlobal()
 	WAR.BHCQ = {}			--百花错拳状态
 	WAR.BHCQLIST = {}		--不重复武功列表	
 
+	WAR.WLDZ = {}			--五轮大转状态
+
 	WAR.JHLY = {}			--无酒不欢：举火燎原，金乌+燃木+火焰刀
 	WAR.LRHF = {}			--无酒不欢：利刃寒锋，修罗+阴风+沧溟
 
@@ -2373,6 +2390,18 @@ function WarShowHead(id)
 		zt_num = zt_num + 1
 	end
 
+	--五轮大转
+	if (WAR.WLDZ[pid] or 0) > 0 then
+		if WAR.Person[id]["我方"] == true then
+			lib.LoadPNG(98, 21 * 2 , x1 - size*9- CC.RowPixel, CC.ScreenH - size*2 - CC.RowPixel*2 - (size*2+CC.RowPixel*2)*zt_num, 1)
+			DrawString(x1 - size*6- CC.RowPixel, CC.ScreenH - size - CC.RowPixel*3 + 1 - (size*2+CC.RowPixel*2)*zt_num, "五轮大转：" .. WAR.WLDZ[pid], C_WHITE, size)
+		else
+			lib.LoadPNG(98, 21 * 2 , x1 + width + CC.RowPixel, CC.RowPixel + 3 + (size*2+CC.RowPixel*2)*zt_num, 1)
+			DrawString(x1 + width + size*2 + CC.RowPixel*3, size + 3 + (size*2+CC.RowPixel*2)*zt_num, "五轮大转：" .. WAR.WLDZ[pid], C_WHITE, size)
+		end
+		zt_num = zt_num + 1
+	end
+
 	--无酒不欢：盲目状态
 	if WAR.KHCM[pid] == 2 then
 		if WAR.Person[id]["我方"] == true then
@@ -2583,6 +2612,12 @@ function War_CalculateDamage(pid, eid, wugong)
 		--无上大力杵
 		if Match_wugong(pid, wugong, 83) then
 			raged = raged * 2
+		end
+		--五轮大转
+		if Match_wugong(pid, wugong, 158) then
+			local fivenum = WAR.WLDZ[pid] or 0
+			fivenum = math.max(5 - fivenum, 0)
+			raged = raged * fivenum
 		end
 		--倚天屠龙功
 		if Match_wugong(pid, wugong, 84) and IsStrike(pid) then
@@ -5866,6 +5901,10 @@ function War_Fight_Sub(id, wugongnum, x, y)
 		if IsBluff(pid, wugong) then
 			WAR.MOVEBUFF[emenyForPush] = (WAR.MOVEBUFF[emenyForPush] or 0) - 1
 		end
+		--五轮大转效果
+    	if Match_wugong(pid, wugong, 158) then
+			WAR.WLDZ[pid] = (WAR.WLDZ[pid] or 0) + 1
+    	end
 		--倚天屠龙功效果
     	if Match_wugong(pid, wugong, 84) then
 			WAR.LQZ[pid], WAR.Shield[pid] = WAR.Shield[pid], WAR.LQZ[pid]
@@ -5895,6 +5934,10 @@ function War_Fight_Sub(id, wugongnum, x, y)
 				AddRage(pid, 18)
 			end
 		end
+		--参合指效果
+		if Match_wugong(pid, wugong, 138) and then
+			WAR.TEMPDEF[pid] = (WAR.TEMPDEF[pid] or 0) + 5
+    	end		
 		--大力金刚掌
 		if Match_wugong(pid, wugong, 22) then
 			local push = PushPerson(WAR.CurID, emenyForPush)
@@ -8094,6 +8137,10 @@ function IsFullForce(pid, wugong)
 	end
 	--碧海潮生曲
 	if Match_wugong(pid, wugong, 124) then
+		return true
+	end
+	--五轮大转
+	if Match_wugong(pid, wugong, 158) then
 		return true
 	end
 	return false
