@@ -1931,6 +1931,7 @@ function WarSetGlobal()
 	WAR.Defup = {}		--防御记录
 	WAR.Wait = {}		--等待记录
 	WAR.Wait2 = {}		--换位记录
+	WAR.BXJF = {}		--辟邪剑法记录
 	WAR.TEMPATK = {}	--临时攻击
 	WAR.TEMPDEF = {}	--临时防御
 	WAR.TEMPSPD = {}	--临时迅捷
@@ -2838,12 +2839,16 @@ function War_FightMenu(sb, star, wgnum)
 			--轻功无法攻击
 			if JY.Wugong[tmp]["武功类型"] == 7 then
 				menu[i][3] = 0
-			end
-
-			--斗转星移不显示
-			if tmp == 43 then
-				menu[i][3] = 0
 			end]]
+
+			--辟邪剑法默认不显示
+			if tmp == 48 and WAR.BXJF[pid] ~= 1 then
+				menu[i][3] = 0
+			end
+			--瞬移后只显示辟邪剑法
+			if tmp ~= 48 and WAR.BXJF[pid] == 1 then
+				menu[i][3] = 0
+			end
 
 			numwugong = numwugong + 1
 
@@ -6300,7 +6305,7 @@ function War_Manual_Sub()
 	local warmenu = {
 	{"移动", War_MoveMenu, 1},	--1
 	{"攻击", War_FightMenu, 1},	--2
-	{"运功", War_YunGongMenu, 1},	--3
+	{"瞬移", War_YunGongMenu, 1},	--3
 	{"战术", War_TacticsMenu, 1},	--4
 	{"用毒", War_PoisonMenu, 1},	--5
 	{"解毒", War_DecPoisonMenu, 1},	--6
@@ -6315,6 +6320,11 @@ function War_Manual_Sub()
 	--移动过不许用
 	if WAR.Wait[pid] == -1 or WAR.Person[WAR.CurID]["移动步数"] == 0 then
 		warmenu[4][3] = 0
+	end
+
+	--辟邪剑法
+	if not NewPersonKF(pid, 48) or WAR.BXJF[pid] == 1 then
+		warmenu[3][3] = 0
 	end
 
 	--特色指令
@@ -6563,28 +6573,34 @@ function War_Manual_Sub()
 	return ShowMenu(warmenu, #warmenu, 0, CC.MainMenuX, CC.MainMenuY, 0, 0, 1, 1, CC.DefaultFont, C_ORANGE, C_WHITE)
 end
 
---无酒不欢：运功选择菜单
+--辟邪剑法瞬移
 function War_YunGongMenu()
+	local p = WAR.CurID
 	local id = WAR.Person[WAR.CurID]["人物编号"]
-	local menu={};
-	menu[1]={"运行内功",SelectNeiGongMenu,1};
-	menu[2]={"停运内功",nil,1};
-	menu[3]={"运行轻功",SelectQingGongMenu,1};
-	menu[4]={"停运轻功",nil,1};
-    local r = ShowMenu(menu,#menu,0,CC.MainSubMenuX+15,CC.MainSubMenuY,0,0,1,1,CC.DefaultFont,C_ORANGE, C_WHITE);
-	if r == 2 then
-		JY.Person[id]["主运内功"] = 0
-		DrawStrBoxWaitKey(JY.Person[id]["姓名"].."停止了运行主内功",C_RED,CC.DefaultFont,nil,LimeGreen)
-		return 20;
-	elseif r == 20 then
-		return 20;
-	elseif r == 4 then
-		JY.Person[id]["主运轻功"] = 0
-		DrawStrBoxWaitKey(JY.Person[id]["姓名"].."停止了运行主轻功",M_DeepSkyBlue,CC.DefaultFont,nil,LimeGreen)
-		return 20;
-	elseif r == 10 then
-		return 10;
+	Cls()
+	War_CalMoveStep(WAR.CurID, 128, 0)
+	local x, y = War_SelectMove()
+	local targets = GetValidTargets(p, 48)
+	local enemys = GetNonEmptyTargets(p, targets, x, y)
+	if enemys == nil then
+		enemys = {}
 	end
+	if #enemys < 1 then
+		DrawStrBoxWaitKey("需瞬移至对手背后可攻击的位置", C_WHITE, CC.DefaultFont)
+		return 20
+	end
+	for i = 1, #enemys do
+		local x0, y0 = x + enemys[i].x, y + enemys[i].y
+		local tdID = lib.GetWarMap(x0, y0, 2)
+		if War_Direct(x, y, x0, y0) == WAR.Person[tdID]["人方向"] then
+			WAR.Person[p]["坐标X"], WAR.Person[p]["坐标Y"] = x, y
+			WAR.Person[p]["移动步数"] = 0
+			WAR.BXJF[id] = 1
+			return 20
+		end
+	end
+	DrawStrBoxWaitKey("需瞬移至对手背后可攻击的位置", C_WHITE, CC.DefaultFont)
+	return 20
 end
 
 function ForceDirection(warid)
@@ -10073,6 +10089,8 @@ function WarMain(warid, isexp)
 			end
 
 			local function TurnEndReal()
+				--重置辟邪剑法
+				WAR.BXJF[id] = 0
 				--逍遥游 攻击后可移动
 	        	if WAR.Person[p]["我方"] == true and MatchStyle(id, 2) then
 					kfmoveAferwards(false)

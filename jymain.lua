@@ -5063,7 +5063,7 @@ function ShowMenu(menuItem, numItem, numShow, x1, y1, x2, y2, isBox, isEsc, size
 		if In_Battle == true then
 			if newMenu[i][1] == "攻击" then
 				DrawString(x1 + CC.MenuBorderPixel + size*2, y1 + CC.MenuBorderPixel + (i - start) * (size + CC.RowPixel) +2, "A", LimeGreen, CC.FontSmall)
-			elseif newMenu[i][1] == "运功" then
+			elseif newMenu[i][1] == "瞬移" then
 				DrawString(x1 + CC.MenuBorderPixel + size*2, y1 + CC.MenuBorderPixel + (i - start) * (size + CC.RowPixel) +2, "G", LimeGreen, CC.FontSmall)
 			elseif newMenu[i][1] == "战术" then
 				DrawString(x1 + CC.MenuBorderPixel + size*2, y1 + CC.MenuBorderPixel + (i - start) * (size + CC.RowPixel) +2, "S", LimeGreen, CC.FontSmall)
@@ -5169,7 +5169,7 @@ function ShowMenu(menuItem, numItem, numShow, x1, y1, x2, y2, isBox, isEsc, size
 				DrawBox(x1,y1,x1+w,y1+h,C_WHITE);
 			end
 		--运功
-		elseif In_Battle == true and keyPress == VK_G then
+		elseif In_Battle == true and keyPress == VK_G and menuItem[3][3] == 1 then
 			local r=War_YunGongMenu();
 			if r==20 then
 				returnValue= 20;
