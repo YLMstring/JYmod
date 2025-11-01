@@ -1120,7 +1120,7 @@ function GetWugongDescription(wugong)
 		mechanic = "反击：怒气14，可立刻进入其他架势"
 		flavor = "苗家祖传剑法，剑如飞凤，*金面佛苗人凤以之打遍天下无敌手"
 	elseif wugong == 26 then
-		mechanic = "内力1，可攻击直线距离为2的对手；*过招：击退，若引起碰撞，怒气18；反击受怒气加成但不消耗怒气"
+		mechanic = "内力1，可攻击直线距离为2的对手；*过招：击退，若引起碰撞，怒气18；反击受怒气加成但怒气不减"
 		flavor = "降龙十八掌招式简明而劲力精深，*乃是武学中的巅峰绝诣，天下阳刚之至"
 	elseif wugong == 81 then
 		mechanic = "进招：中毒10；背刺：触发对手的中毒"
@@ -1140,6 +1140,15 @@ function GetWugongDescription(wugong)
 	elseif wugong == 138 then
 		mechanic = "内力1，可攻击直线距离为2的对手；*过招或反击：护体提升5，直到战斗结束；*先制：封穴5"
 		flavor = "姑苏慕容举世无匹的家传武功，神奇精奥不逊于六脉神剑"
+	elseif wugong == 14 then
+		mechanic = "内力1，进招：冰封5；*受到攻击时，可立刻进入你掌握的一门其他武功的架势"
+		flavor = "逍遥派绝学，蕴含着诸般长短兵刃的绝招，*天下任何招数武功，都能自行化在这六路折梅手之中"
+	elseif wugong == 24 then
+		mechanic = "全力，可以攻击直线距离为2-3的对手；*进招：3回合内反击即可触发援护效果"
+		flavor = "少林七十二绝艺之一，极难练成，*每次出掌须坐马运气，凝神良久，始能将内劲聚于丹田"
+	elseif wugong == 29 then
+		mechanic = "内力1，虚招，可攻击空位，一并攻击目标延伸处的侠客；*先制：怒气不减"
+		flavor = "卓不凡在长白山荒僻极寒之地苦练三十年的大成剑术，*可在剑尖上生出半尺吞吐不定的青芒，真力非同小可"
 	end
 	local strs = {name.." "..typename, flavor, health..qi..atk..def..dex..move, mechanic}
 	--local str = name.." "..typename.."*"..flavor.."*"..health..qi..atk..def..dex..move.."*"..mechanic

@@ -1013,6 +1013,10 @@ function War_WugongHurtLife(enemyid, wugong)
     if Match_wugong(pid, wugong, 130) and IsStrike(pid) then
 		AddFreeze(eid, 5)
     end
+	--天山折梅手效果
+    if Match_wugong(pid, wugong, 14) and IsStrike(pid) then
+		AddFreeze(eid, 5)
+    end
 	--太岳三青峰效果
     if Match_wugong(pid, wugong, 34) and IsStrike(pid) then
 		if WAR.TYSQF[pid] == nil then
@@ -1081,6 +1085,10 @@ function War_WugongHurtLife(enemyid, wugong)
     if Match_wugong(pid, wugong, 15) and IsStrike(pid) then
 		AddShield(pid, 16)
 		WAR.KMSHIELD[pid] = 3
+    end
+	--须弥山掌效果
+    if Match_wugong(pid, wugong, 24) and IsStrike(pid) then
+		WAR.XMSZ[pid] = 3
     end
 	--五虎断门刀效果
     if Match_wugong(pid, wugong, 59) and IsStrike(pid) then
@@ -1448,6 +1456,10 @@ function War_WugongHurtLife(enemyid, wugong)
 		JY.Person[eid]["生命"] = 0
 		WAR.Person[enemyid]["反击武功"] = -1		--如果被打死则不会触发反击
 	elseif WAR.DZXY ~= 1 and WAR.Person[WAR.CurID]["我方"] ~= WAR.Person[enemyid]["我方"] and JY.Person[eid]["主运内功"] > 0 then
+		--天山折梅手
+		if MatchStyle(eid, 14) then
+			ShiftStyleMenu(eid)
+		end
 		WAR.Person[enemyid]["反击武功"] = JY.Person[eid]["主运内功"]
 	end
 	--万岳朝宗 被打的独孤九剑不反击
@@ -1568,6 +1580,10 @@ function AddPoison(eid, num, enemyid)
 end
 
 function IsProtecting(eid, wugong, enemyid)
+	--须弥山掌
+	if (WAR.XMSZ[eid] or 0) > 0 then
+		return true
+	end
 	return WAR.Person[enemyid]["反击武功"] == wugong + 11000
 end
 
@@ -2025,6 +2041,7 @@ function WarSetGlobal()
 	WAR.WMYH = {}			--无明业火状态，耗损使用的内力一半的生命
 	WAR.TYSQF = {}			--太岳三青峰状态
 	WAR.KMSHIELD = {}		--空明拳状态
+	WAR.XMSZ = {}		    --须弥山掌状态
 	WAR.FREEMOVE = false    --八卦特效的自由移动环节用
 	WAR.LHFXS = {}			--兰花拂穴手状态
 	WAR.FMZF = {}			--疯魔杖法状态
@@ -2439,14 +2456,14 @@ function WarShowHead(id)
 		zt_num = zt_num + 1
 	end
 
-	--无酒不欢：金身不灭
-	if WAR.JSBM[pid] ~= nil then
+	--须弥山掌
+	if (WAR.XMSZ[pid] or 0) > 0 then
 		if WAR.Person[id]["我方"] == true then
 			lib.LoadPNG(98, 25 * 2 , x1 - size*9- CC.RowPixel, CC.ScreenH - size*2 - CC.RowPixel*2 - (size*2+CC.RowPixel*2)*zt_num, 1)
-			DrawString(x1 - size*6- CC.RowPixel, CC.ScreenH - size - CC.RowPixel*3 + 1 - (size*2+CC.RowPixel*2)*zt_num, "金身不灭", C_WHITE, size)
+			DrawString(x1 - size*6- CC.RowPixel, CC.ScreenH - size - CC.RowPixel*3 + 1 - (size*2+CC.RowPixel*2)*zt_num, "须弥山掌："..WAR.XMSZ[pid], C_WHITE, size)
 		else
 			lib.LoadPNG(98, 25 * 2 , x1 + width + CC.RowPixel, CC.RowPixel + 3 + (size*2+CC.RowPixel*2)*zt_num, 1)
-			DrawString(x1 + width + size*2 + CC.RowPixel*3, size + 3 + (size*2+CC.RowPixel*2)*zt_num, "金身不灭", C_WHITE, size)
+			DrawString(x1 + width + size*2 + CC.RowPixel*3, size + 3 + (size*2+CC.RowPixel*2)*zt_num, "须弥山掌："..WAR.XMSZ[pid], C_WHITE, size)
 		end
 		zt_num = zt_num + 1
 	end
@@ -8159,6 +8176,10 @@ function IsFullForce(pid, wugong)
 	if Match_wugong(pid, wugong, 158) then
 		return true
 	end
+	--须弥山掌
+	if Match_wugong(pid, wugong, 24) then
+		return true
+	end
 	return false
 end
 
@@ -9885,6 +9906,10 @@ function WarMain(warid, isexp)
 			--空明拳计数
 			WAR.KMSHIELD[pid] = (WAR.KMSHIELD[pid] or 0) - 1
 			WAR.KMSHIELD[pid] = math.max(0, WAR.KMSHIELD[pid])
+
+			--须弥山掌计数
+			WAR.XMSZ[pid] = (WAR.XMSZ[pid] or 0) - 1
+			WAR.XMSZ[pid] = math.max(0, WAR.XMSZ[pid])
 
 			--兰花拂穴手背刺计数
 			WAR.LHFXS[pid] = (WAR.LHFXS[pid] or 0) - 1
