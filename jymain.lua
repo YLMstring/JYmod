@@ -907,7 +907,7 @@ function GetWugongDescription(wugong)
 		mechanic = "虚招，连击：怒气10"
 		flavor = "石梁派剑法，六六三十六招尽是虚招，*如同雷震之前的闪电，敌人头晕眼花之后，便是雷轰霹雳的猛攻"
 	elseif wugong == 9 then
-		mechanic = "背刺：破招，中毒5"
+		mechanic = "背刺：摧破，中毒5"
 		flavor = "西毒欧阳锋从毒蛇身上悟出的古怪拳法，*打出后能在空中任意拐弯"
 	elseif wugong == 30 then
 		mechanic = "疗伤（可攻击同伴，攻击同伴时改为回复气血）"
@@ -943,7 +943,7 @@ function GetWugongDescription(wugong)
 		mechanic = "援护1，援护且反击：封穴10"
 		flavor = "少林派点穴绝技，一指点出，带有极轻微的呲呲声响"
 	elseif wugong == 33 then
-		mechanic = "令对手在你进招前抢先反击，不动：破招"
+		mechanic = "令对手在你进招前抢先反击，不动：摧破"
 		flavor = "嵩山派剑法，气象森严，便似千军万马奔驰而来，*长枪大戟，黄沙万里，堂堂正正，端严雄伟"
 	elseif wugong == 126 then
 		mechanic = "反击：封穴5，若上回合起发动过背刺，改为封穴10"
@@ -955,19 +955,19 @@ function GetWugongDescription(wugong)
 		mechanic = "书法，攻击距离为1-2；*不受怒气加成，过招：将怒气转化为卸力，将卸力转化为怒气"
 		flavor = "武林至尊，宝刀屠龙。*号令天下，莫敢不从。*倚天不出，谁与争锋？*张三丰情之所至，将这二十四个字演为一套武功"
 	elseif wugong == 36 then
-		mechanic = "需要内力；背刺：破招，卸力20"
+		mechanic = "需要内力；背刺：摧破，卸力20"
 		flavor = "武当派七十二招绕指柔剑，以浑厚内力逼弯剑刃，*轻柔曲折，飘忽不定，剑招闪烁无常，敌人难以挡架"
 	elseif wugong == 20 then
 		mechanic = "援护2，援护且反击：怒气10"
 		flavor = "少林派的三十六式抓法，要旨端在凌厉狠辣，不求变化繁多，*龙影飞空，龙爪急舞，快极狠极"
 	elseif wugong == 164 then
-		mechanic = "攻击距离为1-2；*进招：若对手与自身有相同层数的负面效果，破招"
+		mechanic = "攻击距离为1-2；*进招：若对手与自身有相同层数的负面效果，摧破"
 		flavor = "九阴真经中记载的鬼魅鞭法，身法奇诡莫测，*如风吹柳絮，水送浮萍，实非人间气象"
 	elseif wugong == 92 then
 		mechanic = "内力2，无误伤，攻击3格内所有对手，全力，进招：灼烧5"
 		flavor = "佛门中极上乘的功夫，一声断喝中蕴蓄深厚的内家劲力"
 	elseif wugong == 151 then
-		mechanic = "内力2，攻击3格内所有对手，音律，全力，进招：破招"
+		mechanic = "内力2，攻击3格内所有对手，音律，全力，进招：摧破"
 		flavor = "梅庄大庄主黄钟公苦练数十年的绝技，琴音中灌注上乘内力，*用以扰乱敌人心神，对方内力和琴音一生共鸣，便不知不觉的为琴音所制"
 	elseif wugong == 134 then
 		mechanic = "进招：对手的流血转化为2倍的内伤"
@@ -1012,10 +1012,10 @@ function GetWugongDescription(wugong)
 		mechanic = "无误伤，额外触发一次八卦逆位效果；合击：两仪剑法"
 		flavor = "华山派刀法，狠辣沉猛，不依常规，*刀招施发两仪术数中的极致"
 	elseif wugong == 42 then
-		mechanic = "进招：破招全真剑法，若掌握全真剑法，冰封10；*若掌握双手互搏和全真剑法，具有全真剑法的效果；*合击：全真剑法"
+		mechanic = "进招：摧破全真剑法，若掌握全真剑法，冰封10；*若掌握双手互搏和全真剑法，具有全真剑法的效果；*合击：全真剑法"
 		flavor = "林朝英所创剑法，飘忽来去，轻灵跳脱，*丰姿绰约，姿势闲雅，是全真剑法的克星。"
 	elseif wugong == 61 then
-		mechanic = "需要内力，进招：破招雪山剑法，若为合击，灼烧10；合击：雪山剑法"
+		mechanic = "需要内力，进招：摧破雪山剑法，若为合击，灼烧10；合击：雪山剑法"
 		flavor = "史小翠专为克制雪山剑法而创的七十三路刀法，*但联手并使时，又会变成威力无穷的一套武功"
 	elseif wugong == 22 then
 		mechanic = "过招：击退，若引起碰撞，双方内伤5"
@@ -1148,7 +1148,10 @@ function GetWugongDescription(wugong)
 		flavor = "少林七十二绝艺之一，极难练成，*每次出掌须坐马运气，凝神良久，始能将内劲聚于丹田"
 	elseif wugong == 29 then
 		mechanic = "内力1，虚招，可攻击空位，一并攻击目标延伸处的侠客；*先制：怒气不减"
-		flavor = "卓不凡在长白山荒僻极寒之地苦练三十年的大成剑术，*可在剑尖上生出半尺吞吐不定的青芒，真力非同小可"
+		flavor = "卓不凡在长白山荒僻极寒之地苦练三十年方得达成之剑术，*可在剑尖上生出半尺吞吐不定的青芒，真力非同小可"
+	elseif wugong == 38 then
+		mechanic = "神兵，令对手在你进招前抢先反击，将对手的灼烧附加至伤害；*反击：对手下次发生碰撞时，摧破"
+		flavor = "重剑无锋，大巧不工！顺刺，逆击，横削，倒劈，*越是平平无奇的剑招，对方越难抵御"
 	end
 	local strs = {name.." "..typename, flavor, health..qi..atk..def..dex..move, mechanic}
 	--local str = name.." "..typename.."*"..flavor.."*"..health..qi..atk..def..dex..move.."*"..mechanic
@@ -1157,7 +1160,7 @@ end
 
 function CheckKeyword(des, m2)
 	local list = {"进招","反击","连击","过招","合击","背刺","先制","不动","全力","冰封","灼烧","内伤","封穴","中毒","流血",
-					"怒气","卸力","破招","虚招","疗伤","援护","击退","神兵","音律","书法","八卦"}
+					"怒气","卸力","摧破","虚招","疗伤","援护","击退","神兵","音律","书法","八卦"}
 	for i = 1, #list do
 		if string.find(des, list[i]) ~= nil then
 			say(ExplainKeyword(list[i]),JY.Person[m2]["头像代号"],1,JY.Person[m2]["姓名"])
@@ -1219,8 +1222,8 @@ function ExplainKeyword(word)
 	if word == "卸力" then
 		return "【卸力】被对手主动攻击时一次性抵消伤害，回合开始时减半"
 	end
-	if word == "破招" then
-		return "【破招】让对手退出架势（退出架势后无法反击）"
+	if word == "摧破" then
+		return "【摧破】让对手退出架势（退出架势后无法反击）"
 	end
 	if word == "虚招" then
 		return "【虚招】主动攻击的中央目标下回合移动力-1，进入架势后可以自由使用其他类型的外功"
@@ -1235,7 +1238,7 @@ function ExplainKeyword(word)
 		return "【击退】将对手朝远离自身的方向移动一格，若引起碰撞，改为下回合移动力-1"
 	end
 	if word == "神兵" then
-		return "【神兵】进入架势后，只有满足背刺条件才能被破招"
+		return "【神兵】进入架势后，只有满足背刺条件才能被摧破"
 	end
 	if word == "音律" then
 		return "【音律】使用音律相关的杂学时，有额外效果"

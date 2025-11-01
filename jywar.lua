@@ -799,8 +799,8 @@ function BreakStance(eid, warpid, wareid)
 		JY.Person[eid]["主运内功"] = 0
 		return
 	end
-	--大剪刀，棋盘招式,金蛇剑法
-	if stance == 75 or stance == 72 or stance == 40 then
+	--大剪刀，棋盘招式，金蛇剑法，玄铁剑法
+	if stance == 75 or stance == 72 or stance == 40 or stance == 38 then
 		return
 	end
 	JY.Person[eid]["主运内功"] = 0
@@ -985,6 +985,10 @@ function War_WugongHurtLife(enemyid, wugong)
 	--参合指效果
 	if Match_wugong(pid, wugong, 138) and IsCounter(pid) then
 		WAR.TEMPDEF[pid] = (WAR.TEMPDEF[pid] or 0) + 5
+    end
+	--玄铁剑法
+	if Match_wugong(pid, wugong, 38) and IsCounter(pid) then
+		WAR.XTJF[eid] = WAR.CurID
     end
 	if Match_wugong(pid, wugong, 138) and MatchStyle(eid, 0) then
 		AddStun(eid, 5)
@@ -1462,8 +1466,8 @@ function War_WugongHurtLife(enemyid, wugong)
 		end
 		WAR.Person[enemyid]["反击武功"] = JY.Person[eid]["主运内功"]
 	end
-	--万岳朝宗 被打的独孤九剑不反击
-	if Match_wugong(pid, wugong, 33) or MatchStyle(eid, 47) then
+	--万岳朝宗 玄铁剑法 被打的独孤九剑不反击
+	if Match_wugong(pid, wugong, 33) or Match_wugong(pid, wugong, 38) or MatchStyle(eid, 47) then
 		WAR.Person[enemyid]["反击武功"] = -1
     end
 
@@ -2046,6 +2050,7 @@ function WarSetGlobal()
 	WAR.LHFXS = {}			--兰花拂穴手状态
 	WAR.FMZF = {}			--疯魔杖法状态
 	WAR.LYSJZ = {}			--落英神剑掌状态
+	WAR.XTJF = {}			--玄铁剑法状态
 
 	WAR.BHCQ = {}			--百花错拳状态
 	WAR.BHCQLIST = {}		--不重复武功列表	
@@ -2372,14 +2377,14 @@ function WarShowHead(id)
 		zt_num = zt_num + 1
 	end
 
-	--无酒不欢：虚弱状态
-	if WAR.XRZT[pid] ~= nil then
+	--玄铁剑法
+	if (WAR.XTJF[pid] or -1) > -1 then
 		if WAR.Person[id]["我方"] == true then
 			lib.LoadPNG(98, 20 * 2 , x1 - size*9- CC.RowPixel, CC.ScreenH - size*2 - CC.RowPixel*2 - (size*2+CC.RowPixel*2)*zt_num, 1)
-			DrawString(x1 - size*6- CC.RowPixel, CC.ScreenH - size - CC.RowPixel*3 + 1 - (size*2+CC.RowPixel*2)*zt_num, "虚弱状态:" .. WAR.XRZT[pid], C_WHITE, size)
+			DrawString(x1 - size*6- CC.RowPixel, CC.ScreenH - size - CC.RowPixel*3 + 1 - (size*2+CC.RowPixel*2)*zt_num, "重剑摧破", C_WHITE, size)
 		else
 			lib.LoadPNG(98, 20 * 2 , x1 + width + CC.RowPixel, CC.RowPixel + 3 + (size*2+CC.RowPixel*2)*zt_num, 1)
-			DrawString(x1 + width + size*2 + CC.RowPixel*3, size + 3 + (size*2+CC.RowPixel*2)*zt_num, "虚弱状态:" .. WAR.XRZT[pid], C_WHITE, size)
+			DrawString(x1 + width + size*2 + CC.RowPixel*3, size + 3 + (size*2+CC.RowPixel*2)*zt_num, "重剑摧破", C_WHITE, size)
 		end
 		zt_num = zt_num + 1
 	end
@@ -2623,6 +2628,10 @@ function War_CalculateDamage(pid, eid, wugong)
 	if Match_wugong(pid, wugong, 23) then
 		dmg = dmg + JY.Person[eid]["受伤程度"]
 	end
+	--玄铁剑法
+	if Match_wugong(pid, wugong, 38) then
+		dmg = dmg + JY.Person[eid]["灼烧程度"]
+    end
 	local raged = 0
 	local dragon = Match_wugong(pid, wugong, 26) and IsCounter(pid)
 	if (IsStrike(pid) or dragon) and WAR.LQZ[pid] ~= nil then
@@ -2647,6 +2656,10 @@ function War_CalculateDamage(pid, eid, wugong)
 		end
 		dmg = dmg + WAR.LQZ[pid]
 		if dragon then
+			raged = 0
+		end
+		--周公剑芒
+		if Match_wugong(pid, wugong, 29) and MatchStyle(eid, 0) then
 			raged = 0
 		end
 	end
@@ -5553,6 +5566,19 @@ function War_Fight_Sub(id, wugongnum, x, y)
 		if wareid ~= nil and wareid >= 0 and wareid ~= WAR.CurID then		--如果有人，并且不是当前控制人
 			addhitperson(wareid, i, j)
 		end
+		--周公剑芒
+		if Match_wugong(pid, wugong, 29) then
+			local i9, j9 = i - WAR.Person[WAR.CurID]["坐标X"], j - WAR.Person[WAR.CurID]["坐标Y"]
+			if i9 > 1 then i9 = 1 end
+			if i9 < -1 then i9 = -1 end
+			if j9 > 1 then j9 = 1 end
+			if j9 < -1 then j9 = -1 end
+			i9, j9 = i + i9, j + j9
+			local wareid2 = GetWarMap(i9, j9, 2)
+			if wareid2 ~= nil and wareid2 >= 0 and wareid2 ~= WAR.CurID then
+				addhitperson(wareid2, i9, j9)
+			end
+		end
 		--九阴白骨爪
 		if Match_wugong(pid, wugong, 11) then
 			local i9, j9 = i - WAR.Person[WAR.CurID]["坐标X"], j - WAR.Person[WAR.CurID]["坐标Y"]
@@ -5660,12 +5686,12 @@ function War_Fight_Sub(id, wugongnum, x, y)
 		end
     end
 	for i = 1, #WAR.DGJJ do
-		--先手反击检查 万岳朝宗 独孤九剑
+		--先手反击检查
 		local isDone = false
 		local enemyid = WAR.DGJJ[i][1]
 		local eid = WAR.Person[enemyid]["人物编号"]
-		--万岳朝宗总是后手
-		if not isDone and Match_wugong(pid, wugong, 33) and JY.Person[eid]["主运内功"] > 0 then
+		--万岳朝宗 玄铁剑法总是后手
+		if not isDone and (Match_wugong(pid, wugong, 33) or Match_wugong(pid, wugong, 38)) and JY.Person[eid]["主运内功"] > 0 then
 			local datas = GetValidTargets(enemyid, JY.Person[eid]["主运内功"])
 			local data = {}
 			data.x, data.y = WAR.Person[WAR.CurID]["坐标X"] - WAR.Person[enemyid]["坐标X"], WAR.Person[WAR.CurID]["坐标Y"] - WAR.Person[enemyid]["坐标Y"]
@@ -6110,9 +6136,19 @@ function PushPerson(warpid, wareid)
 	if j9 > 1 then j9 = 1 end
 	if j9 < -1 then j9 = -1 end
 	i9, j9 = WAR.Person[wareid]["坐标X"] + i9, WAR.Person[wareid]["坐标Y"] + j9
+
+	local function onClash(id)
+		WAR.MOVEBUFF[id] = (WAR.MOVEBUFF[id] or 0) - 1
+		local p = WAR.Person[id]["人物编号"]
+		if (WAR.XTJF[p] or -1) > -1 then
+			BreakStance(p, warpid, id)
+			WAR.XTJF[p] = -1
+		end
+	end
+
 	--表示有障碍物
 	if GetWarMap(i9, j9, 1) ~= nil and GetWarMap(i9, j9, 1) > 0 then
-		WAR.MOVEBUFF[wareid] = (WAR.MOVEBUFF[wareid] or 0) - 1
+		onClash(wareid)
 		return -1
 	end
 	local wareid2 = GetWarMap(i9, j9, 2)
@@ -6127,8 +6163,8 @@ function PushPerson(warpid, wareid)
 		return 100
 	end
 	--表示有人
-	WAR.MOVEBUFF[wareid] = (WAR.MOVEBUFF[wareid] or 0) - 1
-	WAR.MOVEBUFF[wareid2] = (WAR.MOVEBUFF[wareid2] or 0) - 1
+	onClash(wareid)
+	onClash(wareid2)
 	return wareid2
 end
 
@@ -8138,6 +8174,10 @@ function IsBluff(pid, stance)
 	end
 	--胡家刀法
 	if Match_wugong(pid, stance, 67) then
+		return true
+	end
+	--周公剑芒
+	if Match_wugong(pid, stance, 29) then
 		return true
 	end
 	return false
