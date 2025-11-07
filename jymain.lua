@@ -910,8 +910,8 @@ function GetWugongDescription(wugong)
 		mechanic = "背刺：摧破，中毒5"
 		flavor = "西毒欧阳锋从毒蛇身上悟出的古怪拳法，*打出后能在空中任意拐弯"
 	elseif wugong == 30 then
-		mechanic = "疗伤（可攻击同伴，攻击同伴时改为回复气血）"
-		flavor = "恒山派剑法，绵密严谨，长于守御，破绽极少"
+		mechanic = "疗伤，攻击时可用护体+疗愈代替力道（若更高）"
+		flavor = "恒山派剑法，绵密严谨，长于守御，破绽极少，*又可在出其不意之处突出杀招"
 	elseif wugong == 6 then
 		mechanic = "该武功不造成伤害，改为增加卸力"
 		flavor = "春蚕掌法招招全是守势，出手奇短，*抬手踢足，全不出半尺之外，不求有功，但求无过"
@@ -994,7 +994,7 @@ function GetWugongDescription(wugong)
 		mechanic = "进招或连击：3格内对手冰封5"
 		flavor = "封不平在中条山隐居十五年而创制出的得意剑法，*剑招一剑快似一剑，剑锋所发劲气渐渐扩展，寒气逼人"
 	elseif wugong == 11 then
-		mechanic = "可攻击空位，*若能够背刺攻击目标延伸处的侠客，则一并攻击之；*进招：自身中毒5，分别触发自身和对手的中毒"
+		mechanic = "可攻击空位，*若可背刺攻击目标延伸处的对手，则一并攻击之；*进招：自身中毒5，分别触发自身和对手的中毒"
 		flavor = "黑风双煞服食砒霜练成的阴毒功夫，*手爪上含有剧毒，专在对方明知不能发招之时暴起疾进，最是难闪难挡"
 	elseif wugong == 58 then
 		mechanic = "回合结束时，若足踏八卦方位，卸力16，*可以继续移动，无视经过敌人身边的移动限制"
@@ -1039,10 +1039,10 @@ function GetWugongDescription(wugong)
 		mechanic = "虚招，过招：你的进招改为反击，你的反击改为进招，*若使用的武功与从此时起使用过的均不同，则具有百花错拳的效果，持续2回合"
 		flavor = "天池怪侠袁士霄融通百家，别走蹊径所创的独门拳术，*每一招均和各派祖传正宗手法相似而实非，出其不意"
 	elseif wugong == 132 then
-		mechanic = "可攻击空位，*若目标延伸处的侠客有灼烧，则一并攻击之；*若攻击的是空位，你可以消耗内力1来攻击目标延伸处"
-		flavor = "少林派上乘武学，十指快速连点，凌空指力可击碎金属"
+		mechanic = "可攻击空位，*若目标延伸处的对手有灼烧，则一并攻击之；*若攻击的是空位，你可以消耗内力1来攻击目标延伸处"
+		flavor = "少林七十二绝艺之一，十指快速连点，凌空指力可击碎金属"
 	elseif wugong == 8 then
-		mechanic = "可攻击空位，*若目标延伸处的侠客有冰封，则一并攻击之；*进招：对手的冰封和灼烧转化为中毒"
+		mechanic = "可攻击空位，*若目标延伸处的对手有冰封，则一并攻击之；*进招：对手的冰封和灼烧转化为中毒"
 		flavor = "逍遥派最上乘的武功，出手狠辣刻毒，*蕴含着生死符的发射和破解手法"
 	elseif wugong == 56 then
 		mechanic = "无误伤，进招：将对手足踏的八卦转移到自己脚下；*不动：计算自身连击数时，将负面效果层数加到迅捷上"
@@ -1075,7 +1075,7 @@ function GetWugongDescription(wugong)
 		mechanic = "令对手退场时，怒气10，疯魔杖法的攻击范围+1"
 		flavor = "梁山泊好汉鲁智深脱胎于少林棍法所创的功夫，*猛如疯虎，骤若天魔"
 	elseif wugong == 17 then
-		mechanic = "书法，疗伤，可攻击空位，*若目标延伸处的侠客有封穴，则一并攻击之；*若攻击的是空位，你可以消耗内力1来攻击目标延伸处"
+		mechanic = "书法，疗伤，可攻击空位，*若目标延伸处的对手有封穴，则一并攻击之；*若攻击的是空位，你可以消耗内力1来攻击目标延伸处"
 		flavor = "大理段家驰名天下的纯阳功夫，*指上罡气温淳平和，沛然浑厚，可替人打通周身穴道，治愈重伤"
 	elseif wugong == 63 then
 		mechanic = "令对手退场时，气血上限+10，背刺：改为气血上限+20；*吸取流血对手气血的效果变为2倍"
@@ -1087,11 +1087,11 @@ function GetWugongDescription(wugong)
 		mechanic = "内力2，攻击3格内所有对手，音律，全力，*若移动至八卦方位，也可以使用该武功；*进招：可令对手任意转向"
 		flavor = "东邪黄药师吹奏的乐曲，*含有上乘内功，诱惑聆曲者随之翩翩起舞"
 	elseif wugong == 125 then
-		mechanic = "需要内力，可攻击直线距离为2的对手；*可攻击空位，若能够背刺攻击目标延伸处的侠客，则一并攻击之；*进招：可令对手任意转向"
+		mechanic = "需要内力，可攻击直线距离为2的对手；*可攻击空位，若可先制攻击目标延伸处的对手，则一并攻击之；*进招：可令对手任意转向"
 		flavor = "少林派独步天下的袖功，口中谈笑，袍袖已动，潇洒自在"
 	elseif wugong == 137 then
-		mechanic = "无误伤，可攻击空位，*若有怒气，怒气效果改为回复自身，*且一并攻击攻击目标延伸处的侠客；*令对手退场时，改为令其重新开始集气并加入我方，*生命值提升至其封穴点数的5倍"
-		flavor = "少林绝学，出指轻柔无比，*似是拈住一朵鲜花，温颜微笑间神功已运"
+		mechanic = "无误伤，可攻击空位，*若有怒气，怒气效果改为进招时回复自身等量气血，*且一并攻击攻击目标延伸处的对手；*令对手退场时，改为令其重新开始集气并加入我方，*生命值提升至其封穴点数的5倍"
+		flavor = "少林七十二绝艺之一，出指轻柔无比，*似是拈住一朵鲜花，温颜微笑间神功已运"
 	elseif wugong == 62 then
 		mechanic = "无视距离援护掌握夫妻刀法的同伴，援护且反击：流血10；*合击：夫妻刀法"
 		flavor = "神秘高僧所传的奇门刀法，阴阳开合，配合天衣无缝"
@@ -1114,7 +1114,7 @@ function GetWugongDescription(wugong)
 		mechanic = "援护2，援护且反击：将自身所有负面效果转化为气血回复，*并触发掌握的所有其他援护武功的效果"
 		flavor = "少林派最精奥的掌法，要义在于摄伏心念，安然怡然；*掌力越练越强，招数愈练愈纯，那是学无止境"
 	elseif wugong == 67 then
-		mechanic = "虚招，进入该武功的架势，*或从该武功进入其他架势时，怒气8"
+		mechanic = "虚招，从其他架势进入该武功架势时，*或从该武功架势进入其他架势时，怒气8"
 		flavor = "胡家祖传刀法，招数精奇，*虚实互用，忽虚忽实，有鬼神莫测之变"
 	elseif wugong == 44 then
 		mechanic = "反击：怒气14，可立刻进入其他架势"
@@ -1132,7 +1132,7 @@ function GetWugongDescription(wugong)
 		mechanic = "内力1，全力，攻击距离为2-3，*该武功受到怒气加成时效果为5倍，*过招：效果降低1倍，但不会变为负值"
 		flavor = "金轮法王所创奇功，*空中飞起三只轮子，手中各握一轮，随接随掷，*金银铜铁铅五轮齐施，运转如飞"
 	elseif wugong == 54 then
-		mechanic = "音律，进招：力道提升5，直到战斗结束"
+		mechanic = "神兵，音律，进招：力道提升5，直到战斗结束"
 		flavor = "《庄子》中蕴含的杀敌之法，出手因便施巧，*合于音乐节拍，趋退转合，潇洒异常"
 	elseif wugong == 48 then
 		mechanic = "你使用该武功进招前瞬移至任意对手背后；*连击：迅捷提升5，直到战斗结束"
@@ -1141,17 +1141,50 @@ function GetWugongDescription(wugong)
 		mechanic = "内力1，可攻击直线距离为2的对手；*过招或反击：护体提升5，直到战斗结束；*先制：封穴5"
 		flavor = "姑苏慕容举世无匹的家传武功，神奇精奥不逊于六脉神剑"
 	elseif wugong == 14 then
-		mechanic = "内力1，进招：冰封5；*受到攻击时，可立刻进入你掌握的一门其他武功的架势"
+		mechanic = "内力1，进招：冰封5；*受到攻击时，可立刻进入其他架势"
 		flavor = "逍遥派绝学，蕴含着诸般长短兵刃的绝招，*天下任何招数武功，都能自行化在这六路折梅手之中"
 	elseif wugong == 24 then
-		mechanic = "全力，可以攻击直线距离为2-3的对手；*进招：3回合内反击即可触发援护效果"
+		mechanic = "全力，可以攻击直线距离为2-3的对手；*进招：3回合内反击也可触发援护效果"
 		flavor = "少林七十二绝艺之一，极难练成，*每次出掌须坐马运气，凝神良久，始能将内劲聚于丹田"
 	elseif wugong == 29 then
-		mechanic = "内力1，虚招，可攻击空位，一并攻击目标延伸处的侠客；*先制：怒气不减"
+		mechanic = "内力1，虚招，可攻击空位，一并攻击目标延伸处的对手；*先制：怒气不减"
 		flavor = "卓不凡在长白山荒僻极寒之地苦练三十年方得达成之剑术，*可在剑尖上生出半尺吞吐不定的青芒，真力非同小可"
 	elseif wugong == 38 then
 		mechanic = "神兵，令对手在你进招前抢先反击，将对手的灼烧附加至伤害；*反击：对手下次发生碰撞时，摧破"
 		flavor = "重剑无锋，大巧不工！顺刺，逆击，横削，倒劈，*越是平平无奇的剑招，对方越难抵御"
+	elseif wugong == 41 then
+		mechanic = "先制或连击：流血9，自身流血9，将你的疗愈加到力道上"
+		flavor = "灭绝师太手创的两套剑法，连环抢攻，迅捷无伦，*出手之凌厉猛悍，犹如天神行法，直是匪夷所思"
+	elseif wugong == 170 then
+		mechanic = "内力2，进招：若为同伴，中毒28；*令对手退场时，对其4格内所有其他对手施加等量中毒"
+		flavor = "星宿派阴毒武功，将人一抓而毙，尸身满是尸毒，*即使拨挡闪避，隔空击打，亦难免毒气侵袭"
+	elseif wugong == 152 then
+		mechanic = "进招：2格内同伴的怒气和卸力转移至自身；*合击：七星聚会"
+		flavor = "丘处机等人从天罡北斗阵法中变化而来的并力攻敌法门，*每一招都是将多人劲力归集于一点，威力非同小可"
+	elseif wugong == 136 then
+		mechanic = "可攻击空位，不动：一并攻击目标延伸处的对手；*若攻击的是空位，你可以消耗内力1来攻击目标延伸处；*进招：若上回合起发动过背刺，进招时也可触发先制，持续2回合"
+		flavor = "少林七十二绝艺之一，指力从衣袖中暗暗发出，全无形迹"
+	elseif wugong == 80 then
+		mechanic = "神兵，无误伤，反击或连击：攻击所有可触及的对手，*若对手有封穴，下回合移动力-1"
+		flavor = "丐帮帮主历代相传的镇帮之宝，变化奇幻，妙用无穷，*绝招使将出来，四面八方是棒，其精妙已臻武学中的绝诣"
+	elseif wugong == 175 then
+		mechanic = "5回合内，你的任意一门五岳剑法均具有你掌握的其他五岳剑法的效果"
+		flavor = "华山思过崖后洞石壁上所刻五岳剑法的失传绝招，*融合贯通，一气呵成，存招式之意，而无招式之形"
+	elseif wugong == 77 then
+		mechanic = "4回合内，你的剑法和刀法具有虚招，且受到的封穴减半"
+		flavor = "绝情谷主公孙止的平生绝学，刀成剑，剑变刀，奇幻无方"
+	elseif wugong == 171 then
+		mechanic = "4回合内，过招：外功结算完毕后，可立刻进入其他架势"
+		flavor = "老顽童周伯通所创分心二用的奇怪功夫，*双手的招数全然不同，如同两个人在各自发招"
+	elseif wugong == 93 then
+		mechanic = "3回合内，连击也可触发背刺效果，回合结束时，可以继续移动"
+		flavor = "山中老人霍山所创的古波斯魔道武功，*东滚一转，西摔一交，颠三倒四，诡异古怪"
+	elseif wugong == 98 then
+		mechanic = "5回合内，你的所有武功等阶视为你所掌握的最高阶"
+		flavor = "逍遥派的神奇内功，不着形相，无迹可寻，*以此为根基可运使天下诸般招式"
+	elseif wugong == 154 then
+		mechanic = "5回合内，迅捷+5，多次连击均可触发连击效果"
+		flavor = "林朝英隐居古墓创下的武功，招断意连，绵绵不绝，*当真是闲雅潇洒，翰逸神飞"
 	end
 	local strs = {name.." "..typename, flavor, health..qi..atk..def..dex..move, mechanic}
 	--local str = name.." "..typename.."*"..flavor.."*"..health..qi..atk..def..dex..move.."*"..mechanic
@@ -1190,7 +1223,7 @@ function ExplainKeyword(word)
 		return "【背刺】从敌人背后发动攻击时触发效果"
 	end
 	if word == "先制" then
-		return "【先制】攻击没有进入架势的敌人时触发效果"
+		return "【先制】攻击未架势的敌人时触发效果"
 	end
 	if word == "不动" then
 		return "【不动】本回合开始起未移动且未使用轻身功夫时触发效果"
@@ -1229,7 +1262,7 @@ function ExplainKeyword(word)
 		return "【虚招】主动攻击的中央目标下回合移动力-1，进入架势后可以自由使用其他类型的外功"
 	end
 	if word == "疗伤" then
-		return "【疗伤】可攻击同伴，攻击同伴时改为回复气血"
+		return "【疗伤】可攻击同伴，攻击同伴时改为治疗（用护体代替力道计算）"
 	end
 	if word == "援护" then
 		return "【援护】身边相应距离内的气血更少的同伴被攻击时，替代同伴成为攻击目标"
@@ -2935,7 +2968,7 @@ function ShowPersonStatus_sub(id, page, istart, tfid, max_row, case, AI_s1, AI_s
 				--如果不是,则显示武功威力
 				else
 					--威力
-					local wugongwl = get_skill_power(id, wugong, level)
+					local wugongwl = get_skill_power(id, wugong, false)
 					--区别天赋内外功的颜色
 					if Given_WG(id, wugong) or Given_NG(id, wugong) then
 						DrawString(x1 + size * 8 -13, y1 + h * (i), string.format("%4d",wugongwl), PinkRed, size)
@@ -9019,25 +9052,28 @@ function ShowMenu3(menu,itemNum,numShow,showRow,x1,y1,size,color,selectColor)
 end
 
 --无酒不欢：获取武功威力
-function get_skill_power(personid, wugongid, wugonglvl)
+function get_skill_power(personid, wugongid, isheal)
 	local power = JY.Wugong[wugongid]["攻击力10"]
-	local powerNew = 1
-	if power == 2 then
-		powerNew = 1.2
-	end
-	if power == 3 then
-		powerNew = 1.4
-	end
-	if power == 4 then
-		powerNew = 1.6
-	end
+	local powerNew = 0.8 + 0.2 * power
 	local p = personid
 	local abilitylist = {JY.Person[p]["拳掌功夫"],JY.Person[p]["指法技巧"],JY.Person[p]["御剑能力"],JY.Person[p]["耍刀技巧"],JY.Person[p]["特殊兵器"]}
 	local WGLX = JY.Wugong[wugongid]["武功类型"]
 	if WGLX < 6 and abilitylist[WGLX] < power then
 		powerNew = 1
 	end
+	if HasBuff(p, 98) then
+		power = math.max(table.unpack(abilitylist))
+		powerNew = 0.8 + 0.2 * power
+	end
 	local atk = JY.Person[personid]["攻击力"] + (WAR.TEMPATK[personid] or 0)
+	local def = JY.Person[personid]["防御力"] + (WAR.TEMPDEF[personid] or 0)
+	if isheal then
+		atk = def
+	end
+	--绵里藏针
+	if Match_wugong(p, wugongid, 30) and not isheal then
+		atk = math.max(atk, def + JY.Person[p]["医疗能力"])
+	end
 	return math.modf(powerNew * atk)
 end
 
